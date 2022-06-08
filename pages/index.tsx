@@ -6,8 +6,8 @@ import { useState } from "react";
 import chroma from "chroma-js";
 import classnames from "classnames";
 
-// TODO randomize first planet
 // TODO give planet info
+// TODO randomize first planet
 // TODO planet shadow
 // TODO permalink to a specific planet
 
@@ -45,6 +45,10 @@ export default function HappyBirthdayPlanets() {
             <stop offset="0%" stopColor={planetColorGradient(parseInt(planet.pl_eqt) / 1300)} />
             <stop offset="100%" stopColor="black" />
           </radialGradient>
+          {/* <radialGradient id="planetShadowGradient">
+            <stop offset="0%" stopColor="gray" />
+            <stop offset="100%" stopColor="black" />
+          </radialGradient> */}
           <radialGradient id="earthGradient" cx="0.5" cy="0.5" r="0.8" fx="0.25" fy="0.25">
             <stop offset="0%" stopColor="#0000E0" />
             <stop offset="100%" stopColor="black" />
@@ -58,6 +62,14 @@ export default function HappyBirthdayPlanets() {
             cy={height / 2}
             fill="url(#planetGradient)"
           />
+          {/* <ellipse
+            className={styles.planetShadow}
+            cx={width / 2}
+            cy={height * 0.96}
+            rx={10 * parseInt(planet.pl_rade) * zoom}
+            ry={12}
+            fill="url(#planetShadowGradient)"
+          /> */}
           <g transform={`translate(${width * 0.8}, ${height * 0.8})`}>
             <g className={styles.earth}>
               <g transform={`scale(${0.2 * zoom})`}>

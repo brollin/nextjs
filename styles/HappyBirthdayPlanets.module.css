@@ -28,6 +28,14 @@
   animation-iteration-count: infinite;
 }
 
+/* .planetShadow {
+  animation-name: shrinkInOut;
+  animation-duration: 3s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  transform-origin: 50%;
+} */
+
 .earth {
   animation-name: floatUpDown;
   animation-duration: 3.5s;
@@ -43,6 +51,18 @@
     transform: translate3d(0, 20px, 0);
   }
 }
+
+/* @keyframes shrinkInOut {
+  0% {
+    transform: scaleX(0.5);
+  }
+  50% {
+    transform: scaleX(0.6);
+  }
+  100% {
+    transform: scaleX(0.5);
+  }
+} */
 
 .happyBirthday {
   margin-bottom: 1em;
