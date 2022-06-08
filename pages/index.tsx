@@ -4,15 +4,13 @@ import planets from "../planetaryData/planets.json";
 import Earth from "../components/earth";
 import { useState } from "react";
 import chroma from "chroma-js";
+import classnames from "classnames";
 
-// TODO make planet prettier
 // TODO randomize first planet
 // TODO give planet info
 // TODO pick better planets with better names
-// TODO animate transition between planets
 // TODO planet shadow
 // TODO permalink to a specific planet
-// TODO new favicon
 
 const width = 400;
 const height = 500;
@@ -27,8 +25,14 @@ const zoomFactor = (planetRadius: number) => {
 
 export default function HappyBirthdayPlanets() {
   const [planetIndex, setPlanetIndex] = useState(0);
+  const [count, setCount] = useState(1);
   const planet = planets[planetIndex];
   const zoom = zoomFactor(parseInt(planet.pl_rade));
+  const onWander = () => {
+    setPlanetIndex(Math.floor(Math.random() * planets.length));
+    setCount(count + 1);
+  };
+  const partyPoopers = count % 10 == 0;
   return (
     <div className={styles.container}>
       <Head>
@@ -39,7 +43,7 @@ export default function HappyBirthdayPlanets() {
       <svg width={width} height={height}>
         <defs>
           <radialGradient id="planetGradient" cx="0.5" cy="0.5" r="0.5" fx="0.25" fy="0.25">
-            <stop offset="0%" stopColor={planetColorGradient(parseInt(planet.pl_eqt) / 2500)} />
+            <stop offset="0%" stopColor={planetColorGradient(parseInt(planet.pl_eqt) / 1300)} />
             <stop offset="100%" stopColor="black" />
           </radialGradient>
           <radialGradient id="earthGradient" cx="0.5" cy="0.5" r="0.8" fx="0.25" fy="0.25">
@@ -47,7 +51,7 @@ export default function HappyBirthdayPlanets() {
             <stop offset="100%" stopColor="black" />
           </radialGradient>
         </defs>
-        <g>
+        <g key={planet.rowid} className={styles.fadeIn}>
           <circle
             className={styles.planet}
             r={10 * parseInt(planet.pl_rade) * zoom}
@@ -64,10 +68,16 @@ export default function HappyBirthdayPlanets() {
           </g>
         </g>
       </svg>
-      <div className={styles.happyBirthday}>Happy birthday Jeff!</div>
-      <div>From planet</div>
-      <span className={styles.planetName}>{planet.pl_name}</span>
-      <button className={styles.wander} onClick={() => setPlanetIndex(Math.floor(Math.random() * planets.length))}>
+      <div className={styles.happyBirthday}>
+        {partyPoopers
+          ? "Oh no... this is a planet of party poopers. They do not wish Jeff a happy birthday."
+          : "Happy birthday Jeff!"}
+      </div>
+      <div>{partyPoopers ? "Thanks a lot," : "From planet"}</div>
+      <span className={classnames(styles.fadeIn, styles.planetName)} key={planet.rowid}>
+        {planet.pl_name}
+      </span>
+      <button className={styles.wander} onClick={onWander}>
         Wander
       </button>
     </div>
