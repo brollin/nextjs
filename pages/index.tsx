@@ -1,27 +1,34 @@
 import Head from "next/head";
-import Image from "next/image";
 import styles from "../styles/HappyBirthdayPlanets.module.css";
 
+import planets from "../planetaryData/planets.json";
+
+// TODO randomized planet
+// TODO give planet info
+// TODO generate planet based on size
+// TODO planet shadow
+// TODO new favicon
+
+const width = 500;
+const height = 500;
+
 export default function HappyBirthdayPlanets() {
+  const planet = planets[0];
   return (
     <div className={styles.container}>
       <Head>
         <title>Happy Birthday Jeff!</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+      <svg width={width} height={height}>
+        <g>
+          <circle className={styles.planet} r={10 * parseInt(planet.pl_rade)} cx={width / 2} cy={height / 2} />
+        </g>
+      </svg>
+      <div>Happy birthday Jeff,</div>
+      <div>
+        from planet <span className={styles.planetName}>{planet.pl_name}</span>!
+      </div>
     </div>
   );
 }

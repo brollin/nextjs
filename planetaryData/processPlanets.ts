@@ -40,7 +40,7 @@ const main = async () => {
   const planets = prunePlanets(data);
   console.log(`After pruning, ${planets.length} planets remain.`);
 
-  saveJson("./planetaryData/planets.json", planets);
+  saveJson("./planetaryData/planets.json", planets.slice(0, 500));
 };
 
 main();
