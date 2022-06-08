@@ -1,14 +1,15 @@
 import Head from "next/head";
 import styles from "../styles/HappyBirthdayPlanets.module.css";
-
 import planets from "../planetaryData/planets.json";
 import Earth from "../components/earth";
 import { useState } from "react";
 
-// TODO randomized planet
+// TODO make planet pretty
+// TODO randomize first planet
+// TODO animate transition between planets
 // TODO give planet info
+// TODO pick better planets with better names
 // TODO planet shadow
-// TODO button for next planet
 // TODO permalink to a specific planet
 // TODO new favicon
 
@@ -25,13 +26,24 @@ export default function HappyBirthdayPlanets() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <svg width={width} height={height}>
+        <defs>
+          <radialGradient id="planetGradient" cx="0.5" cy="0.5" r="0.5" fx="0.25" fy="0.25">
+            <stop offset="0%" stopColor="#FF00FF" />
+            <stop offset="100%" stopColor="black" />
+          </radialGradient>
+          <radialGradient id="earthGradient" cx="0.5" cy="0.5" r="0.8" fx="0.25" fy="0.25">
+            <stop offset="0%" stopColor="#0000E0" />
+            <stop offset="100%" stopColor="black" />
+          </radialGradient>
+        </defs>
         <g>
           <circle
             className={styles.planet}
             r={10 * parseInt(planet.pl_rade)}
             cx={width / 2}
             cy={height / 2}
-            fill="#8F8000"
+            // fill="#8F8000"
+            fill="url(#planetGradient)"
           />
           <g transform={`translate(${width * 0.9}, ${height * 0.8})`}>
             <g className={styles.earth}>
