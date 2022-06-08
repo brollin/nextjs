@@ -7,26 +7,34 @@ import chroma from "chroma-js";
 
 // TODO make planet prettier
 // TODO randomize first planet
-// TODO animate transition between planets
 // TODO give planet info
 // TODO pick better planets with better names
+// TODO animate transition between planets
 // TODO planet shadow
 // TODO permalink to a specific planet
 // TODO new favicon
 
-const width = 500;
+const width = 400;
 const height = 500;
 
 const planetColorGradient = chroma.scale(["fuchsia", "navy", "teal", "lime", "yellow", "red"]);
 
+// The fewer total earth radii, the more we should zoom.
+const zoomFactor = (planetRadius: number) => {
+  const totalEarthRadii = 1 + planetRadius;
+  return Math.max(1, (-2 / 12) * totalEarthRadii + 3.33);
+};
+
 export default function HappyBirthdayPlanets() {
   const [planetIndex, setPlanetIndex] = useState(0);
   const planet = planets[planetIndex];
+  const zoom = zoomFactor(parseInt(planet.pl_rade));
   return (
     <div className={styles.container}>
       <Head>
         <title>Happy Birthday Jeff!</title>
         <link rel="icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
       <svg width={width} height={height}>
         <defs>
@@ -42,14 +50,16 @@ export default function HappyBirthdayPlanets() {
         <g>
           <circle
             className={styles.planet}
-            r={10 * parseInt(planet.pl_rade)}
+            r={10 * parseInt(planet.pl_rade) * zoom}
             cx={width / 2}
             cy={height / 2}
             fill="url(#planetGradient)"
           />
-          <g transform={`translate(${width * 0.9}, ${height * 0.8})`}>
+          <g transform={`translate(${width * 0.8}, ${height * 0.8})`}>
             <g className={styles.earth}>
-              <Earth />
+              <g transform={`scale(${0.2 * zoom})`}>
+                <Earth />
+              </g>
             </g>
           </g>
         </g>

@@ -1,7 +1,7 @@
 export default function Earth() {
   return (
     // <svg width="100" height="100" viewBox="0 0 100 100">
-    <g transform="scale(0.2)">
+    <g>
       <circle r={50} cx={50} cy={50} fill="url(#earthGradient)" />
       <g transform="scale(0.55) translate(-455, -105)" fill="#00A000">
         <path
