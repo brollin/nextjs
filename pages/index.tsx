@@ -95,6 +95,7 @@ export default function HappyBirthdayPlanets() {
       <div>Earth masses: {planet.earthMasses ? planet.earthMasses.toFixed(1) : "?"}</div>
       <div>Temperature (F): {planet.temperatureF().toFixed(0)}</div>
       <div>Number of stars: {planet.numberStars}</div>
+      <div>Length of year (days): {planet.orbitalPeriod ? planet.orbitalPeriod.toFixed(1) : "?"}</div>
     </div>
   );
 }

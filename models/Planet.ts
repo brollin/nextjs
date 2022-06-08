@@ -5,6 +5,7 @@ export class Planet {
   numberStars: number;
   earthRadii: number;
   earthMasses: number;
+  orbitalPeriod: number;
 
   constructor(planet) {
     this.id = planet.rowid;
@@ -13,6 +14,7 @@ export class Planet {
     this.numberStars = parseInt(planet.sy_snum);
     this.earthRadii = parseFloat(planet.pl_rade);
     this.earthMasses = parseFloat(planet.pl_masse);
+    this.orbitalPeriod = parseFloat(planet.pl_orbper);
   }
 
   temperatureF = () => (this.temperature - 273) * 1.8 + 32;
