@@ -19,8 +19,9 @@ const parseCsv = (filename: string): Promise<any> => {
 
 type Planet = {
   pl_rade: string;
+  sy_snum: string;
 };
-const acceptablePlanet = (planet: Planet) => planet.pl_rade.length > 0;
+const acceptablePlanet = (planet: Planet) => parseInt(planet.pl_rade) > 0;
 
 const prunePlanets = (data: Planet[]) => {
   const planets = [];

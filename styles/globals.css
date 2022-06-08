@@ -13,6 +13,13 @@ a {
   text-decoration: none;
 }
 
+button {
+  padding: 1em;
+  background-color: darkcyan;
+  border: none;
+  color: white;
+}
+
 * {
   box-sizing: border-box;
 }

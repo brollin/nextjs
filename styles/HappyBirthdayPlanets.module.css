@@ -8,11 +8,14 @@
   align-items: center;
 }
 
-.planetName {
-  font-weight: bold;
+.planet {
+  animation-name: floatUpDown;
+  animation-duration: 3s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
 }
 
-.planet {
+.earth {
   animation-name: floatUpDown;
   animation-duration: 3s;
   animation-timing-function: ease-in-out;
@@ -26,4 +29,19 @@
   50% {
     transform: translate3d(0, 20px, 0);
   }
+}
+
+.happyBirthday {
+  margin-bottom: 1em;
+}
+
+.planetName {
+  font-weight: bold;
+  font-size: large;
+  margin-top: 1em;
+}
+
+.wander {
+  margin-top: 5em;
+  width: 8em;
 }
