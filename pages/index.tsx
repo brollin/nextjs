@@ -5,8 +5,8 @@ import Earth from "../components/earth";
 import { useState } from "react";
 import chroma from "chroma-js";
 import classnames from "classnames";
+import { Planet } from "../models/Planet";
 
-// TODO give planet info
 // TODO randomize first planet
 // TODO planet shadow
 // TODO permalink to a specific planet
@@ -25,8 +25,8 @@ const zoomFactor = (planetRadius: number) => {
 export default function HappyBirthdayPlanets() {
   const [planetIndex, setPlanetIndex] = useState(0);
   const [count, setCount] = useState(1);
-  const planet = planets[planetIndex];
-  const zoom = zoomFactor(parseInt(planet.pl_rade));
+  const planet = new Planet(planets[planetIndex]);
+  const zoom = zoomFactor(planet.earthRadii);
   const onWander = () => {
     setPlanetIndex(Math.floor(Math.random() * planets.length));
     setCount(count + 1);
@@ -42,7 +42,7 @@ export default function HappyBirthdayPlanets() {
       <svg width={width} height={height}>
         <defs>
           <radialGradient id="planetGradient" cx="0.5" cy="0.5" r="0.5" fx="0.25" fy="0.25">
-            <stop offset="0%" stopColor={planetColorGradient(parseInt(planet.pl_eqt) / 1300)} />
+            <stop offset="0%" stopColor={planetColorGradient(planet.temperature / 1300)} />
             <stop offset="100%" stopColor="black" />
           </radialGradient>
           {/* <radialGradient id="planetShadowGradient">
@@ -54,10 +54,10 @@ export default function HappyBirthdayPlanets() {
             <stop offset="100%" stopColor="black" />
           </radialGradient>
         </defs>
-        <g key={planet.rowid} className={styles.fadeIn}>
+        <g key={planet.id} className={styles.fadeIn}>
           <circle
             className={styles.planet}
-            r={10 * parseInt(planet.pl_rade) * zoom}
+            r={10 * planet.earthRadii * zoom}
             cx={width / 2}
             cy={height / 2}
             fill="url(#planetGradient)"
@@ -85,12 +85,16 @@ export default function HappyBirthdayPlanets() {
           : "Happy birthday Jeff!"}
       </div>
       <div>{partyPoopers ? "Thanks a lot," : "From planet"}</div>
-      <span className={classnames(styles.fadeIn, styles.planetName)} key={planet.rowid}>
-        {planet.pl_name}
+      <span className={classnames(styles.fadeIn, styles.planetName)} key={planet.id}>
+        {planet.name}
       </span>
       <button className={styles.wander} onClick={onWander}>
         Wander
       </button>
+      <div>Earth radii: {planet.earthRadii.toFixed(1)}</div>
+      <div>Earth masses: {planet.earthMasses ? planet.earthMasses.toFixed(1) : "?"}</div>
+      <div>Temperature (F): {planet.temperatureF().toFixed(0)}</div>
+      <div>Number of stars: {planet.numberStars}</div>
     </div>
   );
 }
