@@ -421,6 +421,11 @@ chalk@^4.0.0:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
+chroma-js@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/chroma-js/-/chroma-js-2.4.2.tgz#dffc214ed0c11fa8eefca2c36651d8e57cbfb2b0"
+  integrity sha512-U9eDw6+wt7V8z5NncY2jJfZa+hUH8XEj8FQHgFJTrUFnJfXYf4Ml4adI2vXZOjqRDpFWtYVWypDfZwnJ+HIR4A==
+
 color-convert@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-2.0.1.tgz#72d3a68d598c9bdb3af2ad1e84f21d896abd4de3"
@@ -461,31 +466,6 @@ csstype@^3.0.2:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.0.tgz#4ddcac3718d787cf9df0d1b7d15033925c8f29f2"
   integrity sha512-uX1KG+x9h5hIJsaKR9xHUeUraxf8IODOwq9JLNPq6BwB04a/xgpq3rcx47l5BZu5zBPlgD342tdke3Hom/nJRA==
-
-csv-generate@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/csv-generate/-/csv-generate-4.1.0.tgz#31eb5cf9f2484f0d4b289ee03858fc77b3ed55ff"
-  integrity sha512-Z17wI0xmDfpwzB7lShyK7INBt0YMyh5kV7svWTwsBSOa30T6Lq1fHHasmSCtf2rRTI7GnTk52HQRYBk0ToAXQQ==
-
-csv-parse@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/csv-parse/-/csv-parse-5.1.0.tgz#e587e969bf0385ecf4f36f584ed5ddebba0237ab"
-  integrity sha512-JL+Q6YEikT2uoe57InjFFa6VejhSv0tDwOxeQ1bVQKeUC/NCnLAAZ8n3PzowPQQLuZ37fysDYZipB2UJkH9C6A==
-
-csv-stringify@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/csv-stringify/-/csv-stringify-6.1.0.tgz#6b79e2717bc35ae063800a490244117998a2e86c"
-  integrity sha512-rdBqiy77TczvhGlpLHyoph2adMs6WMnmQY4PBRqeIWykI1FLnVCppnRdso8faGj2+eN7izk9YlbFyZkOrL9rAQ==
-
-csv@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/csv/-/csv-6.1.0.tgz#f81198182b19eeeb2cd7f2479fcc086a25edfcca"
-  integrity sha512-kvd8YWk7emi/0fXhuv+IKaanNFhPi5Up1wT4ZGVUu39bd9lRWpxQu1F7eaRfxTEc9mGxeMWIzEilKKrL0MoEnQ==
-  dependencies:
-    csv-generate "^4.1.0"
-    csv-parse "^5.1.0"
-    csv-stringify "^6.1.0"
-    stream-transform "^3.1.0"
 
 damerau-levenshtein@^1.0.7:
   version "1.0.8"
@@ -1638,11 +1618,6 @@ source-map-js@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.0.2.tgz#adbc361d9c62df380125e7f161f71c826f1e490c"
   integrity sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==
-
-stream-transform@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/stream-transform/-/stream-transform-3.1.0.tgz#9320fc99b6ef4767a0d87ff374c4366d46d214e9"
-  integrity sha512-ncT/rST/M2N2zGLacJmeB7TNq/XS8Ck0xqvhYX6bgLwSPTSZLVFCSvNnwTU+RYhk9fAfwzCkYH9I5kdgcDMvfw==
 
 string.prototype.matchall@^4.0.6:
   version "4.0.7"

@@ -20,8 +20,9 @@ const parseCsv = (filename: string): Promise<any> => {
 type Planet = {
   pl_rade: string;
   sy_snum: string;
+  pl_eqt: string;
 };
-const acceptablePlanet = (planet: Planet) => parseInt(planet.pl_rade) > 0;
+const acceptablePlanet = (planet: Planet) => parseInt(planet.pl_rade) > 0 && parseInt(planet.pl_eqt) > 0;
 
 const prunePlanets = (data: Planet[]) => {
   const planets = [];
@@ -41,7 +42,12 @@ const main = async () => {
   const planets = prunePlanets(data);
   console.log(`After pruning, ${planets.length} planets remain.`);
 
-  saveJson("./planetaryData/planets.json", planets.slice(0, 500));
+  // grab a set of 500 planets throughout the dataset
+  const planetsSubset = [];
+  for (let i = 0; i < planets.length; i++) {
+    if (i % Math.floor(planets.length / 500) == 0) planetsSubset.push(planets[i]);
+  }
+  saveJson("./planetaryData/planets.json", planetsSubset);
 };
 
 main();
