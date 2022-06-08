@@ -8,7 +8,6 @@ import classnames from "classnames";
 
 // TODO randomize first planet
 // TODO give planet info
-// TODO pick better planets with better names
 // TODO planet shadow
 // TODO permalink to a specific planet
 

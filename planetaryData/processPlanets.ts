@@ -18,6 +18,7 @@ const parseCsv = (filename: string): Promise<any> => {
 };
 
 type Planet = {
+  pl_name: string;
   pl_rade: string;
   sy_snum: string;
   pl_eqt: string;
@@ -37,16 +38,33 @@ const saveJson = (filename: string, data: any) => fs.writeFileSync(filename, JSO
 const main = async () => {
   console.log("Parsing planetary data...");
   const data = (await parseCsv("./planetaryData/PS_2022.06.07_19.36.03.csv")) as Planet[];
-  console.log(`Complete. ${data.length} planets parsed.`);
+  console.log("Complete. Planets parsed:", data.length);
 
   const planets = prunePlanets(data);
-  console.log(`After pruning, ${planets.length} planets remain.`);
+  console.log("Remaining planets after pruning:", planets.length);
 
-  // grab a set of 500 planets throughout the dataset
-  const planetsSubset = [];
-  for (let i = 0; i < planets.length; i++) {
-    if (i % Math.floor(planets.length / 500) == 0) planetsSubset.push(planets[i]);
+  // gather planets by prefix
+  const planetGroups: Record<string, Planet[]> = {};
+  for (const planet of planets as Planet[]) {
+    const prefix = planet.pl_name.substring(0, 3);
+    if (!planetGroups[prefix]) planetGroups[prefix] = [];
+    planetGroups[prefix].push(planet);
   }
+  const prefixes = Object.keys(planetGroups);
+  console.log("Total planet prefixes:", prefixes.length);
+
+  const planetsSubset = [];
+  let prefixIndex = 0;
+  while (planetsSubset.length < 500) {
+    const newPlanet = planetGroups[prefixes[prefixIndex]].pop();
+    if (newPlanet) planetsSubset.push(newPlanet);
+    prefixIndex = (prefixIndex + 1) % prefixes.length;
+  }
+  // grab a set of 500 planets throughout the dataset
+  // const planetsSubset = [];
+  // for (let i = 0; i < planets.length; i++) {
+  //   if (i % Math.floor(planets.length / 500) == 0) planetsSubset.push(planets[i]);
+  // }
   saveJson("./planetaryData/planets.json", planetsSubset);
 };
 
