@@ -91,17 +91,17 @@ const PlanetInfo = ({ planet }) => (
     <span className={classnames(styles.fadeIn, styles.planetName)} key={`${planet.id}name`}>
       {planet.name}
     </span>
-    <div key={`${planet.id}info`} className={classnames(styles.fadeIn, styles.planetInfo)}>
+    <div key={`${planet.id}info`} className={styles.planetInfo}>
       <span className={styles.planetInfo__heading}>Earth radii</span>
-      <span>{planet.earthRadii.toFixed(1)}</span>
+      <span className={styles.fadeIn}>{planet.earthRadii.toFixed(1)}</span>
       <span className={styles.planetInfo__heading}>Earth masses</span>
-      <span>{planet.earthMasses ? planet.earthMasses.toFixed(1) : "?"}</span>
+      <span className={styles.fadeIn}>{planet.earthMasses ? planet.earthMasses.toFixed(1) : "?"}</span>
       <span className={styles.planetInfo__heading}>Temperature</span>
-      <span>{planet.temperatureF().toFixed(0) + " °F"}</span>
+      <span className={styles.fadeIn}>{planet.temperatureF().toFixed(0) + " °F"}</span>
       <span className={styles.planetInfo__heading}>Number of stars</span>
-      <span>{planet.numberStars}</span>
+      <span className={styles.fadeIn}>{planet.numberStars}</span>
       <span className={styles.planetInfo__heading}>Length of year</span>
-      <span>{planet.orbitalPeriod ? planet.orbitalPeriod.toFixed(1) + " days" : "?"}</span>
+      <span className={styles.fadeIn}>{planet.orbitalPeriod ? planet.orbitalPeriod.toFixed(1) + " days" : "?"}</span>
     </div>
     <a href="https://exoplanetarchive.ipac.caltech.edu">Data sourced from NASA Exoplanet Archive</a>
   </>
