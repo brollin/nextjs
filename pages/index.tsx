@@ -1,16 +1,17 @@
-import Head from "next/head";
-import styles from "../styles/HappyBirthdayPlanets.module.css";
-import planets from "../planetaryData/planets.json";
-import Earth from "../components/earth";
+import { Planet } from "../models/Planet";
 import { useState } from "react";
 import chroma from "chroma-js";
 import classnames from "classnames";
-import { Planet } from "../models/Planet";
+import EarthView from "../components/earth";
+import Head from "next/head";
+import planets from "../planetaryData/planets.json";
+import PlanetView from "../components/planet";
+import styles from "../styles/HappyBirthdayPlanets.module.css";
 
 // TODO randomize first planet
 // TODO planet shadow
 // TODO permalink to a specific planet
-// TODO zoom out to show all planets visited so far
+// TODO zoom out to show all planets visited so far (reflecting)
 
 const width = 400;
 const height = 500;
@@ -27,12 +28,14 @@ export default function HappyBirthdayPlanets() {
   const [planetIndex, setPlanetIndex] = useState(0);
   const [count, setCount] = useState(1);
   const [showMore, setShowMore] = useState(false);
+  const [reflecting, setReflecting] = useState(false);
   const planet = new Planet(planets[planetIndex]);
   const zoom = zoomFactor(planet.earthRadii);
   const onWander = () => {
     setPlanetIndex(Math.floor(Math.random() * planets.length));
     setCount(count + 1);
   };
+  const onReflect = () => setReflecting(!setReflecting);
   const partyPoopers = count % 10 == 0;
   return (
     <div className={styles.container}>
@@ -53,20 +56,8 @@ export default function HappyBirthdayPlanets() {
           </radialGradient>
         </defs>
         <g key={planet.id} className={styles.fadeIn}>
-          <circle
-            className={styles.planet}
-            r={10 * planet.earthRadii * zoom}
-            cx={width / 2}
-            cy={height / 2}
-            fill="url(#planetGradient)"
-          />
-          <g transform={`translate(${width * 0.8}, ${height * 0.8})`}>
-            <g className={styles.earth}>
-              <g transform={`scale(${0.2 * zoom})`}>
-                <Earth />
-              </g>
-            </g>
-          </g>
+          <PlanetView className={styles.planet} r={10 * planet.earthRadii * zoom} cx={width / 2} cy={height / 2} />
+          <EarthView className={styles.earth} x={width * 0.8} y={height * 0.8} zoom={zoom} />
         </g>
       </svg>
       <div className={styles.happyBirthday}>
@@ -78,9 +69,15 @@ export default function HappyBirthdayPlanets() {
       <span className={classnames(styles.fadeInRise, styles.planetName)} key={planet.id}>
         {planet.name}
       </span>
-      <button className={styles.wander} onClick={onWander}>
-        Wander
-      </button>
+      <div className={styles.buttonContainer}>
+        <button className={styles.action} onClick={onWander}>
+          Wander
+        </button>
+        <button className={styles.action} onClick={onReflect}>
+          Reflect
+        </button>
+      </div>
+
       {showMore ? <PlanetInfo planet={planet} /> : <a onClick={() => setShowMore(true)}>Show me more...</a>}
     </div>
   );
