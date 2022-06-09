@@ -75,7 +75,7 @@ export default function HappyBirthdayPlanets() {
           : "Happy birthday Jeff!"}
       </div>
       <div>{partyPoopers ? "Thanks a lot," : "From planet"}</div>
-      <span className={classnames(styles.fadeIn, styles.planetName)} key={planet.id}>
+      <span className={classnames(styles.fadeInRise, styles.planetName)} key={planet.id}>
         {planet.name}
       </span>
       <button className={styles.wander} onClick={onWander}>
@@ -88,20 +88,22 @@ export default function HappyBirthdayPlanets() {
 
 const PlanetInfo = ({ planet }) => (
   <>
-    <span className={classnames(styles.fadeIn, styles.planetName)} key={`${planet.id}name`}>
+    <span className={classnames(styles.fadeInRise, styles.planetName)} key={`${planet.id}name`}>
       {planet.name}
     </span>
     <div key={`${planet.id}info`} className={styles.planetInfo}>
       <span className={styles.planetInfo__heading}>Earth radii</span>
-      <span className={styles.fadeIn}>{planet.earthRadii.toFixed(1)}</span>
+      <span className={styles.fadeInRise}>{planet.earthRadii.toFixed(1)}</span>
       <span className={styles.planetInfo__heading}>Earth masses</span>
-      <span className={styles.fadeIn}>{planet.earthMasses ? planet.earthMasses.toFixed(1) : "?"}</span>
+      <span className={styles.fadeInRise}>{planet.earthMasses ? planet.earthMasses.toFixed(1) : "?"}</span>
       <span className={styles.planetInfo__heading}>Temperature</span>
-      <span className={styles.fadeIn}>{planet.temperatureF().toFixed(0) + " °F"}</span>
+      <span className={styles.fadeInRise}>{planet.temperatureF().toFixed(0) + " °F"}</span>
       <span className={styles.planetInfo__heading}>Number of stars</span>
-      <span className={styles.fadeIn}>{planet.numberStars}</span>
+      <span className={styles.fadeInRise}>{planet.numberStars}</span>
       <span className={styles.planetInfo__heading}>Length of year</span>
-      <span className={styles.fadeIn}>{planet.orbitalPeriod ? planet.orbitalPeriod.toFixed(1) + " days" : "?"}</span>
+      <span className={styles.fadeInRise}>
+        {planet.orbitalPeriod ? planet.orbitalPeriod.toFixed(1) + " days" : "?"}
+      </span>
     </div>
     <a href="https://exoplanetarchive.ipac.caltech.edu">Data sourced from NASA Exoplanet Archive</a>
   </>
