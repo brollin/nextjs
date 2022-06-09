@@ -39,7 +39,7 @@ export default function HappyBirthdayPlanets() {
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
-      <svg width={width} height={height}>
+      <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>
         <defs>
           <radialGradient id="planetGradient" cx="0.5" cy="0.5" r="0.5" fx="0.25" fy="0.25">
             <stop offset="0%" stopColor={planetColorGradient(planet.temperature / 1300)} />
