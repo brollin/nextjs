@@ -10,6 +10,7 @@ import { Planet } from "../models/Planet";
 // TODO randomize first planet
 // TODO planet shadow
 // TODO permalink to a specific planet
+// TODO zoom out to show all planets visited so far
 
 const width = 400;
 const height = 500;
@@ -25,6 +26,7 @@ const zoomFactor = (planetRadius: number) => {
 export default function HappyBirthdayPlanets() {
   const [planetIndex, setPlanetIndex] = useState(0);
   const [count, setCount] = useState(1);
+  const [showMore, setShowMore] = useState(false);
   const planet = new Planet(planets[planetIndex]);
   const zoom = zoomFactor(planet.earthRadii);
   const onWander = () => {
@@ -91,11 +93,28 @@ export default function HappyBirthdayPlanets() {
       <button className={styles.wander} onClick={onWander}>
         Wander
       </button>
-      <div>Earth radii: {planet.earthRadii.toFixed(1)}</div>
-      <div>Earth masses: {planet.earthMasses ? planet.earthMasses.toFixed(1) : "?"}</div>
-      <div>Temperature (F): {planet.temperatureF().toFixed(0)}</div>
-      <div>Number of stars: {planet.numberStars}</div>
-      <div>Length of year (days): {planet.orbitalPeriod ? planet.orbitalPeriod.toFixed(1) : "?"}</div>
+      {showMore ? (
+        <>
+          <span className={classnames(styles.fadeIn, styles.planetName)} key={`${planet.id}name`}>
+            {planet.name}
+          </span>
+          <div key={`${planet.id}info`} className={classnames(styles.fadeIn, styles.planetInfo)}>
+            <span className={styles.planetInfo__heading}>Earth radii</span>
+            <span>{planet.earthRadii.toFixed(1)}</span>
+            <span className={styles.planetInfo__heading}>Earth masses</span>
+            <span>{planet.earthMasses ? planet.earthMasses.toFixed(1) : "?"}</span>
+            <span className={styles.planetInfo__heading}>Temperature</span>
+            <span>{planet.temperatureF().toFixed(0) + " °F"}</span>
+            <span className={styles.planetInfo__heading}>Number of stars</span>
+            <span>{planet.numberStars}</span>
+            <span className={styles.planetInfo__heading}>Length of year</span>
+            <span>{planet.orbitalPeriod ? planet.orbitalPeriod.toFixed(1) + " days" : "?"}</span>
+          </div>
+          <a href="https://exoplanetarchive.ipac.caltech.edu">Data sourced from NASA Exoplanet Archive</a>
+        </>
+      ) : (
+        <a onClick={() => setShowMore(true)}>Show me more...</a>
+      )}
     </div>
   );
 }
