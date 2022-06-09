@@ -47,10 +47,6 @@ export default function HappyBirthdayPlanets() {
             <stop offset="0%" stopColor={planetColorGradient(planet.temperature / 1300)} />
             <stop offset="100%" stopColor="black" />
           </radialGradient>
-          {/* <radialGradient id="planetShadowGradient">
-            <stop offset="0%" stopColor="gray" />
-            <stop offset="100%" stopColor="black" />
-          </radialGradient> */}
           <radialGradient id="earthGradient" cx="0.5" cy="0.5" r="0.8" fx="0.25" fy="0.25">
             <stop offset="0%" stopColor="#0000E0" />
             <stop offset="100%" stopColor="black" />
@@ -64,14 +60,6 @@ export default function HappyBirthdayPlanets() {
             cy={height / 2}
             fill="url(#planetGradient)"
           />
-          {/* <ellipse
-            className={styles.planetShadow}
-            cx={width / 2}
-            cy={height * 0.96}
-            rx={10 * parseInt(planet.pl_rade) * zoom}
-            ry={12}
-            fill="url(#planetShadowGradient)"
-          /> */}
           <g transform={`translate(${width * 0.8}, ${height * 0.8})`}>
             <g className={styles.earth}>
               <g transform={`scale(${0.2 * zoom})`}>
@@ -93,28 +81,28 @@ export default function HappyBirthdayPlanets() {
       <button className={styles.wander} onClick={onWander}>
         Wander
       </button>
-      {showMore ? (
-        <>
-          <span className={classnames(styles.fadeIn, styles.planetName)} key={`${planet.id}name`}>
-            {planet.name}
-          </span>
-          <div key={`${planet.id}info`} className={classnames(styles.fadeIn, styles.planetInfo)}>
-            <span className={styles.planetInfo__heading}>Earth radii</span>
-            <span>{planet.earthRadii.toFixed(1)}</span>
-            <span className={styles.planetInfo__heading}>Earth masses</span>
-            <span>{planet.earthMasses ? planet.earthMasses.toFixed(1) : "?"}</span>
-            <span className={styles.planetInfo__heading}>Temperature</span>
-            <span>{planet.temperatureF().toFixed(0) + " °F"}</span>
-            <span className={styles.planetInfo__heading}>Number of stars</span>
-            <span>{planet.numberStars}</span>
-            <span className={styles.planetInfo__heading}>Length of year</span>
-            <span>{planet.orbitalPeriod ? planet.orbitalPeriod.toFixed(1) + " days" : "?"}</span>
-          </div>
-          <a href="https://exoplanetarchive.ipac.caltech.edu">Data sourced from NASA Exoplanet Archive</a>
-        </>
-      ) : (
-        <a onClick={() => setShowMore(true)}>Show me more...</a>
-      )}
+      {showMore ? <PlanetInfo planet={planet} /> : <a onClick={() => setShowMore(true)}>Show me more...</a>}
     </div>
   );
 }
+
+const PlanetInfo = ({ planet }) => (
+  <>
+    <span className={classnames(styles.fadeIn, styles.planetName)} key={`${planet.id}name`}>
+      {planet.name}
+    </span>
+    <div key={`${planet.id}info`} className={classnames(styles.fadeIn, styles.planetInfo)}>
+      <span className={styles.planetInfo__heading}>Earth radii</span>
+      <span>{planet.earthRadii.toFixed(1)}</span>
+      <span className={styles.planetInfo__heading}>Earth masses</span>
+      <span>{planet.earthMasses ? planet.earthMasses.toFixed(1) : "?"}</span>
+      <span className={styles.planetInfo__heading}>Temperature</span>
+      <span>{planet.temperatureF().toFixed(0) + " °F"}</span>
+      <span className={styles.planetInfo__heading}>Number of stars</span>
+      <span>{planet.numberStars}</span>
+      <span className={styles.planetInfo__heading}>Length of year</span>
+      <span>{planet.orbitalPeriod ? planet.orbitalPeriod.toFixed(1) + " days" : "?"}</span>
+    </div>
+    <a href="https://exoplanetarchive.ipac.caltech.edu">Data sourced from NASA Exoplanet Archive</a>
+  </>
+);
