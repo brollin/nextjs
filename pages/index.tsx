@@ -8,14 +8,17 @@ import planetData from "../planetaryData/planets.json";
 import PlanetView from "../components/planet";
 import styles from "../styles/HappyBirthdayPlanets.module.css";
 
+// UP NEXT
+// TODO reflect: zoom out to show all planets visited so far
+// TODO gaze: implement a view from the surface (e.g. show Charon from Pluto surface)
+// TODO gaze: make a procedurally generated landscape
+// TODO gaze: show suns, moons, other planets in sky
+
+// LATER
 // TODO randomize first planet
 // TODO fix planet 62 - smarter zooming
-// TODO planet shadow
-// TODO permalink to a specific planet
-// TODO zoom out to show all planets visited so far (reflecting)
 // TODO add our solar systems planets
-// TODO make earth rotate
-// TODO implement a view from the surface (e.g. show Charon from Pluto surface)
+// TODO permalink to a specific planet
 
 // The SVG viewBox width and height
 const viewWidth = 400;
