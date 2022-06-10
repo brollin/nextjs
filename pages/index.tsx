@@ -1,21 +1,24 @@
 import { Planet } from "../models/Planet";
 import { useState } from "react";
-import chroma from "chroma-js";
 import classnames from "classnames";
 import EarthView from "../components/earth";
 import Head from "next/head";
-import planets from "../planetaryData/planets.json";
+import planetData from "../planetaryData/planets.json";
 import PlanetView from "../components/planet";
 import styles from "../styles/HappyBirthdayPlanets.module.css";
+import chroma from "chroma-js";
 
 // TODO randomize first planet
 // TODO planet shadow
 // TODO permalink to a specific planet
 // TODO zoom out to show all planets visited so far (reflecting)
+// TODO add our solar systems planets
+// TODO make earth rotate
 
 const width = 400;
 const height = 500;
 
+const planets = planetData.map((planet) => new Planet(planet));
 const planetColorGradient = chroma.scale(["fuchsia", "navy", "teal", "lime", "yellow", "red"]);
 
 // The fewer total earth radii, the more we should zoom.
@@ -29,14 +32,17 @@ export default function HappyBirthdayPlanets() {
   const [count, setCount] = useState(1);
   const [showMore, setShowMore] = useState(false);
   const [reflecting, setReflecting] = useState(false);
-  const planet = new Planet(planets[planetIndex]);
+
+  const planet = planets[planetIndex];
   const zoom = zoomFactor(planet.earthRadii);
+  const partyPoopers = count % 10 == 0;
+
   const onWander = () => {
     setPlanetIndex(Math.floor(Math.random() * planets.length));
     setCount(count + 1);
   };
   const onReflect = () => setReflecting(!setReflecting);
-  const partyPoopers = count % 10 == 0;
+
   return (
     <div className={styles.container}>
       <Head>
@@ -45,19 +51,15 @@ export default function HappyBirthdayPlanets() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
       <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>
-        <defs>
-          <radialGradient id="planetGradient" cx="0.5" cy="0.5" r="0.55" fx="0.25" fy="0.25">
-            <stop offset="0%" stopColor={planetColorGradient(planet.temperature / 1300)} />
-            <stop offset="100%" stopColor="black" />
-          </radialGradient>
-          <radialGradient id="earthGradient" cx="0.5" cy="0.5" r="0.8" fx="0.25" fy="0.25">
-            <stop offset="0%" stopColor="#0000E0" />
-            <stop offset="100%" stopColor="black" />
-          </radialGradient>
-        </defs>
         <g key={planet.id} className={styles.fadeIn}>
-          <PlanetView className={styles.planet} r={10 * planet.earthRadii * zoom} cx={width / 2} cy={height / 2} />
-          <EarthView className={styles.earth} x={width * 0.8} y={height * 0.8} zoom={zoom} />
+          <PlanetView
+            className={styles.planet}
+            cx={width / 2}
+            cy={height / 2}
+            r={10 * planet.earthRadii * zoom}
+            color={planetColorGradient(planet.temperature / 1300)}
+          />
+          <EarthView className={styles.earth} cx={width * 0.9} cy={height * 0.8} r={zoom * 10} />
         </g>
       </svg>
       <div className={styles.happyBirthday}>
