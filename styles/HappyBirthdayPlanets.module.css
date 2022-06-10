@@ -8,6 +8,15 @@
   align-items: center;
 }
 
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* margin-top: -10em; */
+}
+
 .fadeIn {
   animation-name: fadeIn;
   animation-duration: 0.5s;
@@ -76,14 +85,14 @@
   margin-top: 1em;
 }
 
-.buttonContainer {
+.actions {
   display: flex;
   margin-top: 3em;
   margin-bottom: 5em;
 }
 
 .action {
-  margin-right: 1em;
+  /* margin-right: 1em; */
   width: 8em;
 }
 

@@ -1,34 +1,36 @@
 import { Planet } from "../models/Planet";
 import { useState } from "react";
+import chroma from "chroma-js";
 import classnames from "classnames";
 import EarthView from "../components/earth";
 import Head from "next/head";
 import planetData from "../planetaryData/planets.json";
 import PlanetView from "../components/planet";
 import styles from "../styles/HappyBirthdayPlanets.module.css";
-import chroma from "chroma-js";
 
 // TODO randomize first planet
+// TODO fix planet 62 - smarter zooming
 // TODO planet shadow
 // TODO permalink to a specific planet
 // TODO zoom out to show all planets visited so far (reflecting)
 // TODO add our solar systems planets
 // TODO make earth rotate
 
-const width = 400;
-const height = 500;
+// The SVG viewBox width and height
+const viewWidth = 400;
+const viewHeight = 500;
 
 const planets = planetData.map((planet) => new Planet(planet));
 const planetColorGradient = chroma.scale(["fuchsia", "navy", "teal", "lime", "yellow", "red"]);
 
-// The fewer total earth radii, the more we should zoom.
+// The fewer total earth radii, the more we should zoom
 const zoomFactor = (planetRadius: number) => {
   const totalEarthRadii = 1 + planetRadius;
   return Math.max(1, (-2 / 12) * totalEarthRadii + 3.33);
 };
 
 export default function HappyBirthdayPlanets() {
-  const [planetIndex, setPlanetIndex] = useState(0);
+  const [planetIndex, setPlanetIndex] = useState(32);
   const [count, setCount] = useState(1);
   const [showMore, setShowMore] = useState(false);
   const [reflecting, setReflecting] = useState(false);
@@ -50,37 +52,38 @@ export default function HappyBirthdayPlanets() {
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
-      <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>
+      <svg width="100%" height={viewHeight} viewBox={`0 0 ${viewWidth} ${viewHeight}`}>
         <g key={planet.id} className={styles.fadeIn}>
           <PlanetView
             className={styles.planet}
-            cx={width / 2}
-            cy={height / 2}
+            cx={viewWidth / 2}
+            cy={viewHeight / 2}
             r={10 * planet.earthRadii * zoom}
             color={planetColorGradient(planet.temperature / 1300)}
           />
-          <EarthView className={styles.earth} cx={width * 0.9} cy={height * 0.8} r={zoom * 10} />
+          <EarthView className={styles.earth} cx={viewWidth * 0.9} cy={viewHeight * 0.8} r={zoom * 10} />
         </g>
       </svg>
-      <div className={styles.happyBirthday}>
-        {partyPoopers
-          ? "Oh no... this is a planet of party poopers. They do not wish Jeff a happy birthday."
-          : "Happy birthday Jeff!"}
+      <div className={styles.content}>
+        <div className={styles.happyBirthday}>
+          {partyPoopers
+            ? "Oh no... this is a planet of party poopers. They do not wish Jeff a happy birthday."
+            : "Happy birthday Jeff!"}
+        </div>
+        <div>{partyPoopers ? "Thanks a lot," : "From planet"}</div>
+        <span className={classnames(styles.fadeInRise, styles.planetName)} key={planet.id}>
+          {planet.name}
+        </span>
+        <div className={styles.actions}>
+          <button className={styles.action} onClick={onWander}>
+            Wander
+          </button>
+          {/* <button className={styles.action} onClick={onReflect}>
+            Reflect
+          </button> */}
+        </div>
+        {showMore ? <PlanetInfo planet={planet} /> : <a onClick={() => setShowMore(true)}>Show me more...</a>}
       </div>
-      <div>{partyPoopers ? "Thanks a lot," : "From planet"}</div>
-      <span className={classnames(styles.fadeInRise, styles.planetName)} key={planet.id}>
-        {planet.name}
-      </span>
-      <div className={styles.buttonContainer}>
-        <button className={styles.action} onClick={onWander}>
-          Wander
-        </button>
-        <button className={styles.action} onClick={onReflect}>
-          Reflect
-        </button>
-      </div>
-
-      {showMore ? <PlanetInfo planet={planet} /> : <a onClick={() => setShowMore(true)}>Show me more...</a>}
     </div>
   );
 }
