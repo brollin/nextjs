@@ -72,17 +72,17 @@
   }
 }
 
-.happyBirthday {
+.birthdayText {
   margin-bottom: 1em;
   padding-left: 1em;
   padding-right: 1em;
   text-align: center;
+  width: 100%;
 }
 
 .planetName {
   font-weight: bold;
   font-size: large;
-  margin-top: 1em;
 }
 
 .actions {

@@ -15,6 +15,7 @@ import styles from "../styles/HappyBirthdayPlanets.module.css";
 // TODO zoom out to show all planets visited so far (reflecting)
 // TODO add our solar systems planets
 // TODO make earth rotate
+// TODO implement a view from the surface (e.g. show Charon from Pluto surface)
 
 // The SVG viewBox width and height
 const viewWidth = 400;
@@ -37,7 +38,7 @@ export default function HappyBirthdayPlanets() {
 
   const planet = planets[planetIndex];
   const zoom = zoomFactor(planet.earthRadii);
-  const partyPoopers = count % 10 == 0;
+  const partyPoopers = count % 5 == 0;
 
   const onWander = () => {
     setPlanetIndex(Math.floor(Math.random() * planets.length));
@@ -52,7 +53,7 @@ export default function HappyBirthdayPlanets() {
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
-      <svg width="100%" height={viewHeight} viewBox={`0 0 ${viewWidth} ${viewHeight}`}>
+      <svg width="100%" height={500} viewBox={`0 0 ${viewWidth} ${viewHeight}`}>
         <g key={planet.id} className={styles.fadeIn}>
           <PlanetView
             className={styles.planet}
@@ -65,12 +66,12 @@ export default function HappyBirthdayPlanets() {
         </g>
       </svg>
       <div className={styles.content}>
-        <div className={styles.happyBirthday}>
+        <div className={styles.birthdayText}>
           {partyPoopers
             ? "Oh no... this is a planet of party poopers. They do not wish Jeff a happy birthday."
             : "Happy birthday Jeff!"}
         </div>
-        <div>{partyPoopers ? "Thanks a lot," : "From planet"}</div>
+        <div className={styles.birthdayText}>{partyPoopers ? "Thanks a lot," : "From planet"}</div>
         <span className={classnames(styles.fadeInRise, styles.planetName)} key={planet.id}>
           {planet.name}
         </span>
