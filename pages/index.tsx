@@ -1,9 +1,11 @@
-import { Planet } from "../models/Planet";
-import { useState } from "react";
+import { CSSTransition, SwitchTransition } from "react-transition-group";
+import React, { useState } from "react";
 import chroma from "chroma-js";
 import classnames from "classnames";
-import EarthView from "../components/earth";
 import Head from "next/head";
+
+import { Planet } from "../models/Planet";
+import EarthView from "../components/earth";
 import planetData from "../planetaryData/planets.json";
 import PlanetView from "../components/planet";
 import styles from "../styles/HappyBirthdayPlanets.module.css";
@@ -37,7 +39,7 @@ export default function HappyBirthdayPlanets() {
   const [planetIndex, setPlanetIndex] = useState(32);
   const [count, setCount] = useState(1);
   const [showMore, setShowMore] = useState(false);
-  const [reflecting, setReflecting] = useState(false);
+  // const [reflecting, setReflecting] = useState(false);
 
   const planet = planets[planetIndex];
   const zoom = zoomFactor(planet.earthRadii);
@@ -47,7 +49,8 @@ export default function HappyBirthdayPlanets() {
     setPlanetIndex(Math.floor(Math.random() * planets.length));
     setCount(count + 1);
   };
-  const onReflect = () => setReflecting(!setReflecting);
+  // const ref = React.useRef();
+  // const onReflect = () => setReflecting(!reflecting);
 
   return (
     <div className={styles.container}>
@@ -57,16 +60,32 @@ export default function HappyBirthdayPlanets() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
       <svg width="100%" height={500} viewBox={`0 0 ${viewWidth} ${viewHeight}`}>
-        <g key={planet.id} className={styles.fadeIn}>
-          <PlanetView
-            className={styles.planet}
-            cx={viewWidth / 2}
-            cy={viewHeight / 2}
-            r={10 * planet.earthRadii * zoom}
-            color={planetColorGradient(planet.temperature / 1300)}
-          />
-          <EarthView className={styles.earth} cx={viewWidth * 0.9} cy={viewHeight * 0.8} r={zoom * 10} />
-        </g>
+        <SwitchTransition>
+          <CSSTransition key={planet.id} timeout={500} classNames="fade">
+            {
+              // <CSSTransition
+              //   key={planet.id}
+              //   nodeRef={ref}
+              //   addEndListener={(done) => {
+              //     ref.current;
+              //     // TODO add an event listener onto the element above
+              //     // or go back to using timeout
+              //   }}
+              //   classNames="fade"
+              // >
+            }
+            <g className={styles.fadeIn}>
+              <PlanetView
+                className={styles.planet}
+                cx={viewWidth / 2}
+                cy={viewHeight / 2}
+                r={10 * planet.earthRadii * zoom}
+                color={planetColorGradient(planet.temperature / 1300)}
+              />
+              <EarthView className={styles.earth} cx={viewWidth * 0.9} cy={viewHeight * 0.8} r={zoom * 10} />
+            </g>
+          </CSSTransition>
+        </SwitchTransition>
       </svg>
       <div className={styles.content}>
         <div className={styles.birthdayText}>
