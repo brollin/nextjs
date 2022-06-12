@@ -10,11 +10,12 @@ import planetData from "../planetaryData/planets.json";
 import PlanetView from "../components/planet";
 import styles from "../styles/HappyBirthdayPlanets.module.css";
 import { RawPlanet } from "../models/RawPlanet";
+import MoonView from "../components/moon";
 
 // UP NEXT
-// TODO reflect: zoom out to show all planets visited so far
 // TODO surface: make a procedurally generated landscape. hills for rocky, clouds for giants
 // TODO surface: show suns, moons, other planets in sky
+// TODO reflect: zoom out to show all planets visited so far
 
 // LATER
 // TODO calculate whether in the habitable zone
@@ -77,6 +78,7 @@ export default function HappyBirthdayPlanets() {
         color={planetColorGradient(planet.temperature / 1300)}
       />
       {planet.numberStars > 0 ? null : null}
+      <MoonView cx={viewWidth * 0.1} cy={viewHeight * 0.3} r={30} />
     </g>
   );
 
