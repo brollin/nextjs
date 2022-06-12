@@ -6,4 +6,5 @@ export type RawPlanet = {
   pl_orbper: number;
   pl_rade: number;
   sy_snum: number;
+  pl_orbsmax: number;
 };

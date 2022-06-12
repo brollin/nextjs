@@ -1,5 +1,5 @@
 import { CSSTransition, SwitchTransition } from "react-transition-group";
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import chroma from "chroma-js";
 import classnames from "classnames";
 import Head from "next/head";
@@ -13,13 +13,14 @@ import { RawPlanet } from "../models/RawPlanet";
 
 // UP NEXT
 // TODO reflect: zoom out to show all planets visited so far
-// TODO gaze: implement a view from the surface (e.g. show Charon from Pluto surface)
-// TODO gaze: make a procedurally generated landscape
-// TODO gaze: show suns, moons, other planets in sky
+// TODO surface: make a procedurally generated landscape. hills for rocky, clouds for giants
+// TODO surface: show suns, moons, other planets in sky
 
 // LATER
+// TODO calculate whether in the habitable zone
+// TODO show color temperature scale
 // TODO randomize first planet
-// TODO fix planet 62 - smarter zooming
+// TODO smarter zooming for very large planets
 // TODO add our solar systems planets
 // TODO permalink to a specific planet
 
@@ -36,74 +37,52 @@ const zoomFactor = (planetRadius: number) => {
   return Math.max(1, (-2 / 12) * totalEarthRadii + 3.33);
 };
 
+type Mode = "orbit" | "surface";
+
 export default function HappyBirthdayPlanets() {
   const [planetIndex, setPlanetIndex] = useState(32);
   const [count, setCount] = useState(1);
   const [showMore, setShowMore] = useState(false);
-  const [mode, setMode] = useState("wander");
+  const [mode, setMode] = useState<Mode>("orbit");
 
   const planet = planets[planetIndex];
   const zoom = zoomFactor(planet.earthRadii);
   const partyPoopers = count % 5 == 0;
 
   const onWander = () => {
-    setMode("wander");
     setPlanetIndex(Math.floor(Math.random() * planets.length));
     setCount(count + 1);
   };
-  const onGaze = () => setMode("gaze");
+  const onTransport = () => setMode(mode === "orbit" ? "surface" : "orbit");
 
-  const wanderView = (
-    <SwitchTransition>
-      <CSSTransition key={planet.id} timeout={500} classNames="fade">
-        {
-          // <CSSTransition
-          //   key={planet.id}
-          //   nodeRef={ref}
-          //   addEndListener={(done) => {
-          //     ref.current;
-          //     // TODO add an event listener onto the element above
-          //     // or go back to using timeout
-          //   }}
-          //   classNames="fade"
-          // >
-        }
-        <g className={styles.fadeIn}>
-          <PlanetView
-            className={styles.planet}
-            cx={viewWidth / 2}
-            cy={viewHeight / 2}
-            r={10 * planet.earthRadii * zoom}
-            color={planetColorGradient(planet.temperature / 1300)}
-          />
-          <EarthView className={styles.earth} cx={viewWidth * 0.9} cy={viewHeight * 0.8} r={zoom * 10} />
-        </g>
-      </CSSTransition>
-    </SwitchTransition>
+  const orbitView = (
+    <g className={styles.fadeIn}>
+      <PlanetView
+        className={styles.planet}
+        cx={viewWidth / 2}
+        cy={viewHeight / 2}
+        r={10 * planet.earthRadii * zoom}
+        color={planetColorGradient(planet.temperature / 1300)}
+      />
+      <EarthView className={styles.earth} cx={viewWidth * 0.9} cy={viewHeight * 0.8} r={zoom * 10} />
+    </g>
   );
 
-  const gazeView = (
-    <SwitchTransition>
-      <CSSTransition key={planet.id} timeout={500} classNames="fade">
-        <g className={styles.fadeIn}>
-          <PlanetView
-            cx={viewWidth / 2}
-            cy={viewHeight * 2}
-            r={viewHeight * 1.5}
-            color={planetColorGradient(planet.temperature / 1300)}
-          />
-          {planet.numberStars > 0 ? null : null}
-          {
-            // TODO render stars
-          }
-        </g>
-      </CSSTransition>
-    </SwitchTransition>
+  const surfaceView = (
+    <g className={styles.fadeIn}>
+      <PlanetView
+        cx={viewWidth / 2}
+        cy={viewHeight * 10}
+        r={viewHeight * 9.25}
+        color={planetColorGradient(planet.temperature / 1300)}
+      />
+      {planet.numberStars > 0 ? null : null}
+    </g>
   );
 
-  const modeToView = {
-    wander: wanderView,
-    gaze: gazeView,
+  const modeToView: Record<Mode, ReactNode> = {
+    orbit: orbitView,
+    surface: surfaceView,
   };
 
   return (
@@ -114,7 +93,11 @@ export default function HappyBirthdayPlanets() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
       <svg className={styles.vectorContainer} width="100%" height={500} viewBox={`0 0 ${viewWidth} ${viewHeight}`}>
-        {modeToView[mode]}
+        <SwitchTransition>
+          <CSSTransition key={`${planet.id}${mode}}`} timeout={500} classNames="fade">
+            {modeToView[mode]}
+          </CSSTransition>
+        </SwitchTransition>
       </svg>
       <div className={styles.content}>
         <div className={styles.birthdayText}>
@@ -130,8 +113,8 @@ export default function HappyBirthdayPlanets() {
           <button className={styles.action} onClick={onWander}>
             Wander
           </button>
-          <button className={styles.action} onClick={onGaze}>
-            Gaze
+          <button className={styles.action} onClick={onTransport}>
+            Transport
           </button>
         </div>
         {showMore ? <PlanetInfo planet={planet} /> : <a onClick={() => setShowMore(true)}>Show me more...</a>}
@@ -146,6 +129,8 @@ const PlanetInfo = ({ planet }) => (
       {planet.name}
     </span>
     <div key={`${planet.id}info`} className={styles.planetInfo}>
+      <span className={styles.planetInfo__heading}>Type</span>
+      <span className={styles.fadeInRise}>{planet.type()}</span>
       <span className={styles.planetInfo__heading}>Earth radii</span>
       <span className={styles.fadeInRise}>{planet.earthRadii.toFixed(1)}</span>
       <span className={styles.planetInfo__heading}>Earth masses</span>
@@ -156,7 +141,7 @@ const PlanetInfo = ({ planet }) => (
       <span className={styles.fadeInRise}>{planet.numberStars}</span>
       <span className={styles.planetInfo__heading}>Length of year</span>
       <span className={styles.fadeInRise}>
-        {planet.orbitalPeriod ? planet.orbitalPeriod.toFixed(1) + " days" : "?"}
+        {planet.orbitalPeriod ? planet.orbitalPeriod.toFixed(1) + " Earth days" : "?"}
       </span>
     </div>
     <a href="https://exoplanetarchive.ipac.caltech.edu">Data sourced from NASA Exoplanet Archive</a>
