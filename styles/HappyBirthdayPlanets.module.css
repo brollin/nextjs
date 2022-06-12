@@ -8,6 +8,9 @@
   align-items: center;
 }
 
+.vectorContainer {
+}
+
 .content {
   flex: 1;
   display: flex;
@@ -93,7 +96,7 @@
 }
 
 .action {
-  /* margin-right: 1em; */
+  margin-right: 1em;
   width: 8em;
 }
 

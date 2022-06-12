@@ -1,4 +1,14 @@
-const PlanetView = ({ className, cx, cy, r, color }) => (
+import { Component } from "react";
+
+type PlanetProps = {
+  className?: string;
+  cx: number;
+  cy: number;
+  r: number;
+  color: string;
+};
+
+const PlanetView = ({ className, cx, cy, r, color }: PlanetProps) => (
   <>
     <defs>
       <radialGradient id="planetGradient" cx="0.5" cy="0.5" r="0.55" fx="0.25" fy="0.25">
