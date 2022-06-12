@@ -1,51 +1,28 @@
 import fs from "fs";
-import papa from "papaparse";
+import { RawPlanet } from "../models/RawPlanet";
+import rawPlanets from "./pscomppars.json";
 
-const parseCsv = (filename: string): Promise<any> => {
-  const file = fs.createReadStream(filename);
-  return new Promise((resolve) => {
-    papa.parse(file, {
-      comments: "#",
-      header: true,
-      complete: (results) => {
-        if (results.errors.length) {
-          console.log("Errors encountered!", results.errors);
-        }
-        resolve(results.data);
-      },
-    });
-  });
-};
+const acceptablePlanet = (planet: RawPlanet) => planet.pl_rade > 0 && planet.pl_eqt > 0 && planet.pl_bmasse > 0;
 
-type Planet = {
-  pl_name: string;
-  pl_rade: string;
-  sy_snum: string;
-  pl_eqt: string;
-};
-const acceptablePlanet = (planet: Planet) => parseInt(planet.pl_rade) > 0 && parseInt(planet.pl_eqt) > 0;
-
-const prunePlanets = (data: Planet[]) => {
-  const planets = [];
-  for (const planet of data) {
-    if (acceptablePlanet(planet)) planets.push(planet);
+const prunePlanets = (planets: RawPlanet[]) => {
+  const prunedPlanets = [];
+  for (const planet of planets) {
+    if (acceptablePlanet(planet)) prunedPlanets.push(planet);
   }
-  return planets;
+  return prunedPlanets;
 };
 
 const saveJson = (filename: string, data: any) => fs.writeFileSync(filename, JSON.stringify(data));
 
 const main = async () => {
-  console.log("Parsing planetary data...");
-  const data = (await parseCsv("./planetaryData/PS_2022.06.07_19.36.03.csv")) as Planet[];
-  console.log("Complete. Planets parsed:", data.length);
+  console.log("Number of planets:", (rawPlanets as RawPlanet[]).length);
 
-  const planets = prunePlanets(data);
-  console.log("Remaining planets after pruning:", planets.length);
+  const prunedPlanets = prunePlanets(rawPlanets as RawPlanet[]);
+  console.log("Remaining planets after pruning:", prunedPlanets.length);
 
   // gather planets by prefix
-  const planetGroups: Record<string, Planet[]> = {};
-  for (const planet of planets as Planet[]) {
+  const planetGroups: Record<string, RawPlanet[]> = {};
+  for (const planet of prunedPlanets as RawPlanet[]) {
     const prefix = planet.pl_name.substring(0, 3);
     if (!planetGroups[prefix]) planetGroups[prefix] = [];
     planetGroups[prefix].push(planet);
@@ -53,19 +30,16 @@ const main = async () => {
   const prefixes = Object.keys(planetGroups);
   console.log("Total planet prefixes:", prefixes.length);
 
-  const planetsSubset = [];
+  // take a subset of planets with as unique of names as possible
+  const finalPlanets = [];
   let prefixIndex = 0;
-  while (planetsSubset.length < 500) {
+  while (finalPlanets.length < 500) {
     const newPlanet = planetGroups[prefixes[prefixIndex]].pop();
-    if (newPlanet) planetsSubset.push(newPlanet);
+    if (newPlanet) finalPlanets.push(newPlanet);
     prefixIndex = (prefixIndex + 1) % prefixes.length;
   }
-  // grab a set of 500 planets throughout the dataset
-  // const planetsSubset = [];
-  // for (let i = 0; i < planets.length; i++) {
-  //   if (i % Math.floor(planets.length / 500) == 0) planetsSubset.push(planets[i]);
-  // }
-  saveJson("./planetaryData/planets.json", planetsSubset);
+  saveJson("./planetaryData/planets.json", finalPlanets);
+  console.log("Final number of planets:", finalPlanets.length);
 };
 
 main();

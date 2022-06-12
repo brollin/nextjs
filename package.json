@@ -5,7 +5,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "processPlanets": "ts-node --skipProject planetaryData/processPlanets.ts"
+    "processPlanets": "ts-node --project planetaryData/tsconfig.json planetaryData/processPlanets.ts",
+    "downloadPlanets": "./planetaryData/downloadPlanets.sh"
   },
   "dependencies": {
     "chroma-js": "^2.4.2",
