@@ -9,21 +9,25 @@ export class Planet {
   id: string;
   name: string;
   temperature: number; // Kelvin
-  numberStars: number;
   earthRadii: number;
   earthMasses: number;
   orbitalPeriod: number; // Earth days
   orbitalSemiMajorAxis: number; // AU
 
+  // stellar data
+  numberStars: number;
+  stellarRadius: number; // Sun radii
+
   constructor(rawPlanet: RawPlanet) {
     this.id = rawPlanet.pl_name;
     this.name = rawPlanet.pl_name;
     this.temperature = rawPlanet.pl_eqt;
-    this.numberStars = rawPlanet.sy_snum;
     this.earthRadii = rawPlanet.pl_rade;
     this.earthMasses = rawPlanet.pl_bmasse;
     this.orbitalPeriod = rawPlanet.pl_orbper;
     this.orbitalSemiMajorAxis = rawPlanet.pl_orbsmax;
+    this.numberStars = rawPlanet.sy_snum;
+    this.stellarRadius = rawPlanet.st_rad;
   }
 
   // cm^3

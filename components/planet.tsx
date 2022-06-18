@@ -1,5 +1,3 @@
-import { Component } from "react";
-
 type Props = {
   className?: string;
   cx: number;

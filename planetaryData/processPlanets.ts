@@ -2,7 +2,8 @@ import fs from "fs";
 import { RawPlanet } from "../models/RawPlanet";
 import rawPlanets from "./pscomppars.json";
 
-const acceptablePlanet = (planet: RawPlanet) => planet.pl_rade > 0 && planet.pl_eqt > 0 && planet.pl_bmasse > 0;
+const acceptablePlanet = (planet: RawPlanet) =>
+  planet.pl_rade > 0 && planet.pl_eqt > 0 && planet.pl_bmasse > 0 && planet.st_rad > 0;
 
 const prunePlanets = (planets: RawPlanet[]) => {
   const prunedPlanets = [];

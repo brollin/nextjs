@@ -1,8 +1,7 @@
 import { CSSTransition, SwitchTransition } from "react-transition-group";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import chroma from "chroma-js";
 import classnames from "classnames";
-import Head from "next/head";
 
 import { Planet } from "../models/Planet";
 import EarthView from "../components/earth";
@@ -11,16 +10,20 @@ import PlanetView from "../components/planet";
 import styles from "../styles/HappyBirthdayPlanets.module.css";
 import { RawPlanet } from "../models/RawPlanet";
 import MoonView from "../components/moon";
+import StarView from "../components/star";
+import { angularSize } from "../models/OrbitalMechanics";
+import Layout from "../components/layout";
 
 // UP NEXT
+// TODO surface: use zoom factor in surface mode
+// TODO surface: color sun according to its temperature
 // TODO surface: make a procedurally generated landscape. hills for rocky, clouds for giants
-// TODO surface: show suns, moons, other planets in sky
+// TODO surface: show suns, other planets in sky
 // TODO reflect: zoom out to show all planets visited so far
 
 // LATER
 // TODO calculate whether in the habitable zone
 // TODO show color temperature scale
-// TODO randomize first planet
 // TODO smarter zooming for very large planets
 // TODO add our solar systems planets
 // TODO permalink to a specific planet
@@ -41,12 +44,17 @@ const zoomFactor = (planetRadius: number) => {
 type Mode = "orbit" | "surface";
 
 export default function HappyBirthdayPlanets() {
-  const [planetIndex, setPlanetIndex] = useState(32);
+  const [planetIndex, setPlanetIndex] = useState(-1);
   const [count, setCount] = useState(1);
   const [showMore, setShowMore] = useState(false);
   const [mode, setMode] = useState<Mode>("orbit");
 
-  const planet = planets[planetIndex];
+  // On first client side render, choose an initial random planet
+  useEffect(() => setPlanetIndex(Math.floor(Math.random() * planets.length)), []);
+
+  const planet: Planet | undefined = planets[planetIndex];
+  if (!planet) return <Layout className={styles.container} />;
+
   const zoom = zoomFactor(planet.earthRadii);
   const partyPoopers = count % 5 == 0;
 
@@ -78,6 +86,12 @@ export default function HappyBirthdayPlanets() {
         color={planetColorGradient(planet.temperature / 1300)}
       />
       {planet.numberStars > 0 ? null : null}
+      <StarView
+        cx={viewWidth * 0.5}
+        cy={viewHeight * 0.35}
+        r={30 * angularSize(planet.stellarRadius, planet.orbitalSemiMajorAxis)}
+        color={"yellow"}
+      />
       <MoonView cx={viewWidth * 0.1} cy={viewHeight * 0.3} r={30} />
     </g>
   );
@@ -88,12 +102,7 @@ export default function HappyBirthdayPlanets() {
   };
 
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Happy Birthday Jeff!</title>
-        <link rel="icon" href="/favicon.ico" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      </Head>
+    <Layout className={styles.container}>
       <svg className={styles.vectorContainer} width="100%" height={500} viewBox={`0 0 ${viewWidth} ${viewHeight}`}>
         <SwitchTransition>
           <CSSTransition key={`${planet.id}${mode}}`} timeout={500} classNames="fade">
@@ -121,7 +130,7 @@ export default function HappyBirthdayPlanets() {
         </div>
         {showMore ? <PlanetInfo planet={planet} /> : <a onClick={() => setShowMore(true)}>Show me more...</a>}
       </div>
-    </div>
+    </Layout>
   );
 }
 
