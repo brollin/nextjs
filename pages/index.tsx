@@ -1,5 +1,5 @@
 import { CSSTransition, SwitchTransition } from "react-transition-group";
-import React, { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useRef, useEffect, useState } from "react";
 import chroma from "chroma-js";
 import classnames from "classnames";
 
@@ -11,15 +11,17 @@ import styles from "../styles/HappyBirthdayPlanets.module.css";
 import { RawPlanet } from "../models/RawPlanet";
 import MoonView from "../components/moon";
 import StarView from "../components/star";
-import { angularSize } from "../models/OrbitalMechanics";
+import { angularSize, lerp } from "../models/mathUtils";
 import Layout from "../components/layout";
 
 // UP NEXT
 // TODO surface: use zoom factor in surface mode
+// TODO surface: show second or third sun
 // TODO surface: color sun according to its temperature
 // TODO surface: make a procedurally generated landscape. hills for rocky, clouds for giants
 // TODO surface: show suns, other planets in sky
 // TODO reflect: zoom out to show all planets visited so far
+// TODO KOI-351 b is showing as a hot jupiter, probably wrong
 
 // LATER
 // TODO calculate whether in the habitable zone
@@ -35,12 +37,6 @@ const viewHeight = 500;
 const planets = (planetData as RawPlanet[]).map((planet) => new Planet(planet));
 const planetColorGradient = chroma.scale(["fuchsia", "navy", "teal", "lime", "yellow", "red"]);
 
-// The fewer total earth radii, the more we should zoom
-const zoomFactor = (planetRadius: number) => {
-  const totalEarthRadii = 1 + planetRadius;
-  return Math.max(1, (-2 / 12) * totalEarthRadii + 3.33);
-};
-
 type Mode = "orbit" | "surface";
 
 export default function HappyBirthdayPlanets() {
@@ -48,6 +44,7 @@ export default function HappyBirthdayPlanets() {
   const [count, setCount] = useState(1);
   const [showMore, setShowMore] = useState(false);
   const [mode, setMode] = useState<Mode>("orbit");
+  const nodeRef = useRef(null);
 
   // On first client side render, choose an initial random planet
   useEffect(() => setPlanetIndex(Math.floor(Math.random() * planets.length)), []);
@@ -55,7 +52,6 @@ export default function HappyBirthdayPlanets() {
   const planet: Planet | undefined = planets[planetIndex];
   if (!planet) return <Layout className={styles.container} />;
 
-  const zoom = zoomFactor(planet.earthRadii);
   const partyPoopers = count % 5 == 0;
 
   const onWander = () => {
@@ -64,49 +60,61 @@ export default function HappyBirthdayPlanets() {
   };
   const onTransport = () => setMode(mode === "orbit" ? "surface" : "orbit");
 
-  const orbitView = (
-    <g className={styles.fadeIn}>
-      <PlanetView
-        className={styles.planet}
-        cx={viewWidth / 2}
-        cy={viewHeight / 2}
-        r={10 * planet.earthRadii * zoom}
-        color={planetColorGradient(planet.temperature / 1300)}
-      />
-      <EarthView className={styles.earth} cx={viewWidth * 0.9} cy={viewHeight * 0.8} r={zoom * 10} />
-    </g>
-  );
+  const renderOrbitView = () => {
+    // The fewer total earth radii, the more we should zoom
+    const totalEarthRadii = 1 + planet.earthRadii;
+    const zoom = Math.max(1, lerp(totalEarthRadii, 2, 3, 14, 1));
+    return (
+      <g className={styles.fadeIn}>
+        <PlanetView
+          className={styles.planet}
+          cx={viewWidth / 2}
+          cy={viewHeight / 2}
+          r={10 * planet.earthRadii * zoom}
+          color={planetColorGradient(planet.temperature / 1300)}
+        />
+        <EarthView className={styles.earth} cx={viewWidth * 0.9} cy={viewHeight * 0.8} r={zoom * 10} />
+      </g>
+    );
+  };
 
-  const surfaceView = (
-    <g className={styles.fadeIn}>
-      <PlanetView
-        cx={viewWidth / 2}
-        cy={viewHeight * 10}
-        r={viewHeight * 9.25}
-        color={planetColorGradient(planet.temperature / 1300)}
-      />
-      {planet.numberStars > 0 ? null : null}
-      <StarView
-        cx={viewWidth * 0.5}
-        cy={viewHeight * 0.35}
-        r={30 * angularSize(planet.stellarRadius, planet.orbitalSemiMajorAxis)}
-        color={"yellow"}
-      />
-      <MoonView cx={viewWidth * 0.1} cy={viewHeight * 0.3} r={30} />
-    </g>
-  );
+  const renderSurfaceView = () => {
+    // The fewer total stellar radii, the more we should zoom
+    const surfaceZoomFactor = (stellarRadius: number) => {
+      const totalStellarRadii = 1 + stellarRadius;
+      return Math.max(1, (-2 / 12) * totalStellarRadii + 3.33);
+    };
+    const zoom = surfaceZoomFactor(planet.stellarRadius);
+    return (
+      <g className={styles.fadeIn}>
+        <StarView
+          cx={viewWidth * 0.5}
+          cy={viewHeight * 0.35}
+          r={10 * angularSize(planet.stellarRadius, planet.orbitalSemiMajorAxis) * zoom}
+          color={"yellow"}
+        />
+        <MoonView cx={viewWidth * 0.1} cy={viewHeight * 0.3} r={10 * zoom} />
+        <PlanetView
+          cx={viewWidth / 2}
+          cy={viewHeight * 10}
+          r={viewHeight * 9.25}
+          color={planetColorGradient(planet.temperature / 1300)}
+        />
+      </g>
+    );
+  };
 
-  const modeToView: Record<Mode, ReactNode> = {
-    orbit: orbitView,
-    surface: surfaceView,
+  const modeToView: Record<Mode, () => ReactNode> = {
+    orbit: renderOrbitView,
+    surface: renderSurfaceView,
   };
 
   return (
     <Layout className={styles.container}>
       <svg className={styles.vectorContainer} width="100%" height={500} viewBox={`0 0 ${viewWidth} ${viewHeight}`}>
         <SwitchTransition>
-          <CSSTransition key={`${planet.id}${mode}}`} timeout={500} classNames="fade">
-            {modeToView[mode]}
+          <CSSTransition key={`${planet.id}${mode}}`} nodeRef={nodeRef} timeout={500} classNames="fade">
+            {modeToView[mode]()}
           </CSSTransition>
         </SwitchTransition>
       </svg>
