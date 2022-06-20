@@ -15,13 +15,12 @@ import { angularSize, lerp } from "../models/mathUtils";
 import Layout from "../components/layout";
 
 // UP NEXT
-// TODO surface: use zoom factor in surface mode
 // TODO surface: show second or third sun
 // TODO surface: color sun according to its temperature
 // TODO surface: make a procedurally generated landscape. hills for rocky, clouds for giants
-// TODO surface: show suns, other planets in sky
 // TODO reflect: zoom out to show all planets visited so far
 // TODO KOI-351 b is showing as a hot jupiter, probably wrong
+// TODO density is sometimes negative
 
 // LATER
 // TODO calculate whether in the habitable zone
@@ -80,19 +79,12 @@ export default function HappyBirthdayPlanets() {
 
   const renderSurfaceView = () => {
     // The fewer total stellar radii, the more we should zoom
-    const surfaceZoomFactor = (stellarRadius: number) => {
-      const totalStellarRadii = 1 + stellarRadius;
-      return Math.max(1, (-2 / 12) * totalStellarRadii + 3.33);
-    };
-    const zoom = surfaceZoomFactor(planet.stellarRadius);
+    const stellarAngularSize = angularSize(planet.stellarRadius, planet.orbitalSemiMajorAxis);
+    const totalAngularSize = 0.5 + stellarAngularSize;
+    const zoom = Math.max(0.9, lerp(totalAngularSize, 1, 3, 14, 1));
     return (
       <g className={styles.fadeIn}>
-        <StarView
-          cx={viewWidth * 0.5}
-          cy={viewHeight * 0.35}
-          r={10 * angularSize(planet.stellarRadius, planet.orbitalSemiMajorAxis) * zoom}
-          color={"yellow"}
-        />
+        <StarView cx={viewWidth * 0.5} cy={viewHeight * 0.35} r={10 * stellarAngularSize * zoom} color={"yellow"} />
         <MoonView cx={viewWidth * 0.1} cy={viewHeight * 0.3} r={10 * zoom} />
         <PlanetView
           cx={viewWidth / 2}
