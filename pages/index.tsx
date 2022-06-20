@@ -1,5 +1,5 @@
 import { CSSTransition, SwitchTransition } from "react-transition-group";
-import { ReactNode, useRef, useEffect, useState } from "react";
+import { FunctionComponent, useRef, useEffect, useState } from "react";
 import chroma from "chroma-js";
 import classnames from "classnames";
 
@@ -59,54 +59,17 @@ export default function HappyBirthdayPlanets() {
   };
   const onTransport = () => setMode(mode === "orbit" ? "surface" : "orbit");
 
-  const renderOrbitView = () => {
-    // The fewer total earth radii, the more we should zoom
-    const totalEarthRadii = 1 + planet.earthRadii;
-    const zoom = Math.max(1, lerp(totalEarthRadii, 2, 3, 14, 1));
-    return (
-      <g className={styles.fadeIn}>
-        <PlanetView
-          className={styles.planet}
-          cx={viewWidth / 2}
-          cy={viewHeight / 2}
-          r={10 * planet.earthRadii * zoom}
-          color={planetColorGradient(planet.temperature / 1300)}
-        />
-        <EarthView className={styles.earth} cx={viewWidth * 0.9} cy={viewHeight * 0.8} r={zoom * 10} />
-      </g>
-    );
-  };
-
-  const renderSurfaceView = () => {
-    // The fewer total stellar radii, the more we should zoom
-    const stellarAngularSize = angularSize(planet.stellarRadius, planet.orbitalSemiMajorAxis);
-    const totalAngularSize = 0.5 + stellarAngularSize;
-    const zoom = Math.max(0.9, lerp(totalAngularSize, 1, 3, 14, 1));
-    return (
-      <g className={styles.fadeIn}>
-        <StarView cx={viewWidth * 0.5} cy={viewHeight * 0.35} r={10 * stellarAngularSize * zoom} color={"yellow"} />
-        <MoonView cx={viewWidth * 0.1} cy={viewHeight * 0.3} r={10 * zoom} />
-        <PlanetView
-          cx={viewWidth / 2}
-          cy={viewHeight * 10}
-          r={viewHeight * 9.25}
-          color={planetColorGradient(planet.temperature / 1300)}
-        />
-      </g>
-    );
-  };
-
-  const modeToView: Record<Mode, () => ReactNode> = {
-    orbit: renderOrbitView,
-    surface: renderSurfaceView,
-  };
+  const ModeView: ModeView = {
+    orbit: OrbitView,
+    surface: SurfaceView,
+  }[mode];
 
   return (
     <Layout className={styles.container}>
       <svg className={styles.vectorContainer} width="100%" height={500} viewBox={`0 0 ${viewWidth} ${viewHeight}`}>
         <SwitchTransition>
           <CSSTransition key={`${planet.id}${mode}}`} nodeRef={nodeRef} timeout={500} classNames="fade">
-            {modeToView[mode]()}
+            <ModeView planet={planet} />
           </CSSTransition>
         </SwitchTransition>
       </svg>
@@ -133,6 +96,45 @@ export default function HappyBirthdayPlanets() {
     </Layout>
   );
 }
+
+type ModeView = FunctionComponent<{ planet: Planet }>;
+
+const OrbitView: ModeView = ({ planet }) => {
+  // The fewer total earth radii, the more we should zoom
+  const totalEarthRadii = 1 + planet.earthRadii;
+  const zoom = Math.max(1, lerp(totalEarthRadii, 2, 3, 14, 1));
+  return (
+    <g className={styles.fadeIn}>
+      <PlanetView
+        className={styles.planet}
+        cx={viewWidth / 2}
+        cy={viewHeight / 2}
+        r={10 * planet.earthRadii * zoom}
+        color={planetColorGradient(planet.temperature / 1300)}
+      />
+      <EarthView className={styles.earth} cx={viewWidth * 0.9} cy={viewHeight * 0.8} r={zoom * 10} />
+    </g>
+  );
+};
+
+const SurfaceView: ModeView = ({ planet }) => {
+  // The fewer total stellar radii, the more we should zoom
+  const stellarAngularSize = angularSize(planet.stellarRadius, planet.orbitalSemiMajorAxis);
+  const totalAngularSize = 0.5 + stellarAngularSize;
+  const zoom = Math.max(0.9, lerp(totalAngularSize, 1, 3, 14, 1));
+  return (
+    <g className={styles.fadeIn}>
+      <StarView cx={viewWidth * 0.5} cy={viewHeight * 0.35} r={10 * stellarAngularSize * zoom} color={"yellow"} />
+      <MoonView cx={viewWidth * 0.1} cy={viewHeight * 0.3} r={10 * zoom} />
+      <PlanetView
+        cx={viewWidth / 2}
+        cy={viewHeight * 10}
+        r={viewHeight * 9.25}
+        color={planetColorGradient(planet.temperature / 1300)}
+      />
+    </g>
+  );
+};
 
 const PlanetInfo = ({ planet }) => (
   <>
