@@ -18,16 +18,15 @@ import Layout from "../components/layout";
 // TODO surface: show second or third sun
 // TODO surface: color sun according to its temperature
 // TODO surface: make a procedurally generated landscape. hills for rocky, clouds for giants
-// TODO reflect: zoom out to show all planets visited so far
 // TODO KOI-351 b is showing as a hot jupiter, probably wrong
 // TODO density is sometimes negative
+// TODO permalink to a specific planet
 
 // LATER
+// TODO reflect: zoom out to show all planets visited so far
 // TODO calculate whether in the habitable zone
 // TODO show color temperature scale
-// TODO smarter zooming for very large planets
 // TODO add our solar systems planets
-// TODO permalink to a specific planet
 
 // The SVG viewBox width and height
 const viewWidth = 400;
