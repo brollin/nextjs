@@ -3,6 +3,10 @@ import styles from "../styles/Capitalizer.module.css";
 
 const { countries, capitals } = require("../worldData/worldData.json");
 
+// UP NEXT
+// TODO fix google maps embed
+// TODO implement country border SVG
+
 /**
  * Shuffles multiple arrays in place in the same way.
  */
@@ -44,21 +48,21 @@ function Quiz() {
     setAnswerText(newAnswer);
   };
 
-  const interactiveMap = (
-    <iframe
-      title="googleMap"
-      width="350"
-      height="350"
-      style={{ border: 0 }}
-      src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyDS40cPM6UITBJsQwRHIFYgJK2V01ay8Bo&q=${encodeURIComponent(
-        "country of " + countries[countryIndex]
-      )}`}
-    ></iframe>
-  );
+  // const interactiveMap = (
+  //   <iframe
+  //     title="googleMap"
+  //     width="350"
+  //     height="350"
+  //     style={{ border: 0 }}
+  //     src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyDS40cPM6UITBJsQwRHIFYgJK2V01ay8Bo&q=${encodeURIComponent(
+  //       "country of " + countries[countryIndex]
+  //     )}`}
+  //   ></iframe>
+  // );
 
   return (
     <div>
-      {interactiveMap}
+      {/* {interactiveMap} */}
       <br />
       <div style={{ color: "cyan" }}>
         Correct: {correctCount} / {Math.max(0, countryIndex)}
