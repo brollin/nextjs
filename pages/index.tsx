@@ -2,6 +2,7 @@ import { CSSTransition, SwitchTransition } from "react-transition-group";
 import { FunctionComponent, useRef, useEffect, useState } from "react";
 import chroma from "chroma-js";
 import classnames from "classnames";
+import Link from "next/link";
 
 import { Planet } from "../models/Planet";
 import EarthView from "../components/earth";
@@ -91,6 +92,9 @@ export default function HappyBirthdayPlanets() {
           </button>
         </div>
         {showMore ? <PlanetInfo planet={planet} /> : <a onClick={() => setShowMore(true)}>Show me more...</a>}
+        <span className={styles.capitalize}>
+          <Link href="/capitalizer">...capitalize</Link>
+        </span>
       </div>
     </Layout>
   );
