@@ -9,6 +9,7 @@
     "downloadPlanets": "./planetaryData/downloadPlanets.sh"
   },
   "dependencies": {
+    "@bity/oauth2-auth-code-pkce": "^2.13.0",
     "chroma-js": "^2.4.2",
     "classnames": "^2.3.1",
     "next": "^12.1.6",
