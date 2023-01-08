@@ -66,7 +66,7 @@ export default function HappyBirthdayPlanets() {
 
   return (
     <Layout className={styles.container}>
-      <svg className={styles.vectorContainer} width="100%" height={500} viewBox={`0 0 ${viewWidth} ${viewHeight}`}>
+      <svg width="100%" height={500} viewBox={`0 0 ${viewWidth} ${viewHeight}`}>
         <SwitchTransition>
           <CSSTransition key={`${planet.id}${mode}}`} nodeRef={nodeRef} timeout={500} classNames="fade">
             <ModeView planet={planet} />
@@ -92,8 +92,11 @@ export default function HappyBirthdayPlanets() {
           </button>
         </div>
         {showMore ? <PlanetInfo planet={planet} /> : <a onClick={() => setShowMore(true)}>Show me more...</a>}
-        <span className={styles.capitalize}>
+        <span className={styles.link}>
           <Link href="/capitalizer">...capitalize</Link>
+        </span>
+        <span className={styles.link}>
+          <Link href="/chess">...chess</Link>
         </span>
       </div>
     </Layout>
