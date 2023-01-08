@@ -21,6 +21,8 @@
   font-size: 4rem;
   text-align: center;
 }
+
 .authButton {
+  margin-top: 1rem;
   width: 10rem;
 }

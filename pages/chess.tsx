@@ -35,11 +35,18 @@ export default function Chess() {
       {!auth ? (
         <div>loading...</div>
       ) : me ? (
-        <button className={styles.authButton} onClick={logout}>
-          Logout
-        </button>
+        <>
+          <p>
+            Why hello, <strong>{me.username}</strong>!
+          </p>
+          <button className={styles.authButton} onClick={logout}>
+            Logout
+          </button>
+        </>
       ) : (
-        <button onClick={auth.login}>Login with Lichess</button>
+        <button className={styles.authButton} onClick={auth.login}>
+          Login with Lichess
+        </button>
       )}
     </div>
   );
