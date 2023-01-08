@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
-import { Auth, Me } from "../models/Auth";
+import { Auth } from "../models/chess/Auth";
+import { Me } from "../models/chess/Me";
 import styles from "../styles/Chess.module.css";
 
 export default function Chess() {
@@ -20,21 +21,21 @@ export default function Chess() {
     initAuth();
   }, []);
 
+  const logout = () => {
+    me.logout();
+    setMe(null);
+  };
+
   return (
     <div className={styles.container}>
       <Head>
         <title>Brollin Chess Space</title>
       </Head>
-      <h1 className={styles.title}>Hello world</h1>
+      <h1 className={styles.title}>Lichess Zone</h1>
       {!auth ? (
-        <div>loading</div>
+        <div>loading...</div>
       ) : me ? (
-        <button
-          onClick={() => {
-            auth.logout(me);
-            setMe(null);
-          }}
-        >
+        <button className={styles.authButton} onClick={logout}>
           Logout
         </button>
       ) : (
