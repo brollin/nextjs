@@ -6,6 +6,7 @@ const { countries, capitals } = require("../worldData/worldData.json");
 // UP NEXT
 // TODO fix google maps embed
 // TODO implement country border SVG
+// TODO window title
 
 /**
  * Shuffles multiple arrays in place in the same way.
