@@ -1,11 +1,12 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as little from "lil-gui";
-import gsap from "gsap";
 
 // TODO: make gifs work
 // TODO: image picker
 // TODO: rotation in more directions
+// TODO: quantization, snapping features
+// TODO: selection
 
 type Parameters = {
   selectedObject: number;
@@ -25,8 +26,6 @@ type Parameters = {
 };
 
 export const main = (canvas: HTMLCanvasElement) => {
-  console.log("Initializing..........");
-
   // Parameters for selected object
   const parameters: Parameters = {
     selectedObject: 0,
@@ -46,19 +45,17 @@ export const main = (canvas: HTMLCanvasElement) => {
   };
 
   // File input
-  const fileInput = document.getElementById("fileInput");
   const textureLoader = new THREE.TextureLoader();
+  const fileReader = new FileReader();
+  fileReader.onload = () => {
+    parameters.materialMode = "texture";
+    parameters.texture = textureLoader.load(fileReader.result.toString());
+    handleParametersChange();
+  };
+  const fileInput = document.getElementById("fileInput");
   fileInput.onchange = (event) => {
     const files = (event.target as HTMLInputElement).files;
-    if (files && files.length) {
-      const fileReader = new FileReader();
-      fileReader.onload = () => {
-        parameters.materialMode = "texture";
-        parameters.texture = textureLoader.load(fileReader.result.toString());
-        handleParametersChange();
-      };
-      fileReader.readAsDataURL(files[0]);
-    }
+    if (files?.length) fileReader.readAsDataURL(files[0]);
   };
 
   // Objects
@@ -110,7 +107,7 @@ export const main = (canvas: HTMLCanvasElement) => {
   });
 
   // Camera
-  const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100);
+  const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1000);
   camera.position.x = 3;
   camera.position.y = 3;
   camera.position.z = 3;
@@ -193,6 +190,7 @@ export const main = (canvas: HTMLCanvasElement) => {
   gui.add(parameters, "loadFile").name("Choose image");
   gui.add(parameters, "cloneObject").name("Clone object");
 
+  // Animation loop
   const tick = () => {
     // Update controls
     controls.update();
