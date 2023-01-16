@@ -1,13 +1,22 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import * as little from "lil-gui";
+import gsap from "gsap";
 
 export const main = (canvas: HTMLCanvasElement) => {
   console.log("Initializing..........");
 
+  const parameters = {
+    color: 0x00ff00,
+    spin: () => {
+      gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + Math.PI * 2 });
+    },
+  };
+
   const scene = new THREE.Scene();
 
   const geometry = new THREE.BoxGeometry(1, 1, 1);
-  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  const material = new THREE.MeshBasicMaterial({ color: parameters.color });
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
 
@@ -47,6 +56,12 @@ export const main = (canvas: HTMLCanvasElement) => {
   });
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const gui = new little.GUI();
+  gui.add(mesh.position, "y").min(-3).max(3).step(0.01).name("elevation");
+  gui.add(material, "wireframe");
+  gui.addColor(parameters, "color").onChange(() => material.color.set(parameters.color));
+  gui.add(parameters, "spin");
 
   const tick = () => {
     // Update controls
