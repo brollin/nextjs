@@ -1,5 +1,7 @@
 import "../styles/globals.css";
-import "../styles/HappyBirthdayPlanets.css";
+
+// Module-specific global styling
+import "../styles/Planets.css";
 
 function MyApp({ Component, pageProps }) {
   return <Component {...pageProps} />;

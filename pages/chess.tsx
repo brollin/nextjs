@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
-import { Auth } from "../models/chess/Auth";
-import { Me } from "../models/chess/Me";
+import { Auth } from "../modules/chess/Auth";
+import { Me } from "../modules/chess/Me";
 import styles from "../styles/Chess.module.css";
 
 export default function Chess() {

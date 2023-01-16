@@ -1,5 +1,5 @@
 import fs from "fs";
-import { RawPlanet } from "../models/RawPlanet";
+import { RawPlanet } from "../modules/planets/RawPlanet";
 
 const rawPlanets = require("./pscomppars.json");
 
