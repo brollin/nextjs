@@ -2,13 +2,33 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as little from "lil-gui";
 import gsap from "gsap";
-import { RGBA_ASTC_5x4_Format } from "three";
+
+// TODO: make gifs work
+// TODO: image picker
+// TODO: rotation
+
+type Parameters = {
+  selectedObject: number;
+  x: number;
+  y: number;
+  z: number;
+  width: number;
+  height: number;
+  depth: number;
+  rotation: number;
+  materialMode: "color" | "texture";
+  color: number;
+  texture: THREE.Texture;
+  wireframe: boolean;
+  loadFile: () => void;
+  cloneObject: () => void;
+};
 
 export const main = (canvas: HTMLCanvasElement) => {
   console.log("Initializing..........");
 
   // Parameters for selected object
-  const parameters = {
+  const parameters: Parameters = {
     selectedObject: 0,
     x: 0,
     y: 0,
@@ -16,9 +36,11 @@ export const main = (canvas: HTMLCanvasElement) => {
     width: 1,
     height: 1,
     depth: 1,
+    rotation: 0,
     materialMode: "color",
     color: 0x00ff00,
     texture: null,
+    wireframe: false,
     loadFile: () => fileInput.click(),
     cloneObject: () => handleCloneObject(),
   };
@@ -31,28 +53,31 @@ export const main = (canvas: HTMLCanvasElement) => {
     if (files && files.length) {
       const fileReader = new FileReader();
       fileReader.onload = () => {
-        const texture = textureLoader.load(fileReader.result.toString());
         parameters.materialMode = "texture";
-        parameters.texture = texture;
-        getSelectedObject().material = new THREE.MeshBasicMaterial({ map: texture });
+        parameters.texture = textureLoader.load(fileReader.result.toString());
+        handleParametersChange();
       };
       fileReader.readAsDataURL(files[0]);
     }
   };
 
   // Objects
-  const createObject = ({ x, y, z, width, height, depth, materialMode, color, texture }) => {
+  const createObject = () => {
+    const { x, y, z, width, height, depth, rotation, materialMode, color, texture, wireframe } = parameters;
     const geometry = new THREE.BoxGeometry(width, height, depth);
-    const material = new THREE.MeshBasicMaterial(materialMode === "color" ? { color } : { map: texture });
+    const material = new THREE.MeshBasicMaterial(
+      materialMode === "color" ? { color, wireframe } : { map: texture, wireframe }
+    );
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
+    mesh.rotation.y = rotation;
     return mesh;
   };
-  const objects: THREE.Mesh[] = [createObject(parameters)];
+  const objects: THREE.Mesh[] = [createObject()];
 
   const handleCloneObject = () => {
     parameters.x += 1.5;
-    const newObject = createObject(parameters);
+    const newObject = createObject();
 
     objects.push(newObject);
     parameters.selectedObject = objects.length - 1;
@@ -105,12 +130,21 @@ export const main = (canvas: HTMLCanvasElement) => {
   // GUI
   const gui = new little.GUI();
 
-  const handleGeometryChange = ({ x, y, z, width, height, depth, color, materialMode }) => {
+  const handleParametersChange = () => {
+    const { x, y, z, width, height, depth, rotation, color, materialMode, wireframe, texture } = parameters;
     const mesh = getSelectedObject();
     mesh.geometry = new THREE.BoxGeometry(width, height, depth);
+    mesh.rotation.y = rotation;
     mesh.position.set(x, y, z);
 
-    if (materialMode === "color") mesh.material = new THREE.MeshBasicMaterial({ color });
+    switch (materialMode) {
+      case "color":
+        mesh.material = new THREE.MeshBasicMaterial({ color, wireframe });
+        break;
+      case "texture":
+        mesh.material = new THREE.MeshBasicMaterial({ map: texture, wireframe });
+      default:
+    }
   };
 
   const boundingSize = 50;
@@ -120,7 +154,7 @@ export const main = (canvas: HTMLCanvasElement) => {
     .max(boundingSize)
     .step(0.01)
     .name("x")
-    .onChange(() => handleGeometryChange(parameters))
+    .onChange(handleParametersChange)
     .listen();
   gui
     .add(parameters, "y")
@@ -128,7 +162,7 @@ export const main = (canvas: HTMLCanvasElement) => {
     .max(boundingSize)
     .step(0.01)
     .name("y")
-    .onChange(() => handleGeometryChange(parameters))
+    .onChange(handleParametersChange)
     .listen();
   gui
     .add(parameters, "z")
@@ -136,37 +170,25 @@ export const main = (canvas: HTMLCanvasElement) => {
     .max(boundingSize)
     .step(0.01)
     .name("z")
-    .onChange(() => handleGeometryChange(parameters))
+    .onChange(handleParametersChange)
     .listen();
 
-  // gui.add(getSelectedObject().rotation, "y").min(-Math.PI).max(Math.PI).step(0.01).name("rotation");
+  gui
+    .add(parameters, "rotation")
+    .min(-Math.PI)
+    .max(Math.PI)
+    .step(0.01)
+    .name("rotation")
+    .onChange(handleParametersChange);
 
-  gui
-    .add(parameters, "width")
-    .min(0.01)
-    .max(10)
-    .step(0.01)
-    .name("width")
-    .onChange(() => handleGeometryChange(parameters));
-  gui
-    .add(parameters, "height")
-    .min(0.01)
-    .max(10)
-    .step(0.01)
-    .name("height")
-    .onChange(() => handleGeometryChange(parameters));
-  gui
-    .add(parameters, "depth")
-    .min(0.01)
-    .max(10)
-    .step(0.01)
-    .name("depth")
-    .onChange(() => handleGeometryChange(parameters));
+  gui.add(parameters, "width").min(0.01).max(10).step(0.01).name("width").onChange(handleParametersChange);
+  gui.add(parameters, "height").min(0.01).max(10).step(0.01).name("height").onChange(handleParametersChange);
+  gui.add(parameters, "depth").min(0.01).max(10).step(0.01).name("depth").onChange(handleParametersChange);
 
-  // gui.add(getSelectedObject().material, "wireframe");
+  gui.add(parameters, "wireframe").onChange(handleParametersChange);
   gui.addColor(parameters, "color").onChange(() => {
     parameters.materialMode = "color";
-    handleGeometryChange(parameters);
+    handleParametersChange();
   });
   gui.add(parameters, "loadFile").name("Choose image");
   gui.add(parameters, "cloneObject").name("Clone object");
