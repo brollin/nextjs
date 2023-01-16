@@ -6,7 +6,7 @@ import * as little from "lil-gui";
 // TODO: image picker
 // TODO: rotation in more directions
 // TODO: quantization, snapping features
-// TODO: selection
+// TODO: make selection more obvious
 
 type Parameters = {
   selectedObject: number;
@@ -70,7 +70,7 @@ export const main = (canvas: HTMLCanvasElement) => {
     mesh.rotation.y = rotation;
     return mesh;
   };
-  const objects: THREE.Mesh[] = [createObject()];
+  const objects: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>[] = [createObject()];
 
   const handleCloneObject = () => {
     parameters.x += 1.5;
@@ -82,10 +82,46 @@ export const main = (canvas: HTMLCanvasElement) => {
   };
 
   const getSelectedObject = () => objects[parameters.selectedObject];
+  const setSelectedObject = (objectId: number) => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    const newSelectedObject = objects.find((o) => o.id === objectId);
+    parameters.selectedObject = objects.findIndex((o) => o.id === objectId);
+    parameters.x = newSelectedObject.position.x;
+    parameters.y = newSelectedObject.position.y;
+    parameters.z = newSelectedObject.position.z;
+    parameters.width = newSelectedObject.geometry.parameters.width;
+    parameters.height = newSelectedObject.geometry.parameters.height;
+    parameters.depth = newSelectedObject.geometry.parameters.depth;
+    parameters.rotation = newSelectedObject.rotation.y;
+    if (newSelectedObject.material.map) {
+      parameters.materialMode = "texture";
+      parameters.texture = newSelectedObject.material.map;
+    } else {
+      parameters.materialMode = "color";
+      parameters.color = newSelectedObject.material.color.getHex();
+    }
+    parameters.wireframe = newSelectedObject.material.wireframe;
+  };
 
   // Scene
   const scene = new THREE.Scene();
   for (const object of objects) scene.add(object);
+
+  // Click detection
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  document.onmousedown = (event) => {
+    event.preventDefault();
+
+    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+
+    const intersects = raycaster.intersectObjects(objects);
+    if (intersects.length > 0) setSelectedObject(intersects[0].object.id);
+  };
 
   // Sizes
   const sizes = {
@@ -176,17 +212,21 @@ export const main = (canvas: HTMLCanvasElement) => {
     .max(Math.PI)
     .step(0.01)
     .name("rotation")
-    .onChange(handleParametersChange);
+    .onChange(handleParametersChange)
+    .listen();
 
-  gui.add(parameters, "width").min(0.01).max(10).step(0.01).name("width").onChange(handleParametersChange);
-  gui.add(parameters, "height").min(0.01).max(10).step(0.01).name("height").onChange(handleParametersChange);
-  gui.add(parameters, "depth").min(0.01).max(10).step(0.01).name("depth").onChange(handleParametersChange);
+  gui.add(parameters, "width").min(0.01).max(10).step(0.01).name("width").onChange(handleParametersChange).listen();
+  gui.add(parameters, "height").min(0.01).max(10).step(0.01).name("height").onChange(handleParametersChange).listen();
+  gui.add(parameters, "depth").min(0.01).max(10).step(0.01).name("depth").onChange(handleParametersChange).listen();
 
-  gui.add(parameters, "wireframe").onChange(handleParametersChange);
-  gui.addColor(parameters, "color").onChange(() => {
-    parameters.materialMode = "color";
-    handleParametersChange();
-  });
+  gui.add(parameters, "wireframe").onChange(handleParametersChange).listen();
+  gui
+    .addColor(parameters, "color")
+    .onChange(() => {
+      parameters.materialMode = "color";
+      handleParametersChange();
+    })
+    .listen();
   gui.add(parameters, "loadFile").name("Choose image");
   gui.add(parameters, "cloneObject").name("Clone object");
 
