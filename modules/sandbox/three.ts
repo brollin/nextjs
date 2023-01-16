@@ -7,13 +7,14 @@ export const main = (canvas: HTMLCanvasElement) => {
   console.log("Initializing..........");
 
   const fileInput = document.getElementById("fileInput");
+  const textureLoader = new THREE.TextureLoader();
   fileInput.onchange = (event) => {
     const files = (event.target as HTMLInputElement).files;
     if (files && files.length) {
       const fileReader = new FileReader();
       fileReader.onload = () => {
-        console.log(fileReader.result);
-        // console.log(new Image(fileReader.result));
+        const texture = textureLoader.load(fileReader.result.toString());
+        mesh.material = new THREE.MeshBasicMaterial({ map: texture });
       };
       fileReader.readAsDataURL(files[0]);
     }
@@ -21,6 +22,9 @@ export const main = (canvas: HTMLCanvasElement) => {
   // gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + Math.PI * 2 });
 
   const parameters = {
+    width: 1,
+    height: 1,
+    depth: 1,
     color: 0x00ff00,
     loadFile: () => {
       fileInput.click();
@@ -29,7 +33,7 @@ export const main = (canvas: HTMLCanvasElement) => {
 
   const scene = new THREE.Scene();
 
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const geometry = new THREE.BoxGeometry(parameters.width, parameters.height, parameters.depth);
   const material = new THREE.MeshBasicMaterial({ color: parameters.color });
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
@@ -71,11 +75,38 @@ export const main = (canvas: HTMLCanvasElement) => {
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+  const handleGeometryChange = ({ width, height, depth }) => {
+    mesh.geometry = new THREE.BoxGeometry(width, height, depth);
+  };
+
   const gui = new little.GUI();
   gui.add(mesh.position, "x").min(-3).max(3).step(0.01).name("x");
   gui.add(mesh.position, "y").min(-3).max(3).step(0.01).name("y");
   gui.add(mesh.position, "z").min(-3).max(3).step(0.01).name("z");
   gui.add(mesh.rotation, "y").min(-Math.PI).max(Math.PI).step(0.01).name("rotation");
+
+  gui
+    .add(parameters, "width")
+    .min(0.01)
+    .max(10)
+    .step(0.01)
+    .name("width")
+    .onChange(() => handleGeometryChange(parameters));
+  gui
+    .add(parameters, "height")
+    .min(0.01)
+    .max(10)
+    .step(0.01)
+    .name("height")
+    .onChange(() => handleGeometryChange(parameters));
+  gui
+    .add(parameters, "depth")
+    .min(0.01)
+    .max(10)
+    .step(0.01)
+    .name("depth")
+    .onChange(() => handleGeometryChange(parameters));
+
   gui.add(material, "wireframe");
   gui.addColor(parameters, "color").onChange(() => material.color.set(parameters.color));
   gui.add(parameters, "loadFile").name("Choose image");
