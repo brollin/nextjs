@@ -1,3 +1,4 @@
+import styles from "../styles/Sandbox.module.css";
 import React, { useEffect, useRef } from "react";
 import Head from "next/head";
 import { main } from "../modules/sandbox/three";
@@ -20,6 +21,7 @@ const App = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <canvas ref={canvasRef} className="webgl" />
+      <input className={styles.fileInput} id="fileInput" type="file" />
     </div>
   );
 };

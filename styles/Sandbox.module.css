@@ -4,3 +4,7 @@
   left: 0;
   outline: none;
 }
+
+.fileInput {
+  visibility: hidden;
+}

@@ -6,10 +6,24 @@ import gsap from "gsap";
 export const main = (canvas: HTMLCanvasElement) => {
   console.log("Initializing..........");
 
+  const fileInput = document.getElementById("fileInput");
+  fileInput.onchange = (event) => {
+    const files = (event.target as HTMLInputElement).files;
+    if (files && files.length) {
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        console.log(fileReader.result);
+        console.log(new Image(fileReader.result));
+      };
+      fileReader.readAsDataURL(files[0]);
+    }
+  };
+  // gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + Math.PI * 2 });
+
   const parameters = {
     color: 0x00ff00,
-    spin: () => {
-      gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + Math.PI * 2 });
+    loadFile: () => {
+      fileInput.click();
     },
   };
 
@@ -58,10 +72,13 @@ export const main = (canvas: HTMLCanvasElement) => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
   const gui = new little.GUI();
-  gui.add(mesh.position, "y").min(-3).max(3).step(0.01).name("elevation");
+  gui.add(mesh.position, "x").min(-3).max(3).step(0.01).name("x");
+  gui.add(mesh.position, "y").min(-3).max(3).step(0.01).name("y");
+  gui.add(mesh.position, "z").min(-3).max(3).step(0.01).name("z");
+  gui.add(mesh.rotation, "y").min(-Math.PI).max(Math.PI).step(0.01).name("rotation");
   gui.add(material, "wireframe");
   gui.addColor(parameters, "color").onChange(() => material.color.set(parameters.color));
-  gui.add(parameters, "spin");
+  gui.add(parameters, "loadFile").name("Choose image");
 
   const tick = () => {
     // Update controls
