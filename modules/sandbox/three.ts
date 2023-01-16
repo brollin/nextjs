@@ -13,7 +13,7 @@ export const main = (canvas: HTMLCanvasElement) => {
       const fileReader = new FileReader();
       fileReader.onload = () => {
         console.log(fileReader.result);
-        console.log(new Image(fileReader.result));
+        // console.log(new Image(fileReader.result));
       };
       fileReader.readAsDataURL(files[0]);
     }
