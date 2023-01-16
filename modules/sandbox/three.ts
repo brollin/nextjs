@@ -5,7 +5,7 @@ import gsap from "gsap";
 
 // TODO: make gifs work
 // TODO: image picker
-// TODO: rotation
+// TODO: rotation in more directions
 
 type Parameters = {
   selectedObject: number;
@@ -147,7 +147,7 @@ export const main = (canvas: HTMLCanvasElement) => {
     }
   };
 
-  const boundingSize = 50;
+  const boundingSize = 150;
   gui
     .add(parameters, "x")
     .min(-boundingSize)
