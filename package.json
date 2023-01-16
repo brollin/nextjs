@@ -5,8 +5,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "processPlanets": "ts-node --project planetaryData/tsconfig.json planetaryData/processPlanets.ts",
-    "downloadPlanets": "./planetaryData/downloadPlanets.sh"
+    "processPlanets": "ts-node --project modules/planets/planetaryData/tsconfig.json modules/planets/planetaryData/processPlanets.ts",
+    "downloadPlanets": "./modules/planets/planetaryData/downloadPlanets.sh"
   },
   "dependencies": {
     "@bity/oauth2-auth-code-pkce": "^2.13.0",

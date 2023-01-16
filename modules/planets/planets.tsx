@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { Planet } from "./Planet";
 import EarthView from "../../components/earth";
-import planetData from "../../planetaryData/planets.json";
+import planetData from "./planetaryData/planets.json";
 import PlanetView from "../../components/planet";
 import styles from "../../styles/Planets.module.css";
 import { RawPlanet } from "./RawPlanet";

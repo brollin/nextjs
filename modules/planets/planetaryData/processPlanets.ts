@@ -1,5 +1,5 @@
 import fs from "fs";
-import { RawPlanet } from "../modules/planets/RawPlanet";
+import { RawPlanet } from "../RawPlanet";
 
 const rawPlanets = require("./pscomppars.json");
 
@@ -40,6 +40,7 @@ const main = async () => {
     if (newPlanet) finalPlanets.push(newPlanet);
     prefixIndex = (prefixIndex + 1) % prefixes.length;
   }
+  // TODO: fix path
   saveJson("./planetaryData/planets.json", finalPlanets);
   console.log("Final number of planets:", finalPlanets.length);
 };
