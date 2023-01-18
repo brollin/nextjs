@@ -26,6 +26,17 @@ type Parameters = {
 };
 
 export const main = (canvas: HTMLCanvasElement) => {
+  // Textures
+  const cubeTextureLoader = new THREE.CubeTextureLoader();
+  const environmentMapTexture = cubeTextureLoader.load([
+    "/0/px.png",
+    "/0/nx.png",
+    "/0/py.png",
+    "/0/ny.png",
+    "/0/pz.png",
+    "/0/nz.png",
+  ]);
+
   // Parameters for selected object
   const parameters: Parameters = {
     selectedObject: 0,
@@ -108,6 +119,16 @@ export const main = (canvas: HTMLCanvasElement) => {
   // Scene
   const scene = new THREE.Scene();
   for (const object of objects) scene.add(object);
+
+  // Lights
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(ambientLight);
+
+  const pointLight = new THREE.PointLight(0xffffff, 0.5);
+  pointLight.position.x = 2;
+  pointLight.position.y = 3;
+  pointLight.position.z = 4;
+  scene.add(pointLight);
 
   // Click detection
   const raycaster = new THREE.Raycaster();
