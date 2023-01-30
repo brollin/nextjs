@@ -3,6 +3,7 @@ import styles from "../../styles/Capitalizer.module.css";
 import { Canvas, extend, Object3DNode, useLoader, useThree } from "@react-three/fiber";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { Box } from "@chakra-ui/react";
 
 extend({ OrbitControls });
 
@@ -27,15 +28,18 @@ const Globe = () => {
 
   return <primitive object={globe.scene} scale={0.05} />;
 };
+
 export const GlobeCanvas = () => {
   return (
-    <Canvas shadows={true} className={styles.canvas} camera={{ position: [-4, 0, 0] }}>
-      <Controls />
-      <Suspense fallback={null}>
-        <Globe />
-      </Suspense>
-      <axesHelper scale={5} />
-      <ambientLight color="white" intensity={0.3} />
-    </Canvas>
+    <Box position="fixed" h="100vh" w="100vw">
+      <Canvas className={styles.canvas} shadows={true} camera={{ position: [-4, 0, 0] }}>
+        <Controls />
+        <Suspense fallback={null}>
+          <Globe />
+        </Suspense>
+        {/* <axesHelper scale={5} /> */}
+        <ambientLight color="white" intensity={0.3} />
+      </Canvas>
+    </Box>
   );
 };

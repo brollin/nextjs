@@ -36,3 +36,6 @@ yarn-error.log*
 
 # planets
 pscomppars.json
+
+# country
+boundaryData.json

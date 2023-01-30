@@ -83,9 +83,9 @@ const Capitalizer = () => (
     <Head>
       <title>World Capitals Quiz</title>
     </Head>
-    <VStack h="100vh" justifyContent="center">
-      <GlobeCanvas />
-      <Card size="md" maxW={400}>
+    <GlobeCanvas />
+    <VStack h="100vh" justifyContent="end">
+      <Card size="md" maxW={400} marginBottom={20}>
         <CardHeader marginTop={3}>
           <VStack justifyContent="center">
             <Globe />
