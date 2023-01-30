@@ -1,13 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import Head from "next/head";
-
 import { BiWorld } from "react-icons/bi";
 import { Button, Card, CardBody, ChakraProvider, HStack, Input, Text, VStack } from "@chakra-ui/react";
 import { doesTextRoughlyMatch, shuffleArrays } from "../modules/capitalizer/helpers";
+import { theme } from "../modules/capitalizer/theme";
 
 const { countries, capitals } = require("../worldData/worldData.json");
-
-const Globe = () => <BiWorld size="3em" />;
 
 const QuizApp = () => {
   const [correctCount, setCorrectCount] = useState(0);
@@ -41,14 +39,14 @@ const QuizApp = () => {
       {countryIndex > 0 ? (
         <>
           <Text>Previous:</Text>
-          <Text as="span" color="lightblue">
+          <Text as="span" color="blue.300">
             {countries[countryIndex - 1]} - {capitals[countryIndex - 1]}
           </Text>
         </>
       ) : null}
       <Text>
         What is the capital of{" "}
-        <Text as="span" color="lightgreen">
+        <Text as="span" color="green.300">
           {countries[countryIndex]}
         </Text>
         ?
@@ -66,12 +64,14 @@ const QuizApp = () => {
   );
 };
 
+const Globe = () => <BiWorld size="3em" />;
+
 const Capitalizer = () => (
   <>
     <Head>
       <title>World Capitals Quiz</title>
     </Head>
-    <VStack h="100vh" bgColor="#282c34" justifyContent="center">
+    <VStack h="100vh" justifyContent="center">
       <Card maxW={400}>
         <CardBody>
           <VStack justifyContent="center">
@@ -85,7 +85,7 @@ const Capitalizer = () => (
 );
 
 const ChakraApp = () => (
-  <ChakraProvider>
+  <ChakraProvider theme={theme}>
     <Capitalizer />
   </ChakraProvider>
 );
