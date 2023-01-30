@@ -5,15 +5,15 @@ import classnames from "classnames";
 import Link from "next/link";
 
 import { Planet } from "./Planet";
-import EarthView from "../../components/earth";
+import EarthView from "../../components/planets/earth";
 import planetData from "./planetaryData/planets.json";
-import PlanetView from "../../components/planet";
+import PlanetView from "../../components/planets/planet";
 import styles from "../../styles/Planets.module.css";
 import { RawPlanet } from "./RawPlanet";
-import MoonView from "../../components/moon";
-import StarView from "../../components/star";
+import MoonView from "../../components/planets/moon";
+import StarView from "../../components/planets/star";
 import { angularSize, lerp } from "./mathUtils";
-import Layout from "../../components/layout";
+import Layout from "../../components/planets/layout";
 
 // UP NEXT
 // TODO surface: show second or third sun
