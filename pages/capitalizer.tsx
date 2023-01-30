@@ -1,7 +1,19 @@
 import React, { useEffect, useState, useRef } from "react";
 import Head from "next/head";
 import { BiWorld } from "react-icons/bi";
-import { Button, Card, CardBody, ChakraProvider, HStack, Input, Text, VStack } from "@chakra-ui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  ChakraProvider,
+  Heading,
+  HStack,
+  Input,
+  StackDivider,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { doesTextRoughlyMatch, shuffleArrays } from "../modules/capitalizer/helpers";
 import { theme } from "../modules/capitalizer/theme";
 
@@ -72,10 +84,15 @@ const Capitalizer = () => (
       <title>World Capitals Quiz</title>
     </Head>
     <VStack h="100vh" justifyContent="center">
-      <Card maxW={400}>
-        <CardBody>
+      <Card size="md" maxW={400}>
+        <CardHeader marginTop={3}>
           <VStack justifyContent="center">
             <Globe />
+            <Heading size="md">Capitalizer</Heading>
+          </VStack>
+        </CardHeader>
+        <CardBody>
+          <VStack justifyContent="center">
             <QuizApp />
           </VStack>
         </CardBody>
