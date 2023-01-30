@@ -1,45 +1,29 @@
-import React, { useEffect, useState } from "react";
-import styles from "../styles/Capitalizer.module.css";
+import React, { useEffect, useState, useRef } from "react";
+import Head from "next/head";
+
+import { BiWorld } from "react-icons/bi";
+import { Button, Card, CardBody, ChakraProvider, HStack, Input, Text, VStack } from "@chakra-ui/react";
+import { doesTextRoughlyMatch, shuffleArrays } from "../modules/capitalizer/helpers";
 
 const { countries, capitals } = require("../worldData/worldData.json");
 
-// UP NEXT
-// TODO fix google maps embed
-// TODO implement country border SVG
-// TODO window title
+const Globe = () => <BiWorld size="3em" />;
 
-/**
- * Shuffles multiple arrays in place in the same way.
- */
-const shuffleArrays = (a: any[], b: any[]) => {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-    [b[i], b[j]] = [b[j], b[i]];
-  }
-};
-
-const normalizeText = (text: string) =>
-  text
-    .toLowerCase()
-    .trim()
-    .replace(/[\s'\-&]/g, "");
-
-const isAnswerCorrect = (answerText: string, answer: string) => normalizeText(answerText) === normalizeText(answer);
-
-function Quiz() {
+const QuizApp = () => {
   const [correctCount, setCorrectCount] = useState(0);
   const [countryIndex, setCountryIndex] = useState(-1);
   const [answerText, setAnswerText] = useState("");
 
-  // On first client side render, shuffle all countries/capitals
+  const initialFocusRef = useRef<HTMLInputElement>();
+
   useEffect(() => {
     shuffleArrays(countries, capitals);
     setCountryIndex(0);
+    initialFocusRef.current.focus();
   }, []);
 
   const handleAnswerChange = (newAnswer: string) => {
-    if (isAnswerCorrect(newAnswer, capitals[countryIndex])) {
+    if (doesTextRoughlyMatch(newAnswer, capitals[countryIndex])) {
       setAnswerText("");
       setCountryIndex(countryIndex + 1);
       setCorrectCount(correctCount + 1);
@@ -49,55 +33,61 @@ function Quiz() {
     setAnswerText(newAnswer);
   };
 
-  // const interactiveMap = (
-  //   <iframe
-  //     title="googleMap"
-  //     width="350"
-  //     height="350"
-  //     style={{ border: 0 }}
-  //     src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyDS40cPM6UITBJsQwRHIFYgJK2V01ay8Bo&q=${encodeURIComponent(
-  //       "country of " + countries[countryIndex]
-  //     )}`}
-  //   ></iframe>
-  // );
-
   return (
-    <div>
-      {/* {interactiveMap} */}
-      <br />
-      <div style={{ color: "cyan" }}>
+    <>
+      <Text>
         Correct: {correctCount} / {Math.max(0, countryIndex)}
-      </div>
-      <br />
-      Previous:
-      <br />
-      {countryIndex > 0 && countries[countryIndex - 1]} - {countryIndex > 0 && capitals[countryIndex - 1]}
-      <br />
-      <br />
-      What is the capital of <span style={{ color: "lightgreen" }}>{countries[countryIndex]}</span>?
-      <br />
-      <br />
-      <form
-        onSubmit={(e) => {
-          setCountryIndex(countryIndex + 1);
-          e.preventDefault();
-        }}
-      >
-        <input autoFocus type="text" onChange={(e) => handleAnswerChange(e.target.value)} value={answerText} />
-        <input type="submit" value="idk" />
-      </form>
-    </div>
+      </Text>
+      {countryIndex > 0 ? (
+        <>
+          <Text>Previous:</Text>
+          <Text as="span" color="lightblue">
+            {countries[countryIndex - 1]} - {capitals[countryIndex - 1]}
+          </Text>
+        </>
+      ) : null}
+      <Text>
+        What is the capital of{" "}
+        <Text as="span" color="lightgreen">
+          {countries[countryIndex]}
+        </Text>
+        ?
+      </Text>
+      <HStack>
+        <Input
+          ref={initialFocusRef}
+          placeholder="Enter capital"
+          onChange={(e) => handleAnswerChange(e.target.value)}
+          value={answerText}
+        />
+        <Button onClick={() => setCountryIndex(countryIndex + 1)}>idk</Button>
+      </HStack>
+    </>
   );
-}
+};
 
-function App() {
-  return (
-    <div className={styles.app}>
-      <header className={styles.header}>
-        <Quiz />
-      </header>
-    </div>
-  );
-}
+const Capitalizer = () => (
+  <>
+    <Head>
+      <title>World Capitals Quiz</title>
+    </Head>
+    <VStack h="100vh" bgColor="#282c34" justifyContent="center">
+      <Card maxW={400}>
+        <CardBody>
+          <VStack justifyContent="center">
+            <Globe />
+            <QuizApp />
+          </VStack>
+        </CardBody>
+      </Card>
+    </VStack>
+  </>
+);
 
-export default App;
+const ChakraApp = () => (
+  <ChakraProvider>
+    <Capitalizer />
+  </ChakraProvider>
+);
+
+export default ChakraApp;
