@@ -56,7 +56,7 @@ const QuizApp = () => {
           </Text>
         </>
       ) : null}
-      <Text>
+      <Text textAlign="center">
         What is the capital of{" "}
         <Text as="span" color="green.300">
           {countries[countryIndex]}
@@ -76,7 +76,7 @@ const QuizApp = () => {
   );
 };
 
-const Globe = () => <BiWorld size="3em" />;
+const Globe = () => <BiWorld size="2em" />;
 
 const Capitalizer = () => (
   <>
@@ -85,14 +85,14 @@ const Capitalizer = () => (
     </Head>
     <WorldMapCanvas />
     <VStack h="100vh" justifyContent="end">
-      <Card size="md" maxW={400} marginBottom={20}>
-        <CardHeader marginTop={3}>
-          <VStack justifyContent="center">
+      <Card size="md" w={300} marginBottom={20}>
+        <CardHeader marginTop={0} paddingBottom={0}>
+          <HStack justifyContent="center">
             <Globe />
             <Heading size="md">Capitalizer</Heading>
-          </VStack>
+          </HStack>
         </CardHeader>
-        <CardBody>
+        <CardBody paddingTop={3}>
           <VStack justifyContent="center">
             <QuizApp />
           </VStack>
