@@ -1,5 +1,5 @@
 import { saveJson } from "../../common/helpers";
-import { CountryLoader } from "./CountryLoader";
+import { CountryProcessor } from "./CountryLoader";
 
-const countryLoader = new CountryLoader();
-saveJson("./modules/capitalizer/countryData/countryData.json", countryLoader.countryBoundary);
+const countryLoader = new CountryProcessor();
+saveJson("./modules/capitalizer/countryData/countryData.json", countryLoader.countryData);

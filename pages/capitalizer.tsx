@@ -17,7 +17,7 @@ import { doesTextRoughlyMatch, shuffleArrays } from "../modules/capitalizer/help
 import { theme } from "../modules/capitalizer/theme";
 import { WorldMapCanvas } from "../components/capitalizer/WorldMapCanvas";
 
-const { countries, capitals } = require("../worldData/worldData.json");
+const { countries, capitals } = require("../modules/capitalizer/countryCapitalData.json");
 
 const QuizApp = () => {
   const [correctCount, setCorrectCount] = useState(0);
