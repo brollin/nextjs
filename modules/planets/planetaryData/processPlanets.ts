@@ -1,4 +1,4 @@
-import fs from "fs";
+import { saveJson } from "../../common/helpers";
 import { RawPlanet } from "../RawPlanet";
 
 const rawPlanets = require("./pscomppars.json");
@@ -13,8 +13,6 @@ const prunePlanets = (planets: RawPlanet[]) => {
   }
   return prunedPlanets;
 };
-
-const saveJson = (filename: string, data: any) => fs.writeFileSync(filename, JSON.stringify(data));
 
 const main = async () => {
   console.log("Number of planets:", (rawPlanets as RawPlanet[]).length);
@@ -40,8 +38,8 @@ const main = async () => {
     if (newPlanet) finalPlanets.push(newPlanet);
     prefixIndex = (prefixIndex + 1) % prefixes.length;
   }
-  // TODO: fix path
-  saveJson("./planetaryData/planets.json", finalPlanets);
+
+  saveJson("./modules/planets/planetaryData/planets.json", finalPlanets);
   console.log("Final number of planets:", finalPlanets.length);
 };
 
