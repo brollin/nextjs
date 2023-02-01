@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { doesTextRoughlyMatch, shuffleArrays } from "../modules/capitalizer/helpers";
 import { theme } from "../modules/capitalizer/theme";
-import { GlobeCanvas } from "../components/capitalizer/GlobeCanvas";
+import { WorldMapCanvas } from "../components/capitalizer/WorldMapCanvas";
 
 const { countries, capitals } = require("../worldData/worldData.json");
 
@@ -83,7 +83,7 @@ const Capitalizer = () => (
     <Head>
       <title>World Capitals Quiz</title>
     </Head>
-    <GlobeCanvas />
+    <WorldMapCanvas />
     <VStack h="100vh" justifyContent="end">
       <Card size="md" maxW={400} marginBottom={20}>
         <CardHeader marginTop={3}>
