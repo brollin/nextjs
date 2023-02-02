@@ -17,20 +17,18 @@ import { doesTextRoughlyMatch, shuffleArrays } from "../modules/capitalizer/help
 import { theme } from "../modules/capitalizer/theme";
 import { WorldMapCanvas } from "../components/capitalizer/WorldMapCanvas";
 
-const { countries, capitals } = require("../modules/capitalizer/countryCapitalData.json");
+const {
+  countries,
+  capitals,
+}: { countries: string[]; capitals: string[] } = require("../modules/capitalizer/countryCapitalData.json");
 
-const QuizApp = () => {
+const QuizApp = ({ countryIndex, setCountryIndex }) => {
   const [correctCount, setCorrectCount] = useState(0);
-  const [countryIndex, setCountryIndex] = useState(-1);
   const [answerText, setAnswerText] = useState("");
 
   const initialFocusRef = useRef<HTMLInputElement>();
 
-  useEffect(() => {
-    shuffleArrays(countries, capitals);
-    setCountryIndex(0);
-    initialFocusRef.current.focus();
-  }, []);
+  useEffect(() => initialFocusRef.current.focus(), []);
 
   const handleAnswerChange = (newAnswer: string) => {
     if (doesTextRoughlyMatch(newAnswer, capitals[countryIndex])) {
@@ -78,29 +76,40 @@ const QuizApp = () => {
 
 const Globe = () => <BiWorld size="2em" />;
 
-const Capitalizer = () => (
-  <>
-    <Head>
-      <title>World Capitals Quiz</title>
-    </Head>
-    <WorldMapCanvas />
-    <VStack h="100vh" justifyContent="end">
-      <Card size="md" w={300} marginBottom={20}>
-        <CardHeader marginTop={0} paddingBottom={0}>
-          <HStack justifyContent="center">
-            <Globe />
-            <Heading size="md">Capitalizer</Heading>
-          </HStack>
-        </CardHeader>
-        <CardBody paddingTop={3}>
-          <VStack justifyContent="center">
-            <QuizApp />
-          </VStack>
-        </CardBody>
-      </Card>
-    </VStack>
-  </>
-);
+const Capitalizer = () => {
+  const [countryIndex, setCountryIndex] = useState(-1);
+  const countryName = countryIndex >= 0 ? countries[countryIndex] : "";
+
+  useEffect(() => {
+    // only initialize in hydrated client
+    shuffleArrays(countries, capitals);
+    setCountryIndex(0);
+  }, []);
+
+  return (
+    <>
+      <Head>
+        <title>World Capitals Quiz</title>
+      </Head>
+      <WorldMapCanvas countryName={countryName} />
+      <VStack h="100vh" justifyContent="end">
+        <Card size="md" w={300} marginBottom={20}>
+          <CardHeader marginTop={0} paddingBottom={0}>
+            <HStack justifyContent="center">
+              <Globe />
+              <Heading size="md">Capitalizer</Heading>
+            </HStack>
+          </CardHeader>
+          <CardBody paddingTop={3}>
+            <VStack justifyContent="center">
+              <QuizApp countryIndex={countryIndex} setCountryIndex={setCountryIndex} />
+            </VStack>
+          </CardBody>
+        </Card>
+      </VStack>
+    </>
+  );
+};
 
 const ChakraApp = () => (
   <ChakraProvider theme={theme}>
