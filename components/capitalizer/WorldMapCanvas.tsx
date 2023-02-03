@@ -90,7 +90,7 @@ const Controls = ({ country }: ControlsProps) => {
   const controls = useMemo(() => new CameraControls(camera, gl.domElement), [camera, gl.domElement]);
 
   const { centerCoordinates } = country;
-  // TODO: calculate z based on bounding box of country
+  // TODO: calculate z based on bounding box of country with getDistanceToFitBox
   const positionFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 40);
   const targetFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);
   const target = new Vector3();
