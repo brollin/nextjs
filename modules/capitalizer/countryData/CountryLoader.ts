@@ -5,7 +5,7 @@ const boundaryData: RawCountry[] = require("./boundaryData.json");
 const { countries, capitals }: { countries: string[]; capitals: string[] } = require("../countryCapitalData.json");
 
 export class CountryProcessor {
-  countryData: { [name: string]: Country } = {};
+  countryData: { [name: string]: Partial<Country> } = {};
 
   constructor() {
     for (const country of boundaryData) {
