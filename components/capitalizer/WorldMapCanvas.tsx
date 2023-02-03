@@ -21,6 +21,8 @@ const continentColor: Record<Continent, number | string> = {
   Oceana: "darkcyan",
 };
 
+const selectedColor = "darkslateblue";
+
 const extrudeSettings = { curveSegments: 1, steps: 1, depth: 0.005, bevelEnabled: false };
 
 type AllCountriesProps = {
@@ -34,6 +36,7 @@ const AllCountries = ({ selectedCountry }: AllCountriesProps) => (
         const vectors = [];
         for (let i = 0; i < positions.length; i += 2) vectors.push(new Vector2(positions[i], positions[i + 1]));
         const shape = new Shape(vectors);
+        const selected = selectedCountry.name === name;
         return (
           <>
             <Text
@@ -45,7 +48,7 @@ const AllCountries = ({ selectedCountry }: AllCountriesProps) => (
             </Text>
             <mesh key={name + index}>
               <extrudeGeometry attach="geometry" args={[shape, extrudeSettings]} />
-              <meshBasicMaterial attach="material" color={continentColor[continent]} />
+              <meshBasicMaterial attach="material" color={selected ? selectedColor : continentColor[continent]} />
             </mesh>
           </>
         );
@@ -98,7 +101,7 @@ const Controls = ({ country, pos = new Vector3() }: ControlsProps) => {
   return useFrame((state, delta) => {
     pos.set(focus.x, focus.y, focus.z + 0.2);
 
-    state.camera.position.lerp(pos, 0.5);
+    state.camera.position.lerp(pos, 0.25);
     state.camera.updateProjectionMatrix();
 
     controls.setLookAt(
