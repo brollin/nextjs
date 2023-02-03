@@ -1,16 +1,18 @@
 import styles from "../../styles/Capitalizer.module.css";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { Shape } from "three";
 import { Box } from "@chakra-ui/react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Text } from "@react-three/drei";
+import { Bounds, Float, OrbitControls, Text, useBounds } from "@react-three/drei";
 import { Country } from "../../modules/capitalizer/countryData/Country";
 import { Continent } from "../../modules/capitalizer/countryData/RawCountry";
-import { Vector2, Vector3 } from "three";
+import { Group, Object3D, Vector3, Vector3Tuple } from "three";
 import CameraControls from "camera-controls";
 
-const countryData: { [name: string]: Country } = require("../../modules/capitalizer/countryData/countryData.json");
+const countryDataRaw: {
+  [name: string]: Omit<Country, "shapes">;
+} = require("../../modules/capitalizer/countryData/countryData.json");
+const countries = Object.values(countryDataRaw).map((country) => new Country(country));
 
 const continentColor: Record<Continent, number | string> = {
   Antarctica: 0xffffff,
@@ -23,37 +25,38 @@ const continentColor: Record<Continent, number | string> = {
 
 const selectedColor = "darkslateblue";
 
-const extrudeSettings = { curveSegments: 1, steps: 1, depth: 0.005, bevelEnabled: false };
-
-type AllCountriesProps = {
-  selectedCountry: Country;
+type CountryObjectProps = {
+  isSelected: boolean;
+  country: Country;
 };
 
-const AllCountries = ({ selectedCountry }: AllCountriesProps) => (
+const CountryObject = ({ isSelected, country }: CountryObjectProps) => {
+  const { shapes, name, continent, centerCoordinates } = country;
+  const extrudeOptions = { curveSegments: 1, steps: 1, depth: isSelected ? 0.1 : 0.005, bevelEnabled: false };
+
+  const countryObject = (
+    <>
+      <Text
+        fontSize={isSelected ? 0.75 : 0.5}
+        color={isSelected ? 0xffffff : 0xffffff}
+        position={new Vector3(centerCoordinates.lon, centerCoordinates.lat, 1)}
+      >
+        {name}
+      </Text>
+      <mesh key={name}>
+        <extrudeGeometry attach="geometry" args={[shapes, extrudeOptions]} />
+        <meshBasicMaterial attach="material" color={isSelected ? selectedColor : continentColor[continent]} />
+      </mesh>
+    </>
+  );
+  return isSelected ? countryObject : countryObject;
+};
+
+const AllCountries = ({ selectedCountry }: { selectedCountry: Country }) => (
   <>
-    {Object.values(countryData).flatMap(({ boundaryData, name, continent, centerCoordinates }) =>
-      boundaryData.map((positions, index) => {
-        const vectors = [];
-        for (let i = 0; i < positions.length; i += 2) vectors.push(new Vector2(positions[i], positions[i + 1]));
-        const shape = new Shape(vectors);
-        const selected = selectedCountry.name === name;
-        return (
-          <>
-            <Text
-              key={name + index}
-              color={0xffffff}
-              position={new Vector3(centerCoordinates.lon, centerCoordinates.lat, 1)}
-            >
-              {name}
-            </Text>
-            <mesh key={name + index}>
-              <extrudeGeometry attach="geometry" args={[shape, extrudeSettings]} />
-              <meshBasicMaterial attach="material" color={selected ? selectedColor : continentColor[continent]} />
-            </mesh>
-          </>
-        );
-      })
-    )}
+    {countries.map((country) => (
+      <CountryObject key={country.name} isSelected={selectedCountry.name === country.name} country={country} />
+    ))}
   </>
 );
 
@@ -62,11 +65,12 @@ type WorldMapCanvasProps = {
 };
 
 export const WorldMapCanvas = ({ countryName }: WorldMapCanvasProps) => {
-  const country = countryData[countryName];
+  const country = countries.find(({ name }) => name === countryName);
+  if (!country) console.log("could not find country", countryName);
   return (
     <Box position="fixed" h="100vh" w="100vw">
-      <Canvas className={styles.canvas} shadows={true} camera={{ position: new Vector3(0, 0, 130) }}>
-        <OrbitControls />
+      <Canvas className={styles.canvas} shadows={true}>
+        {/* <OrbitControls /> */}
         <AllCountries selectedCountry={country} />
         {country ? <Controls country={country} /> : null}
       </Canvas>
@@ -81,38 +85,46 @@ type ControlsProps = {
   pos?: Vector3;
 };
 
-const Controls = ({ country, pos = new Vector3() }: ControlsProps) => {
-  // TODO: understand this better, do better zooming/panning
-  const camera = useThree((state) => state.camera);
-  const gl = useThree((state) => state.gl);
+const Controls = ({ country }: ControlsProps) => {
+  const { camera, gl } = useThree();
   const controls = useMemo(() => new CameraControls(camera, gl.domElement), [camera, gl.domElement]);
-  controls.setLookAt(
-    camera.position.x,
-    camera.position.y,
-    camera.position.z,
-    camera.position.x,
-    camera.position.y,
-    0,
-    true
-  );
 
   const { centerCoordinates } = country;
-  const focus = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 30);
-  return useFrame((state, delta) => {
-    pos.set(focus.x, focus.y, focus.z + 0.2);
+  // TODO: calculate z based on bounding box of country
+  const positionFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 40);
+  const targetFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);
+  const target = new Vector3();
 
-    state.camera.position.lerp(pos, 0.25);
-    state.camera.updateProjectionMatrix();
+  const [animating, setAnimating] = useState(true);
 
-    controls.setLookAt(
-      state.camera.position.x,
-      state.camera.position.y,
-      state.camera.position.z,
-      state.camera.position.x,
-      state.camera.position.y,
-      0,
-      true
-    );
-    return controls.update(delta);
+  // set initial camera position/direction
+  useEffect(() => {
+    camera.position.set(0, 0, 130);
+    camera.lookAt(0, 0, 0);
+  }, [camera]);
+
+  useEffect(() => setAnimating(true), [country]);
+
+  useFrame((state, delta) => {
+    if (animating) {
+      if (state.camera.position.distanceTo(positionFinal) < 0.0001 && target.distanceTo(targetFinal) < 0.0001)
+        setAnimating(false);
+
+      state.camera.position.lerp(positionFinal, 0.08);
+      target.copy(state.camera.position).setZ(0).lerp(targetFinal, 0.5);
+      // TODO: understand below
+      // state.camera.updateProjectionMatrix();
+      controls.setLookAt(
+        state.camera.position.x,
+        state.camera.position.y,
+        state.camera.position.z,
+        target.x,
+        target.y,
+        target.z
+      );
+      controls.update(delta);
+    }
   });
+
+  return null;
 };

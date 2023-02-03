@@ -47,8 +47,9 @@ export class CountryProcessor {
   }
 
   private extractBoundary = (coordinatesList: LonLatList) => {
-    let coordinates = [];
-    for (const pair of coordinatesList) coordinates.push(pair[0], pair[1]);
-    return coordinates;
+    // let coordinates = [];
+    // for (const pair of coordinatesList) coordinates.push(pair[0], pair[1]);
+    // return coordinates;
+    return coordinatesList;
   };
 }
