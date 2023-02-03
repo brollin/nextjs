@@ -63,6 +63,7 @@ const QuizApp = ({ countryIndex, setCountryIndex }) => {
       </Text>
       <HStack>
         <Input
+          onKeyDown={(e) => (e.key === "Enter" ? setCountryIndex(countryIndex + 1) : null)}
           ref={initialFocusRef}
           placeholder="Enter capital"
           onChange={(e) => handleAnswerChange(e.target.value)}
