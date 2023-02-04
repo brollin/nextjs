@@ -91,7 +91,7 @@ const Capitalizer = () => {
       </Head>
       <WorldMapCanvas countryName={countryName} />
       <VStack h="100vh" justifyContent="end">
-        <Card size="md" w={300} marginBottom={20}>
+        <Card size="md" w={300}>
           <CardHeader marginTop={0} paddingBottom={0}>
             <HStack justifyContent="center">
               <Globe />
