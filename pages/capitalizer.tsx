@@ -40,12 +40,12 @@ const QuizApp = ({ countryIndex, setCountryIndex }) => {
 
   return (
     <>
-      <Text>
+      {/* <Text>
         Correct: {correctCount} / {Math.max(0, countryIndex)}
-      </Text>
+      </Text> */}
       {countryIndex > 0 ? (
         <>
-          <Text>Previous:</Text>
+          {/* <Text>Previous:</Text> */}
           <Text as="span" color="blue.300">
             {countries[countryIndex - 1]} - {capitals[countryIndex - 1]}
           </Text>
@@ -91,7 +91,7 @@ const Capitalizer = () => {
       </Head>
       <WorldMapCanvas countryName={countryName} />
       <VStack h="100vh" justifyContent="end">
-        <Card size="md" w={300}>
+        <Card size="md" w={370} marginBottom={5}>
           <CardHeader marginTop={0} paddingBottom={0}>
             <HStack justifyContent="center">
               <Globe />
