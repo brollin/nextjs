@@ -1,5 +1,5 @@
 import styles from "../../styles/Capitalizer.module.css";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Box } from "@chakra-ui/react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -8,6 +8,7 @@ import { Country } from "../../modules/capitalizer/countryData/Country";
 import { Continent } from "../../modules/capitalizer/countryData/RawCountry";
 import { Group, Object3D, Vector3, Vector3Tuple } from "three";
 import CameraControls from "camera-controls";
+import { Perf } from "r3f-perf";
 
 const countryDataRaw: {
   [name: string]: Omit<Country, "shapes">;
@@ -52,10 +53,12 @@ const CountryObject = ({ isSelected, country }: CountryObjectProps) => {
   return isSelected ? countryObject : countryObject;
 };
 
+const CountryMemo = memo(CountryObject);
+
 const AllCountries = ({ selectedCountry }: { selectedCountry: Country }) => (
   <>
     {countries.map((country) => (
-      <CountryObject key={country.name} isSelected={selectedCountry.name === country.name} country={country} />
+      <CountryMemo key={country.name} isSelected={selectedCountry.name === country.name} country={country} />
     ))}
   </>
 );
@@ -70,6 +73,7 @@ export const WorldMapCanvas = ({ countryName }: WorldMapCanvasProps) => {
   return (
     <Box position="fixed" h="100vh" w="100vw">
       <Canvas className={styles.canvas} shadows={true}>
+        <Perf />
         {/* <OrbitControls /> */}
         <AllCountries selectedCountry={country} />
         {country ? <Controls country={country} /> : null}
