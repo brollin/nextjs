@@ -64,19 +64,20 @@ const AllCountries = ({ selectedCountry }: { selectedCountry: Country }) => (
 );
 
 type WorldMapCanvasProps = {
+  mode: "follow" | "control";
   countryName: string;
 };
 
-export const WorldMapCanvas = ({ countryName }: WorldMapCanvasProps) => {
+export const WorldMapCanvas = ({ mode, countryName }: WorldMapCanvasProps) => {
   const country = countries.find(({ name }) => name === countryName);
   if (!country) console.log("could not find country", countryName);
   return (
     <Box position="fixed" h="100vh" w="100vw">
       <Canvas className={styles.canvas} shadows={true}>
-        <Perf />
-        {/* <OrbitControls /> */}
+        {/* <Perf /> */}
+        {mode === "control" ? <OrbitControls /> : null}
         <AllCountries selectedCountry={country} />
-        {country ? <Controls country={country} /> : null}
+        {country && mode === "follow" ? <Controls country={country} /> : null}
       </Canvas>
     </Box>
   );

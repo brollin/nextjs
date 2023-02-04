@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Head from "next/head";
 import { BiWorld } from "react-icons/bi";
+import { BsFillCameraVideoFill, BsFillCameraVideoOffFill } from "react-icons/bs";
 import {
   Button,
   Card,
@@ -19,7 +20,7 @@ import { WorldMapCanvas } from "../components/capitalizer/WorldMapCanvas";
 
 import { countries, capitals } from "../modules/capitalizer/countryCapitalData";
 
-const QuizApp = ({ countryIndex, setCountryIndex }) => {
+const QuizApp = ({ mode, setMode, countryIndex, setCountryIndex }) => {
   const [correctCount, setCorrectCount] = useState(0);
   const [answerText, setAnswerText] = useState("");
 
@@ -67,6 +68,9 @@ const QuizApp = ({ countryIndex, setCountryIndex }) => {
           value={answerText}
         />
         <Button onClick={() => setCountryIndex(countryIndex + 1)}>idk</Button>
+        <Button onClick={() => setMode(mode === "follow" ? "control" : "follow")}>
+          {mode === "follow" ? <BsFillCameraVideoOffFill /> : <BsFillCameraVideoFill />}
+        </Button>
       </HStack>
     </>
   );
@@ -74,7 +78,9 @@ const QuizApp = ({ countryIndex, setCountryIndex }) => {
 
 const Globe = () => <BiWorld size="2em" />;
 
+type Mode = "follow" | "control";
 const Capitalizer = () => {
+  const [mode, setMode] = useState<Mode>("follow");
   const [countryIndex, setCountryIndex] = useState(-1);
   const countryName = countryIndex >= 0 ? countries[countryIndex] : "";
 
@@ -89,7 +95,7 @@ const Capitalizer = () => {
       <Head>
         <title>World Capitals Quiz</title>
       </Head>
-      <WorldMapCanvas countryName={countryName} />
+      <WorldMapCanvas mode={mode} countryName={countryName} />
       <VStack h="100vh" justifyContent="end">
         <Card size="md" w={370} marginBottom={5}>
           <CardHeader marginTop={0} paddingBottom={0}>
@@ -100,7 +106,7 @@ const Capitalizer = () => {
           </CardHeader>
           <CardBody paddingTop={3}>
             <VStack justifyContent="center">
-              <QuizApp countryIndex={countryIndex} setCountryIndex={setCountryIndex} />
+              <QuizApp mode={mode} setMode={setMode} countryIndex={countryIndex} setCountryIndex={setCountryIndex} />
             </VStack>
           </CardBody>
         </Card>
