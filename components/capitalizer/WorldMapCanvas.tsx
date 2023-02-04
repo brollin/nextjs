@@ -76,7 +76,7 @@ export const WorldMapCanvas = ({ mode, countryName }: WorldMapCanvasProps) => {
       <Canvas className={styles.canvas} shadows={true}>
         {/* <Perf /> */}
         {mode === "control" ? <OrbitControls /> : null}
-        <AllCountries selectedCountry={country} />
+        {country ? <AllCountries selectedCountry={country} /> : null}
         {country && mode === "follow" ? <Controls country={country} /> : null}
       </Canvas>
     </Box>
