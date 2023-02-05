@@ -25,6 +25,7 @@ class CountryProcessor {
           throw new Error(`Unknown type of geometry encountered: ${geometry.type}`);
       }
 
+      // TODO: mercator projection computation
       // TODO: compute bounds here
 
       let capital = "";

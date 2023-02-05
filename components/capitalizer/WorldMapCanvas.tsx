@@ -1,5 +1,5 @@
 import styles from "../../styles/Capitalizer.module.css";
-import React, { memo, useEffect, useMemo, useState } from "react";
+import React, { memo, useContext, useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { Box } from "@chakra-ui/react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -10,6 +10,8 @@ import { Vector3 } from "three";
 import { mergeBufferGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import CameraControls from "camera-controls";
 import { Perf } from "r3f-perf";
+import { observer } from "mobx-react-lite";
+import { StoreContext } from "../../pages/capitalizer";
 
 const countryDataRaw: {
   [name: string]: UnprocessedCountry;
@@ -91,24 +93,24 @@ const AllCountries = ({ selectedCountry }: { selectedCountry: Country }) => (
 );
 
 type WorldMapCanvasProps = {
-  mode: "follow" | "control";
   countryName: string;
 };
 
-export const WorldMapCanvas = ({ mode, countryName }: WorldMapCanvasProps) => {
+export const WorldMapCanvas = observer<WorldMapCanvasProps>(({ countryName }) => {
+  const store = useContext(StoreContext);
   const country = countries.find(({ name }) => name === countryName);
   if (!country) console.log("could not find country", countryName);
   return (
     <Box position="fixed" h="100vh" w="100vw">
       <Canvas className={styles.canvas} shadows={true}>
         {/* <Perf /> */}
-        {country && mode === "follow" ? <Controls country={country} /> : null}
-        {mode === "control" ? <OrbitControls makeDefault /> : null}
+        {country && store.cameraMode === "follow" ? <Controls country={country} /> : null}
+        {store.cameraMode === "control" ? <OrbitControls makeDefault /> : null}
         {country ? <AllCountries selectedCountry={country} /> : null}
       </Canvas>
     </Box>
   );
-};
+});
 
 CameraControls.install({ THREE });
 
@@ -141,8 +143,9 @@ const Controls = ({ country }: ControlsProps) => {
 
   useFrame((state, delta) => {
     if (animating) {
-      if (state.camera.position.distanceTo(positionFinal) < 0.0001 && target.distanceTo(targetFinal) < 0.0001)
+      if (state.camera.position.distanceTo(positionFinal) < 0.01) {
         setAnimating(false);
+      }
 
       state.camera.position.lerp(positionFinal, 0.08);
       target.copy(state.camera.position).setZ(0).lerp(targetFinal, 0.5);

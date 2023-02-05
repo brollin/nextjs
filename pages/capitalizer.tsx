@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, createContext, useContext } from "react";
 import Head from "next/head";
 import { BiWorld } from "react-icons/bi";
 import { BsFillCameraVideoFill, BsFillCameraVideoOffFill } from "react-icons/bs";
@@ -18,8 +18,15 @@ import { doesTextRoughlyMatch, shuffleArrays } from "../modules/capitalizer/help
 import { theme } from "../modules/capitalizer/theme";
 import { countries, capitals } from "../modules/capitalizer/countryCapitalData";
 import { WorldMapCanvas } from "../components/capitalizer/WorldMapCanvas";
+import { Store } from "../modules/capitalizer/Store";
+import { observer } from "mobx-react-lite";
 
-const QuizApp = ({ mode, setMode, countryIndex, setCountryIndex }) => {
+type QuizAppProps = {
+  countryIndex: number;
+  setCountryIndex: (number) => void;
+};
+const QuizApp = observer<QuizAppProps>(({ countryIndex, setCountryIndex }) => {
+  const store = useContext(StoreContext);
   const [correctCount, setCorrectCount] = useState(0);
   const [answerText, setAnswerText] = useState("");
 
@@ -67,19 +74,18 @@ const QuizApp = ({ mode, setMode, countryIndex, setCountryIndex }) => {
           value={answerText}
         />
         <Button onClick={() => setCountryIndex(countryIndex + 1)}>idk</Button>
-        <Button onClick={() => setMode(mode === "follow" ? "control" : "follow")}>
-          {mode === "follow" ? <BsFillCameraVideoOffFill /> : <BsFillCameraVideoFill />}
+        <Button onClick={store.toggleCameraMode}>
+          {store.cameraMode === "follow" ? <BsFillCameraVideoOffFill /> : <BsFillCameraVideoFill />}
         </Button>
       </HStack>
     </>
   );
-};
+});
 
 const Globe = () => <BiWorld size="2em" />;
 
-type Mode = "follow" | "control";
-const Capitalizer = () => {
-  const [mode, setMode] = useState<Mode>("follow");
+const Capitalizer = observer(() => {
+  const store = useContext(StoreContext);
   const [countryIndex, setCountryIndex] = useState(-1);
   const countryName = countryIndex >= 0 ? countries[countryIndex] : "";
 
@@ -94,7 +100,7 @@ const Capitalizer = () => {
       <Head>
         <title>World Capitals Quiz</title>
       </Head>
-      <WorldMapCanvas mode={mode} countryName={countryName} />
+      <WorldMapCanvas countryName={countryName} />
       <VStack h="100vh" justifyContent="end">
         <Card size="md" w={370} marginBottom={5}>
           <CardHeader marginTop={0} paddingBottom={0}>
@@ -105,18 +111,21 @@ const Capitalizer = () => {
           </CardHeader>
           <CardBody paddingTop={3}>
             <VStack justifyContent="center">
-              <QuizApp mode={mode} setMode={setMode} countryIndex={countryIndex} setCountryIndex={setCountryIndex} />
+              <QuizApp countryIndex={countryIndex} setCountryIndex={setCountryIndex} />
             </VStack>
           </CardBody>
         </Card>
       </VStack>
     </>
   );
-};
+});
 
+export const StoreContext = createContext<Store>(null);
 const ChakraApp = () => (
   <ChakraProvider theme={theme}>
-    <Capitalizer />
+    <StoreContext.Provider value={new Store()}>
+      <Capitalizer />
+    </StoreContext.Provider>
   </ChakraProvider>
 );
 
