@@ -26,12 +26,12 @@ const continentColor: Record<Continent, number | string> = {
 
 const selectedColor = "darkslateblue";
 
-type CountryObjectProps = {
+type CountryWrappedProps = {
   isSelected: boolean;
   country: Country;
 };
 
-const CountryObject = ({ isSelected, country }: CountryObjectProps) => {
+const CountryWrapped = ({ isSelected, country }: CountryWrappedProps) => {
   const { shapes, name, continent, centerCoordinates } = country;
   const extrudeOptions = { curveSegments: 1, steps: 1, depth: isSelected ? 0.1 : 0.005, bevelEnabled: false };
 
@@ -45,7 +45,8 @@ const CountryObject = ({ isSelected, country }: CountryObjectProps) => {
         {name}
       </Text>
       <mesh key={name}>
-        <extrudeGeometry attach="geometry" args={[shapes, extrudeOptions]} />
+        {/* <extrudeGeometry attach="geometry" args={[shapes, extrudeOptions]} /> */}
+        <shapeGeometry attach="geometry" args={[shapes]} />
         <meshBasicMaterial attach="material" color={isSelected ? selectedColor : continentColor[continent]} />
       </mesh>
     </>
@@ -53,12 +54,12 @@ const CountryObject = ({ isSelected, country }: CountryObjectProps) => {
   return isSelected ? countryObject : countryObject;
 };
 
-const CountryMemo = memo(CountryObject);
+const CountryObject = memo(CountryWrapped);
 
 const AllCountries = ({ selectedCountry }: { selectedCountry: Country }) => (
   <>
     {countries.map((country) => (
-      <CountryMemo key={country.name} isSelected={selectedCountry.name === country.name} country={country} />
+      <CountryObject key={country.name} isSelected={selectedCountry.name === country.name} country={country} />
     ))}
   </>
 );
