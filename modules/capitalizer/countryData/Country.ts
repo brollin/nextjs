@@ -10,7 +10,7 @@ export class Country {
   centerCoordinates: { lon: number; lat: number };
   shapes: Shape[];
 
-  constructor(country: Omit<Country, "shapes">) {
+  constructor(country: UnprocessedCountry) {
     this.capital = country.capital;
     this.boundaryData = country.boundaryData;
     this.status = country.status;
@@ -25,3 +25,5 @@ export class Country {
     this.shapes = this.boundaryData.map((countryPart) => new Shape(countryPart.map(([x, y]) => new Vector2(x, y))));
   };
 }
+
+export type UnprocessedCountry = Omit<Country, "shapes">;

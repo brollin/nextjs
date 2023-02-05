@@ -1,18 +1,18 @@
 import styles from "../../styles/Capitalizer.module.css";
-import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { Box } from "@chakra-ui/react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Bounds, Float, OrbitControls, Text, useBounds } from "@react-three/drei";
-import { Country } from "../../modules/capitalizer/countryData/Country";
+import { OrbitControls, Text } from "@react-three/drei";
+import { Country, UnprocessedCountry } from "../../modules/capitalizer/countryData/Country";
 import { Continent } from "../../modules/capitalizer/countryData/RawCountry";
-import { Group, Object3D, Vector3, Vector3Tuple } from "three";
+import { Vector3 } from "three";
 import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import CameraControls from "camera-controls";
 import { Perf } from "r3f-perf";
 
 const countryDataRaw: {
-  [name: string]: Omit<Country, "shapes">;
+  [name: string]: UnprocessedCountry;
 } = require("../../modules/capitalizer/countryData/countryData.json");
 const countries = Object.values(countryDataRaw).map((country) => new Country(country));
 
@@ -105,9 +105,9 @@ export const WorldMapCanvas = ({ mode, countryName }: WorldMapCanvasProps) => {
     <Box position="fixed" h="100vh" w="100vw">
       <Canvas className={styles.canvas} shadows={true}>
         <Perf />
+        {country && mode === "follow" ? <Controls country={country} /> : null}
         {mode === "control" ? <OrbitControls /> : null}
         {country ? <AllCountries selectedCountry={country} /> : null}
-        {country && mode === "follow" ? <Controls country={country} /> : null}
       </Canvas>
     </Box>
   );
