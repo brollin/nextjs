@@ -50,7 +50,7 @@ const CountryWrapped = ({ isSelected, country }: CountryWrappedProps) => {
         <shapeGeometry attach="geometry" args={[shapes]} />
         <meshBasicMaterial attach="material" color={isSelected ? selectedColor : continentColor[continent]} />
       </mesh>
-      {/* <group position={[0, 0, 0.05]}>
+      <group position={[0, 0, 0.05]}>
         {shapes.map((shape, index) => {
           const points = shape
             .getPoints()
@@ -70,7 +70,7 @@ const CountryWrapped = ({ isSelected, country }: CountryWrappedProps) => {
             </lineLoop>
           );
         })}
-      </group> */}
+      </group>
     </>
   );
   return isSelected ? countryObject : countryObject;
@@ -97,7 +97,7 @@ export const WorldMapCanvas = ({ mode, countryName }: WorldMapCanvasProps) => {
   return (
     <Box position="fixed" h="100vh" w="100vw">
       <Canvas className={styles.canvas} shadows={true}>
-        {/* <Perf /> */}
+        <Perf />
         {mode === "control" ? <OrbitControls /> : null}
         {country ? <AllCountries selectedCountry={country} /> : null}
         {country && mode === "follow" ? <Controls country={country} /> : null}

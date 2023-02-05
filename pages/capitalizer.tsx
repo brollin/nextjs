@@ -86,7 +86,7 @@ const Capitalizer = () => {
 
   useEffect(() => {
     // only initialize in hydrated client
-    shuffleArrays(countries, capitals);
+    // shuffleArrays(countries, capitals);
     setCountryIndex(0);
   }, []);
 
