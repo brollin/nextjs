@@ -21,7 +21,7 @@ const continentColor: Record<Continent, number | string> = {
   Europe: "cornflowerblue",
   Americas: "darkseagreen",
   Africa: "darkgoldenrod",
-  Oceana: "darkcyan",
+  Oceania: "darkcyan",
 };
 
 const selectedColor = "darkslateblue";
@@ -38,8 +38,9 @@ const CountryWrapped = ({ isSelected, country }: CountryWrappedProps) => {
   const countryObject = (
     <>
       <Text
+        outlineColor={0x000000}
         fontSize={isSelected ? 0.75 : 0.5}
-        color={isSelected ? 0xffffff : 0xffffff}
+        color={0xffffff}
         position={new Vector3(centerCoordinates.lon, centerCoordinates.lat, 1)}
       >
         {name}
@@ -49,6 +50,27 @@ const CountryWrapped = ({ isSelected, country }: CountryWrappedProps) => {
         <shapeGeometry attach="geometry" args={[shapes]} />
         <meshBasicMaterial attach="material" color={isSelected ? selectedColor : continentColor[continent]} />
       </mesh>
+      <group position={[0, 0, 0.05]}>
+        {shapes.map((shape, index) => {
+          const points = shape
+            .getPoints()
+            .map((vector) => [vector.x, vector.y])
+            .flat();
+          return (
+            <lineLoop key={name + index}>
+              <bufferGeometry>
+                <bufferAttribute
+                  attach="attributes-position"
+                  array={new Float32Array(points)}
+                  count={points.length / 2}
+                  itemSize={2}
+                />
+              </bufferGeometry>
+              <meshBasicMaterial attach="material" color={0x000000} />
+            </lineLoop>
+          );
+        })}
+      </group>
     </>
   );
   return isSelected ? countryObject : countryObject;

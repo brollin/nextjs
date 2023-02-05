@@ -17,7 +17,7 @@ export type Geometry =
       coordinates: LonLatListList[];
     };
 
-export type Continent = "Antarctica" | "Asia" | "Europe" | "Americas" | "Africa" | "Oceana";
+export type Continent = "Antarctica" | "Asia" | "Europe" | "Americas" | "Africa" | "Oceania";
 
 export type RawCountry = {
   geo_point_2d: { lon: number; lat: number };
