@@ -96,7 +96,7 @@ type WorldMapCanvasProps = {
   countryName: string;
 };
 
-export const WorldMapCanvas = observer<WorldMapCanvasProps>(({ countryName }) => {
+const WorldMapCanvas = observer<WorldMapCanvasProps>(({ countryName }) => {
   const store = useContext(StoreContext);
   const country = countries.find(({ name }) => name === countryName);
   if (!country) console.log("could not find country", countryName);
@@ -165,3 +165,5 @@ const Controls = ({ country }: ControlsProps) => {
 
   return null;
 };
+
+export default WorldMapCanvas;
