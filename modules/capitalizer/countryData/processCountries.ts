@@ -1,6 +1,6 @@
 import { saveJson } from "../../common/helpers";
-import { Country } from "./Country";
-import { RawCountry } from "./RawCountry";
+import { Country } from "../models/Country";
+import { RawCountry } from "../models/RawCountry";
 import { countries, capitals } from "../countryCapitalData";
 
 const rawCountryData: RawCountry[] = require("./boundaryData.json");

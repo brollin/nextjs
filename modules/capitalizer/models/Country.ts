@@ -10,7 +10,7 @@ export class Country {
   centerCoordinates: { lon: number; lat: number };
   shapes: Shape[];
 
-  constructor(country: UnprocessedCountry) {
+  constructor(country: UnhydratedCountry) {
     this.capital = country.capital;
     this.boundaryData = country.boundaryData;
     this.status = country.status;
@@ -44,4 +44,4 @@ export class Country {
   };
 }
 
-export type UnprocessedCountry = Omit<Country, "shapes">;
+export type UnhydratedCountry = Omit<Country, "shapes">;

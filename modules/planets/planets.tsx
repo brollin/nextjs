@@ -4,16 +4,16 @@ import chroma from "chroma-js";
 import classnames from "classnames";
 import Link from "next/link";
 
-import { Planet } from "./Planet";
-import EarthView from "../../components/planets/earth";
+import { Planet } from "./models/Planet";
+import EarthView from "./earth";
 import planetData from "./planetaryData/planets.json";
-import PlanetView from "../../components/planets/planet";
+import PlanetView from "./planet";
 import styles from "../../styles/Planets.module.css";
-import { RawPlanet } from "./RawPlanet";
-import MoonView from "../../components/planets/moon";
-import StarView from "../../components/planets/star";
+import { RawPlanet } from "./models/RawPlanet";
+import MoonView from "./moon";
+import StarView from "./star";
 import { angularSize, lerp } from "./mathUtils";
-import Layout from "../../components/planets/layout";
+import Layout from "./layout";
 
 // UP NEXT
 // TODO surface: show second or third sun

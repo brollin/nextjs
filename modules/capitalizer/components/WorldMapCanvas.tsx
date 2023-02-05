@@ -1,21 +1,21 @@
-import styles from "../../styles/Capitalizer.module.css";
+import styles from "../../../styles/Capitalizer.module.css";
 import React, { memo, useContext, useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { Box } from "@chakra-ui/react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Text } from "@react-three/drei";
-import { Country, UnprocessedCountry } from "../../modules/capitalizer/countryData/Country";
-import { Continent } from "../../modules/capitalizer/countryData/RawCountry";
+import { Country, UnhydratedCountry } from "../models/Country";
+import { Continent } from "../models/RawCountry";
 import { Vector3 } from "three";
 import { mergeBufferGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import CameraControls from "camera-controls";
 import { Perf } from "r3f-perf";
 import { observer } from "mobx-react-lite";
-import { StoreContext } from "../../pages/capitalizer";
+import { StoreContext } from "../models/Store";
 
 const countryDataRaw: {
-  [name: string]: UnprocessedCountry;
-} = require("../../modules/capitalizer/countryData/countryData.json");
+  [name: string]: UnhydratedCountry;
+} = require("../countryData/countryData.json");
 const countries = Object.values(countryDataRaw).map((country) => new Country(country));
 
 const continentColor: Record<Continent, number | string> = {

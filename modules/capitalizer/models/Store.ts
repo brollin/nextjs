@@ -1,7 +1,8 @@
+import { createContext } from "react";
 import { observer } from "mobx-react-lite";
 import { makeAutoObservable } from "mobx";
 // import { countries, capitals } from "./countryCapitalData";
-import { shuffleArrays } from "./helpers";
+import { shuffleArrays } from "../helpers";
 
 type CameraMode = "follow" | "control";
 
@@ -22,3 +23,5 @@ export class Store {
     this.cameraMode = this.cameraMode === "follow" ? "control" : "follow";
   };
 }
+
+export const StoreContext = createContext<Store>(null);

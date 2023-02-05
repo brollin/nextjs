@@ -1,5 +1,5 @@
 import { saveJson } from "../../common/helpers";
-import { RawPlanet } from "../RawPlanet";
+import { RawPlanet } from "../models/RawPlanet";
 
 const rawPlanets = require("./pscomppars.json");
 
