@@ -7,6 +7,7 @@ import { Bounds, Float, OrbitControls, Text, useBounds } from "@react-three/drei
 import { Country } from "../../modules/capitalizer/countryData/Country";
 import { Continent } from "../../modules/capitalizer/countryData/RawCountry";
 import { Group, Object3D, Vector3, Vector3Tuple } from "three";
+import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import CameraControls from "camera-controls";
 import { Perf } from "r3f-perf";
 
@@ -31,9 +32,9 @@ type CountryWrappedProps = {
   country: Country;
 };
 
-const CountryWrapped = ({ isSelected, country }: CountryWrappedProps) => {
+const CountryMesh = ({ isSelected, country }: CountryWrappedProps) => {
   const { shapes, name, continent, centerCoordinates } = country;
-  const extrudeOptions = { curveSegments: 1, steps: 1, depth: isSelected ? 0.1 : 0.005, bevelEnabled: false };
+  // const extrudeOptions = { curveSegments: 1, steps: 1, depth: isSelected ? 0.1 : 0.005, bevelEnabled: false };
 
   const countryObject = (
     <>
@@ -50,39 +51,45 @@ const CountryWrapped = ({ isSelected, country }: CountryWrappedProps) => {
         <shapeGeometry attach="geometry" args={[shapes]} />
         <meshBasicMaterial attach="material" color={isSelected ? selectedColor : continentColor[continent]} />
       </mesh>
-      <group position={[0, 0, 0.05]}>
-        {shapes.map((shape, index) => {
-          const points = shape
-            .getPoints()
-            .map((vector) => [vector.x, vector.y])
-            .flat();
-          return (
-            <lineLoop key={name + index}>
-              <bufferGeometry>
-                <bufferAttribute
-                  attach="attributes-position"
-                  array={new Float32Array(points)}
-                  count={points.length / 2}
-                  itemSize={2}
-                />
-              </bufferGeometry>
-              <meshBasicMaterial attach="material" color={0x000000} />
-            </lineLoop>
-          );
-        })}
-      </group>
     </>
   );
-  return isSelected ? countryObject : countryObject;
+  return countryObject;
 };
+const CountryMeshMemo = memo(CountryMesh);
 
-const CountryObject = memo(CountryWrapped);
+const AllBorders = () => {
+  const mergedBorderGeometries = BufferGeometryUtils.mergeBufferGeometries(
+    countries.flatMap(({ shapes }) =>
+      shapes.map((shape) => {
+        const points = shape.getPoints();
+        const segmentPoints = [];
+        for (let i = 0; i < points.length - 1; i++) {
+          segmentPoints.push(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
+        }
+
+        const bufferAttribute = new THREE.BufferAttribute(new Float32Array(segmentPoints), 2);
+        const bufferGeometry = new THREE.BufferGeometry();
+        bufferGeometry.setAttribute("position", bufferAttribute);
+        return bufferGeometry;
+      })
+    )
+  );
+
+  return (
+    <lineSegments position={[0, 0, 0.005]}>
+      <primitive attach="geometry" object={mergedBorderGeometries} />
+      <lineBasicMaterial attach="material" color={0x000000} />
+    </lineSegments>
+  );
+};
+const AllBordersMemo = memo(AllBorders);
 
 const AllCountries = ({ selectedCountry }: { selectedCountry: Country }) => (
   <>
     {countries.map((country) => (
-      <CountryObject key={country.name} isSelected={selectedCountry.name === country.name} country={country} />
+      <CountryMeshMemo key={country.name} isSelected={selectedCountry.name === country.name} country={country} />
     ))}
+    <AllBordersMemo />
   </>
 );
 
