@@ -7,7 +7,7 @@ import { OrbitControls, Text } from "@react-three/drei";
 import { Country, UnprocessedCountry } from "../../modules/capitalizer/countryData/Country";
 import { Continent } from "../../modules/capitalizer/countryData/RawCountry";
 import { Vector3 } from "three";
-import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { mergeBufferGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import CameraControls from "camera-controls";
 import { Perf } from "r3f-perf";
 
@@ -40,9 +40,9 @@ const CountryMesh = ({ isSelected, country }: CountryWrappedProps) => {
     <>
       <Text
         outlineColor={0x000000}
-        fontSize={isSelected ? 0.75 : 0.5}
+        fontSize={isSelected ? 0.5 : 0.4}
         color={0xffffff}
-        position={new Vector3(centerCoordinates.lon, centerCoordinates.lat, 1)}
+        position={new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0.1)}
       >
         {name}
       </Text>
@@ -58,26 +58,23 @@ const CountryMesh = ({ isSelected, country }: CountryWrappedProps) => {
 const CountryMeshMemo = memo(CountryMesh);
 
 const AllBorders = () => {
-  const mergedBorderGeometries = BufferGeometryUtils.mergeBufferGeometries(
-    countries.flatMap(({ shapes }) =>
-      shapes.map((shape) => {
-        const points = shape.getPoints();
-        const segmentPoints = [];
-        for (let i = 0; i < points.length - 1; i++) {
-          segmentPoints.push(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
-        }
+  const borderGeometries = countries.flatMap(({ shapes }) =>
+    shapes.map((shape) => {
+      const points = shape.getPoints();
+      const segmentPoints = [];
+      for (let i = 0; i < points.length - 1; i++)
+        segmentPoints.push(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
 
-        const bufferAttribute = new THREE.BufferAttribute(new Float32Array(segmentPoints), 2);
-        const bufferGeometry = new THREE.BufferGeometry();
-        bufferGeometry.setAttribute("position", bufferAttribute);
-        return bufferGeometry;
-      })
-    )
+      const bufferAttribute = new THREE.BufferAttribute(new Float32Array(segmentPoints), 2);
+      const bufferGeometry = new THREE.BufferGeometry();
+      bufferGeometry.setAttribute("position", bufferAttribute);
+      return bufferGeometry;
+    })
   );
 
   return (
     <lineSegments position={[0, 0, 0.005]}>
-      <primitive attach="geometry" object={mergedBorderGeometries} />
+      <primitive attach="geometry" object={mergeBufferGeometries(borderGeometries)} />
       <lineBasicMaterial attach="material" color={0x000000} />
     </lineSegments>
   );
@@ -104,9 +101,9 @@ export const WorldMapCanvas = ({ mode, countryName }: WorldMapCanvasProps) => {
   return (
     <Box position="fixed" h="100vh" w="100vw">
       <Canvas className={styles.canvas} shadows={true}>
-        <Perf />
+        {/* <Perf /> */}
         {country && mode === "follow" ? <Controls country={country} /> : null}
-        {mode === "control" ? <OrbitControls /> : null}
+        {mode === "control" ? <OrbitControls makeDefault /> : null}
         {country ? <AllCountries selectedCountry={country} /> : null}
       </Canvas>
     </Box>
@@ -125,8 +122,10 @@ const Controls = ({ country }: ControlsProps) => {
   const controls = useMemo(() => new CameraControls(camera, gl.domElement), [camera, gl.domElement]);
 
   const { centerCoordinates } = country;
-  // TODO: calculate z based on bounding box of country with getDistanceToFitBox
-  const positionFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 40);
+  const { minX, minY, maxX, maxY } = country.computeBounds();
+  const distance = controls.getDistanceToFitBox((maxX - minX) * 1.2, (maxY - minY) * 1.2, 0.01);
+
+  const positionFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat - 5, Math.max(distance, 10));
   const targetFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);
   const target = new Vector3();
 
@@ -147,7 +146,7 @@ const Controls = ({ country }: ControlsProps) => {
 
       state.camera.position.lerp(positionFinal, 0.08);
       target.copy(state.camera.position).setZ(0).lerp(targetFinal, 0.5);
-      // TODO: understand below
+      // TODO: understand below line
       // state.camera.updateProjectionMatrix();
       controls.setLookAt(
         state.camera.position.x,

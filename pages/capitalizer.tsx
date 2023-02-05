@@ -16,9 +16,8 @@ import {
 } from "@chakra-ui/react";
 import { doesTextRoughlyMatch, shuffleArrays } from "../modules/capitalizer/helpers";
 import { theme } from "../modules/capitalizer/theme";
-import { WorldMapCanvas } from "../components/capitalizer/WorldMapCanvas";
-
 import { countries, capitals } from "../modules/capitalizer/countryCapitalData";
+import { WorldMapCanvas } from "../components/capitalizer/WorldMapCanvas";
 
 const QuizApp = ({ mode, setMode, countryIndex, setCountryIndex }) => {
   const [correctCount, setCorrectCount] = useState(0);
@@ -86,7 +85,7 @@ const Capitalizer = () => {
 
   useEffect(() => {
     // only initialize in hydrated client
-    // shuffleArrays(countries, capitals);
+    shuffleArrays(countries, capitals);
     setCountryIndex(0);
   }, []);
 
