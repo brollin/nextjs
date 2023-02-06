@@ -51,7 +51,6 @@ export class Store {
     if (doesTextRoughlyMatch(potentialAnswer, this.currentCountry.capital)) {
       this.countryIndex++;
       this.correctCount++;
-      this.animationMode = "zoomToCountry";
       return true;
     }
 
@@ -60,7 +59,6 @@ export class Store {
 
   advanceAfterIncorrect = () => {
     this.countryIndex++;
-    this.animationMode = "zoomToCountry";
   };
 
   toggleCameraMode = () => {

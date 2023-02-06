@@ -1,10 +1,10 @@
 import styles from "../../../styles/Capitalizer.module.css";
-import React, { memo, useContext } from "react";
+import React, { memo, useContext, useRef } from "react";
 import { observer } from "mobx-react-lite";
-import { Vector3 } from "three";
+import { ExtrudeGeometry, Mesh, Vector3 } from "three";
 import * as THREE from "three";
 import { Box } from "@chakra-ui/react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Text } from "@react-three/drei";
 import { mergeBufferGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { Perf } from "r3f-perf";
@@ -30,22 +30,41 @@ type CountryWrappedProps = {
   country: Country;
 };
 
+const BORDER_BASE_Z = 0.002;
+const COUNTRY_BASE_Z = 0;
+const TEXT_BASE_Z = 0.21;
+
 const CountryMesh = ({ isSelected, country }: CountryWrappedProps) => {
   const { shapes, name, continent, centerCoordinates } = country;
-  // const extrudeOptions = { curveSegments: 1, steps: 1, depth: isSelected ? 0.1 : 0.005, bevelEnabled: false };
+
+  const meshRef = useRef<Mesh>(null);
+  const textRef = useRef(null);
+  useFrame(() => {
+    if (!isSelected) {
+      if (meshRef.current.position.z !== 0) {
+        meshRef.current.position.setZ(COUNTRY_BASE_Z);
+        textRef.current.position.setZ(TEXT_BASE_Z);
+      }
+      return;
+    }
+
+    const newZ = 0.105 + 0.1 * Math.sin(((Date.now() % 1500) / 1500) * 2 * Math.PI);
+    meshRef.current.position.setZ(newZ);
+    textRef.current.position.setZ(newZ + 0.1);
+  });
 
   const countryObject = (
     <>
       <Text
+        ref={textRef}
         outlineColor={0x000000}
         fontSize={isSelected ? 0.5 : 0.4}
         color={0xffffff}
-        position={new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0.1)}
+        position={new Vector3(centerCoordinates.lon, centerCoordinates.lat, TEXT_BASE_Z)}
       >
         {name}
       </Text>
-      <mesh key={name}>
-        {/* <extrudeGeometry attach="geometry" args={[shapes, extrudeOptions]} /> */}
+      <mesh key={name} ref={meshRef}>
         <shapeGeometry attach="geometry" args={[shapes]} />
         <meshBasicMaterial attach="material" color={isSelected ? selectedColor : continentColor[continent]} />
       </mesh>
@@ -72,7 +91,7 @@ const AllBorders = observer(() => {
   );
 
   return (
-    <lineSegments position={[0, 0, 0.005]}>
+    <lineSegments position={[0, 0, BORDER_BASE_Z]}>
       <primitive attach="geometry" object={mergeBufferGeometries(borderGeometries)} />
       <lineBasicMaterial attach="material" color={0x000000} />
     </lineSegments>
@@ -100,7 +119,7 @@ const WorldMapCanvas = observer(() => {
   return (
     <Box position="fixed" h="100vh" w="100vw">
       <Canvas className={styles.canvas} shadows={true}>
-        {/* <Perf /> */}
+        <Perf />
         {store.currentCountry && store.cameraMode === "follow" ? <Controls country={store.currentCountry} /> : null}
         {store.cameraMode === "control" ? <OrbitControls makeDefault /> : null}
         {store.countries ? <AllCountries /> : null}
