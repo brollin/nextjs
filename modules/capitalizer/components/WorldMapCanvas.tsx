@@ -35,7 +35,7 @@ const COUNTRY_BASE_Z = 0;
 const TEXT_BASE_Z = 0.21;
 
 const CountryMesh = ({ isSelected, country }: CountryWrappedProps) => {
-  const { shapes, name, continent, centerCoordinates } = country;
+  const { shapes, name, continent, centerCoordinates, bounds } = country;
 
   const meshRef = useRef<Mesh>(null);
   const textRef = useRef(null);
@@ -53,12 +53,14 @@ const CountryMesh = ({ isSelected, country }: CountryWrappedProps) => {
     textRef.current.position.setZ(newZ + 0.1);
   });
 
+  const { minX, maxX } = bounds;
+  const fontSize = Math.min(Math.max((maxX - minX) * 0.08, 0.1), 0.8);
   const countryObject = (
     <>
       <Text
         ref={textRef}
         outlineColor={0x000000}
-        fontSize={isSelected ? 0.5 : 0.4}
+        fontSize={fontSize}
         color={0xffffff}
         position={new Vector3(centerCoordinates.lon, centerCoordinates.lat, TEXT_BASE_Z)}
       >

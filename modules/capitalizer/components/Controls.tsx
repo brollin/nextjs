@@ -10,16 +10,29 @@ import { OrbitControls } from "@react-three/drei";
 
 CameraControls.install({ THREE });
 
+const VIEWING_MARGIN = 2;
+const TILT_ANGLE = 3.5;
+const NEAR_CAMERA_LIMIT = 3;
+const FAR_CAMERA_LIMIT = 80;
+
 const Controls = observer(() => {
   const store = useContext(StoreContext);
   const { camera, gl } = useThree();
   const cameraControls = useMemo(() => new CameraControls(camera, gl.domElement), [camera, gl.domElement]);
 
   const { minX, minY, maxX, maxY } = store.currentCountry.bounds;
-  const distance = cameraControls.getDistanceToFitBox((maxX - minX) * 1.2, (maxY - minY) * 1.2, 0.01);
+  const distance = cameraControls.getDistanceToFitBox(
+    (maxX - minX) * VIEWING_MARGIN,
+    (maxY - minY) * VIEWING_MARGIN,
+    0.01
+  );
 
   const { centerCoordinates } = store.currentCountry;
-  const positionFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat - 5, Math.max(distance, 10));
+  const positionFinal = new Vector3(
+    centerCoordinates.lon,
+    centerCoordinates.lat - TILT_ANGLE,
+    Math.min(Math.max(distance, NEAR_CAMERA_LIMIT), FAR_CAMERA_LIMIT)
+  );
   const targetFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);
   const target = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);
   store.animationMode = "zoomToCountry";
