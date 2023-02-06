@@ -7,7 +7,7 @@ const countryDataRaw: {
   [name: string]: UnhydratedCountry;
 } = require("../countryData/countryData.json");
 
-type CameraMode = "follow" | "control";
+type CameraMode = "follow" | "control-start" | "control";
 
 type AnimationMode = "zoomToCountry" | "countrySpotlight";
 
@@ -62,7 +62,7 @@ export class Store {
   };
 
   toggleCameraMode = () => {
-    this.cameraMode = this.cameraMode === "follow" ? "control" : "follow";
+    this.cameraMode = this.cameraMode === "follow" ? "control-start" : "follow";
   };
 }
 

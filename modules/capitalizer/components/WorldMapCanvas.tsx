@@ -1,11 +1,11 @@
 import styles from "../../../styles/Capitalizer.module.css";
 import React, { memo, useContext, useRef } from "react";
 import { observer } from "mobx-react-lite";
-import { ExtrudeGeometry, Mesh, Vector3 } from "three";
+import { Mesh, Vector3 } from "three";
 import * as THREE from "three";
 import { Box } from "@chakra-ui/react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Text } from "@react-three/drei";
+import { Text } from "@react-three/drei";
 import { mergeBufferGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { Perf } from "r3f-perf";
 
@@ -120,8 +120,7 @@ const WorldMapCanvas = observer(() => {
     <Box position="fixed" h="100vh" w="100vw">
       <Canvas className={styles.canvas} shadows={true}>
         <Perf />
-        {store.currentCountry && store.cameraMode === "follow" ? <Controls country={store.currentCountry} /> : null}
-        {store.cameraMode === "control" ? <OrbitControls makeDefault /> : null}
+        {store.currentCountry ? <Controls /> : null}
         {store.countries ? <AllCountries /> : null}
       </Canvas>
     </Box>

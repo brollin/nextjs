@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import Head from "next/head";
 import { BiWorld } from "react-icons/bi";
 import { Card, CardBody, CardHeader, ChakraProvider, Heading, HStack, VStack } from "@chakra-ui/react";
@@ -7,7 +7,6 @@ import { observer } from "mobx-react-lite";
 import Quiz from "./Quiz";
 import WorldMapCanvas from "./WorldMapCanvas";
 import { theme } from "../theme";
-import { countries, capitals } from "../countryCapitalData";
 import { Store, StoreContext } from "../models/Store";
 
 const Capitalizer = observer(() => {
