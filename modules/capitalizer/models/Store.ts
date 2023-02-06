@@ -1,22 +1,61 @@
 import { createContext } from "react";
-import { observer } from "mobx-react-lite";
 import { makeAutoObservable } from "mobx";
-// import { countries, capitals } from "./countryCapitalData";
-import { shuffleArrays } from "../helpers";
+import { Country, UnhydratedCountry } from "./Country";
+import { doesTextRoughlyMatch, shuffleArray } from "../helpers";
+
+const countryDataRaw: {
+  [name: string]: UnhydratedCountry;
+} = require("../countryData/countryData.json");
 
 type CameraMode = "follow" | "control";
 
 export class Store {
-  countryIndex = -1;
   cameraMode: CameraMode = "follow";
+
+  correctCount = 0;
+  countryIndex = -1;
+  countries: Country[];
+
+  initialized = false;
+
+  get previousCountry(): Country | undefined {
+    return !this.initialized || this.countryIndex - 1 < 0 ? undefined : this.countries[this.countryIndex - 1];
+  }
+
+  get currentCountry(): Country | undefined {
+    return !this.initialized || this.countryIndex < 0 ? undefined : this.countries[this.countryIndex];
+  }
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  initialize = () => {
-    // shuffleArrays(countries, capitals);
+  initializeCountries = () => {
+    // logic that should only be performed on the client
+    const countries = Object.values(countryDataRaw).map((country) => new Country(country));
+
+    const memberCountries = countries.filter(({ status }) => status === "Member State");
+    const nonMemberCountries = countries.filter(({ status }) => status !== "Member State");
+
+    shuffleArray(memberCountries);
+    this.countries = [...memberCountries, ...nonMemberCountries];
     this.countryIndex = 0;
+
+    this.initialized = true;
+  };
+
+  checkCapital = (potentialAnswer: string): boolean => {
+    if (doesTextRoughlyMatch(potentialAnswer, this.currentCountry.capital)) {
+      this.countryIndex++;
+      this.correctCount++;
+      return true;
+    }
+
+    return false;
+  };
+
+  advanceAfterIncorrect = () => {
+    this.countryIndex++;
   };
 
   toggleCameraMode = () => {

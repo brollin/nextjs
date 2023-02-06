@@ -1,4 +1,14 @@
 /**
+ * Shuffles an array in place.
+ */
+export const shuffleArray = (a: any[]) => {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+};
+
+/**
  * Shuffles multiple arrays in place in the same way.
  */
 export const shuffleArrays = (a: any[], b: any[]) => {

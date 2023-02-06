@@ -1,22 +1,18 @@
 import styles from "../../../styles/Capitalizer.module.css";
-import React, { memo, useContext, useEffect, useMemo, useState } from "react";
+import React, { memo, useContext } from "react";
+import { observer } from "mobx-react-lite";
+import { Vector3 } from "three";
 import * as THREE from "three";
 import { Box } from "@chakra-ui/react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Text } from "@react-three/drei";
-import { Country, UnhydratedCountry } from "../models/Country";
-import { Continent } from "../models/RawCountry";
-import { Vector3 } from "three";
 import { mergeBufferGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import CameraControls from "camera-controls";
 import { Perf } from "r3f-perf";
-import { observer } from "mobx-react-lite";
-import { StoreContext } from "../models/Store";
 
-const countryDataRaw: {
-  [name: string]: UnhydratedCountry;
-} = require("../countryData/countryData.json");
-const countries = Object.values(countryDataRaw).map((country) => new Country(country));
+import { Country } from "../models/Country";
+import { Continent } from "../models/RawCountry";
+import { StoreContext } from "../models/Store";
+import Controls from "./Controls";
 
 const continentColor: Record<Continent, number | string> = {
   Antarctica: 0xffffff,
@@ -59,8 +55,9 @@ const CountryMesh = ({ isSelected, country }: CountryWrappedProps) => {
 };
 const CountryMeshMemo = memo(CountryMesh);
 
-const AllBorders = () => {
-  const borderGeometries = countries.flatMap(({ shapes }) =>
+const AllBorders = observer(() => {
+  const store = useContext(StoreContext);
+  const borderGeometries = store.countries.flatMap(({ shapes }) =>
     shapes.map((shape) => {
       const points = shape.getPoints();
       const segmentPoints = [];
@@ -80,90 +77,36 @@ const AllBorders = () => {
       <lineBasicMaterial attach="material" color={0x000000} />
     </lineSegments>
   );
-};
-const AllBordersMemo = memo(AllBorders);
+});
 
-const AllCountries = ({ selectedCountry }: { selectedCountry: Country }) => (
-  <>
-    {countries.map((country) => (
-      <CountryMeshMemo key={country.name} isSelected={selectedCountry.name === country.name} country={country} />
-    ))}
-    <AllBordersMemo />
-  </>
-);
-
-type WorldMapCanvasProps = {
-  countryName: string;
-};
-
-const WorldMapCanvas = observer<WorldMapCanvasProps>(({ countryName }) => {
+const AllCountries = observer(() => {
   const store = useContext(StoreContext);
-  const country = countries.find(({ name }) => name === countryName);
-  if (!country) console.log("could not find country", countryName);
+  return (
+    <>
+      {store.countries.map((country) => (
+        <CountryMeshMemo
+          key={country.name}
+          isSelected={store.currentCountry?.name === country.name}
+          country={country}
+        />
+      ))}
+      <AllBorders />
+    </>
+  );
+});
+
+const WorldMapCanvas = observer(() => {
+  const store = useContext(StoreContext);
   return (
     <Box position="fixed" h="100vh" w="100vw">
       <Canvas className={styles.canvas} shadows={true}>
         {/* <Perf /> */}
-        {country && store.cameraMode === "follow" ? <Controls country={country} /> : null}
+        {store.currentCountry && store.cameraMode === "follow" ? <Controls country={store.currentCountry} /> : null}
         {store.cameraMode === "control" ? <OrbitControls makeDefault /> : null}
-        {country ? <AllCountries selectedCountry={country} /> : null}
+        {store.countries ? <AllCountries /> : null}
       </Canvas>
     </Box>
   );
 });
-
-CameraControls.install({ THREE });
-
-type ControlsProps = {
-  country: Country;
-  pos?: Vector3;
-};
-
-const Controls = ({ country }: ControlsProps) => {
-  const { camera, gl } = useThree();
-  const controls = useMemo(() => new CameraControls(camera, gl.domElement), [camera, gl.domElement]);
-
-  const { centerCoordinates } = country;
-  const { minX, minY, maxX, maxY } = country.computeBounds();
-  const distance = controls.getDistanceToFitBox((maxX - minX) * 1.2, (maxY - minY) * 1.2, 0.01);
-
-  const positionFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat - 5, Math.max(distance, 10));
-  const targetFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);
-  const target = new Vector3();
-
-  const [animating, setAnimating] = useState(true);
-
-  // set initial camera position/direction
-  useEffect(() => {
-    camera.position.set(0, 0, 130);
-    camera.lookAt(0, 0, 0);
-  }, [camera]);
-
-  useEffect(() => setAnimating(true), [country]);
-
-  useFrame((state, delta) => {
-    if (animating) {
-      if (state.camera.position.distanceTo(positionFinal) < 0.01) {
-        setAnimating(false);
-      }
-
-      state.camera.position.lerp(positionFinal, 0.08);
-      target.copy(state.camera.position).setZ(0).lerp(targetFinal, 0.5);
-      // TODO: understand below line
-      // state.camera.updateProjectionMatrix();
-      controls.setLookAt(
-        state.camera.position.x,
-        state.camera.position.y,
-        state.camera.position.z,
-        target.x,
-        target.y,
-        target.z
-      );
-      controls.update(delta);
-    }
-  });
-
-  return null;
-};
 
 export default WorldMapCanvas;

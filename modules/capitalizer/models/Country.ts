@@ -4,7 +4,7 @@ import { Continent } from "./RawCountry";
 export class Country {
   capital: string;
   boundaryData: number[][][];
-  status: string;
+  status: "Member State" | "unknown"; // more statuses are possible
   name: string;
   continent: Continent;
   centerCoordinates: { lon: number; lat: number };
