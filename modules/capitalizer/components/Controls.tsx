@@ -1,9 +1,10 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Country } from "../models/Country";
 import { Vector3 } from "three";
 import CameraControls from "camera-controls";
+import { StoreContext } from "../models/Store";
 
 CameraControls.install({ THREE });
 
@@ -13,6 +14,7 @@ type ControlsProps = {
 };
 
 const Controls = ({ country }: ControlsProps) => {
+  const store = useContext(StoreContext);
   const { camera, gl } = useThree();
   const controls = useMemo(() => new CameraControls(camera, gl.domElement), [camera, gl.domElement]);
 
@@ -24,20 +26,16 @@ const Controls = ({ country }: ControlsProps) => {
   const targetFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);
   const target = new Vector3();
 
-  const [animating, setAnimating] = useState(true);
-
   // set initial camera position/direction
   useEffect(() => {
     camera.position.set(0, 0, 130);
     camera.lookAt(0, 0, 0);
   }, [camera]);
 
-  useEffect(() => setAnimating(true), [country]);
-
   useFrame((state, delta) => {
-    if (animating) {
+    if (store.animationMode === "zoomToCountry") {
       if (state.camera.position.distanceTo(positionFinal) < 0.01) {
-        setAnimating(false);
+        store.animationMode = "countrySpotlight";
       }
 
       state.camera.position.lerp(positionFinal, 0.08);

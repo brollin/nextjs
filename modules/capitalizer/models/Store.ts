@@ -9,6 +9,8 @@ const countryDataRaw: {
 
 type CameraMode = "follow" | "control";
 
+type AnimationMode = "zoomToCountry" | "countrySpotlight";
+
 export class Store {
   cameraMode: CameraMode = "follow";
 
@@ -17,6 +19,7 @@ export class Store {
   countries: Country[];
 
   initialized = false;
+  animationMode: AnimationMode = "zoomToCountry";
 
   get previousCountry(): Country | undefined {
     return !this.initialized || this.countryIndex - 1 < 0 ? undefined : this.countries[this.countryIndex - 1];
@@ -48,6 +51,7 @@ export class Store {
     if (doesTextRoughlyMatch(potentialAnswer, this.currentCountry.capital)) {
       this.countryIndex++;
       this.correctCount++;
+      this.animationMode = "zoomToCountry";
       return true;
     }
 
@@ -56,6 +60,7 @@ export class Store {
 
   advanceAfterIncorrect = () => {
     this.countryIndex++;
+    this.animationMode = "zoomToCountry";
   };
 
   toggleCameraMode = () => {
