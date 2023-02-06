@@ -1,12 +1,12 @@
 import { saveJson } from "../../common/helpers";
-import { Country } from "../models/Country";
+import { UnhydratedCountry } from "../models/Country";
 import { RawCountry } from "../models/RawCountry";
 import { countries, capitals } from "../countryCapitalData";
 
 const rawCountryData: RawCountry[] = require("./boundaryData.json");
 
 class CountryProcessor {
-  countryData: { [name: string]: Partial<Country> } = {};
+  countryData: { [name: string]: UnhydratedCountry } = {};
 
   constructor(rawCountries) {
     for (const country of rawCountries) {
@@ -26,7 +26,8 @@ class CountryProcessor {
       }
 
       // TODO: mercator projection computation
-      // TODO: compute bounds here
+
+      const bounds = this.computeBounds(boundaryData);
 
       let capital = "";
       if (status === "Member State") {
@@ -42,9 +43,27 @@ class CountryProcessor {
         name,
         continent,
         centerCoordinates: geo_point_2d,
+        bounds,
       };
     }
   }
+
+  private computeBounds = (boundaryData) => {
+    const point = boundaryData[0][0];
+    let minX = point[0];
+    let minY = point[1];
+    let maxX = point[0];
+    let maxY = point[1];
+    for (const boundary of boundaryData) {
+      for (const [x, y] of boundary) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+    return { minX, minY, maxX, maxY };
+  };
 }
 
 const countryLoader = new CountryProcessor(rawCountryData);

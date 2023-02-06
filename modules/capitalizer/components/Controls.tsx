@@ -15,7 +15,7 @@ const Controls = observer(() => {
   const { camera, gl } = useThree();
   const cameraControls = useMemo(() => new CameraControls(camera, gl.domElement), [camera, gl.domElement]);
 
-  const { minX, minY, maxX, maxY } = store.currentCountry.computeBounds();
+  const { minX, minY, maxX, maxY } = store.currentCountry.bounds;
   const distance = cameraControls.getDistanceToFitBox((maxX - minX) * 1.2, (maxY - minY) * 1.2, 0.01);
 
   const { centerCoordinates } = store.currentCountry;
