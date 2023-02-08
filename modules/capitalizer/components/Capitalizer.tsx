@@ -1,7 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import Head from "next/head";
-import { BiWorld } from "react-icons/bi";
-import { Card, CardBody, CardHeader, ChakraProvider, Heading, HStack, VStack } from "@chakra-ui/react";
+import { Card, CardBody, ChakraProvider, VStack } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 
 import Quiz from "@/modules/capitalizer/components/Quiz";
@@ -19,21 +18,13 @@ const Capitalizer = observer(() => {
   return (
     <>
       <Head>
-        <title>World Capitals Quiz</title>
+        <title>World Capitalizer</title>
       </Head>
       <WorldMapCanvas />
       <VStack h="100vh" justifyContent="end">
         <Card size="md" w={370} marginBottom={5}>
-          <CardHeader marginTop={0} paddingBottom={0}>
-            <HStack justifyContent="center">
-              <BiWorld size="2em" />
-              <Heading size="md">Capitalizer</Heading>
-            </HStack>
-          </CardHeader>
-          <CardBody paddingTop={3}>
-            <VStack justifyContent="center">
-              <Quiz />
-            </VStack>
+          <CardBody paddingTop={6}>
+            <Quiz />
           </CardBody>
         </Card>
       </VStack>
