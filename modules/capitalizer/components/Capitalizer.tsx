@@ -4,11 +4,11 @@ import { BiWorld } from "react-icons/bi";
 import { Card, CardBody, CardHeader, ChakraProvider, Heading, HStack, VStack } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 
-import Quiz from "./Quiz";
-import WorldMapCanvas from "./WorldMapCanvas";
-import { theme } from "../theme";
-import { Store } from "../models/Store";
-import { StoreContext } from "../models/StoreContext";
+import Quiz from "@/modules/capitalizer/components/Quiz";
+import WorldMapCanvas from "@/modules/capitalizer/components/WorldMapCanvas";
+import theme from "@/modules/capitalizer/theme";
+import Store from "@/modules/capitalizer/models/Store";
+import StoreContext from "@/modules/capitalizer/models/StoreContext";
 
 const Capitalizer = observer(() => {
   const store = useContext(StoreContext);

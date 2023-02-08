@@ -6,7 +6,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { observer } from "mobx-react-lite";
 import { OrbitControls } from "@react-three/drei";
 
-import { StoreContext } from "../models/StoreContext";
+import StoreContext from "@/modules/capitalizer/models/StoreContext";
 
 CameraControls.install({ THREE });
 
@@ -23,7 +23,7 @@ const Controls = observer(() => {
   const { camera, gl } = useThree();
   const cameraControls = useMemo(() => new CameraControls(camera, gl.domElement), [camera, gl.domElement]);
 
-  const { centerCoordinates, width, height } = store.currentCountry;
+  const { centerCoordinates, width, height } = store.currentCountry!;
   const distance = cameraControls.getDistanceToFitBox(width * VIEWING_MARGIN, height * VIEWING_MARGIN, 0.01);
 
   const tiltAngle = Math.min(Math.max(width / TILT_FACTOR + TILT_OFFSET, MIN_TILT_ANGLE), MAX_TILT_ANGLE);

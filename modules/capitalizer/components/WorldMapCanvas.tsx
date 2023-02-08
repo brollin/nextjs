@@ -1,7 +1,7 @@
 import styles from "../../../styles/Capitalizer.module.css";
 import React, { memo, useContext, useRef } from "react";
 import { observer } from "mobx-react-lite";
-import { Mesh, Vector3 } from "three";
+import { Mesh, Object3D, Vector3 } from "three";
 import * as THREE from "three";
 import { Box } from "@chakra-ui/react";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -9,10 +9,10 @@ import { Text } from "@react-three/drei";
 import { mergeBufferGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { Perf } from "r3f-perf";
 
-import { Country } from "../models/Country";
-import { Continent } from "../models/RawCountry";
-import Controls from "./Controls";
-import { StoreContext } from "../models/StoreContext";
+import Country from "@/modules/capitalizer/models/Country";
+import { Continent } from "@/modules/capitalizer/models/RawCountry";
+import Controls from "@/modules/capitalizer/components/Controls";
+import StoreContext from "@/modules/capitalizer/models/StoreContext";
 
 const continentColor: Record<Continent, number | string> = {
   Antarctica: 0xffffff,
@@ -42,19 +42,19 @@ const CountryMesh = ({ isSelected, country }: CountryWrappedProps) => {
   const { shapes, name, continent, centerCoordinates, width } = country;
 
   const meshRef = useRef<Mesh>(null);
-  const textRef = useRef(null);
+  const textRef = useRef<Object3D>(null);
   useFrame(() => {
     if (!isSelected) {
-      if (meshRef.current.position.z !== 0) {
-        meshRef.current.position.setZ(COUNTRY_BASE_Z);
-        textRef.current.position.setZ(TEXT_BASE_Z);
+      if (meshRef.current?.position.z !== 0) {
+        meshRef.current?.position.setZ(COUNTRY_BASE_Z);
+        textRef.current?.position.setZ(TEXT_BASE_Z);
       }
       return;
     }
 
     const newZ = 0.105 + 0.1 * Math.sin(((Date.now() % 1500) / 1500) * 2 * Math.PI);
-    meshRef.current.position.setZ(newZ);
-    textRef.current.position.setZ(newZ + 0.1);
+    meshRef.current?.position.setZ(newZ);
+    textRef.current?.position.setZ(newZ + 0.1);
   });
 
   const fontSize = Math.min(Math.max(width * FONT_SIZE_FACTOR, MIN_FONT_SIZE), MAX_FONT_SIZE);

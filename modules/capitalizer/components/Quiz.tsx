@@ -3,15 +3,15 @@ import { BsFillCameraVideoFill, BsFillCameraVideoOffFill } from "react-icons/bs"
 import { Button, HStack, Input, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 
-import { StoreContext } from "../models/StoreContext";
+import StoreContext from "@/modules/capitalizer/models/StoreContext";
 
 const Quiz = observer(() => {
   const store = useContext(StoreContext);
   const [answerText, setAnswerText] = useState("");
 
-  const initialFocusRef = useRef<HTMLInputElement>();
+  const initialFocusRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => initialFocusRef.current.focus(), []);
+  useEffect(() => initialFocusRef.current?.focus(), []);
 
   const handleAnswerChange = (potentialAnswer: string) =>
     setAnswerText(store.checkCapital(potentialAnswer) ? "" : potentialAnswer);

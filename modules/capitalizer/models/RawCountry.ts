@@ -1,4 +1,4 @@
-export type LonLat = string[];
+export type LonLat = number[];
 export type LonLatList = LonLat[];
 export type LonLatListList = LonLatList[];
 
@@ -12,10 +12,12 @@ export type Geometry =
       coordinates: LonLatListList[];
     }
   | {
-      // There is a better way to do this one...
       type: "unknown";
       coordinates: LonLatListList[];
     };
+
+// More statuses are possible, but we only care about member states
+export type Status = "Member State" | "unknown";
 
 export type Continent = "Antarctica" | "Asia" | "Europe" | "Americas" | "Africa" | "Oceania";
 
@@ -26,7 +28,7 @@ export type RawCountry = {
     geometry: Geometry;
   };
   iso3: string;
-  status: string;
+  status: Status;
   color_code: string;
   name: string;
   continent: Continent;

@@ -1,7 +1,7 @@
-import { createContext } from "react";
 import { makeAutoObservable } from "mobx";
-import { Country, UnhydratedCountry } from "./Country";
-import { doesTextRoughlyMatch, shuffleArray } from "../helpers";
+
+import Country, { UnhydratedCountry } from "@/modules/capitalizer/models/Country";
+import { doesTextRoughlyMatch, shuffleArray } from "@/modules/capitalizer/helpers";
 
 const countryDataRaw: {
   [name: string]: UnhydratedCountry;
@@ -13,12 +13,12 @@ type CameraMode = "follow" | "control-start" | "control";
 
 type AnimationMode = "zoomToCountry" | "countrySpotlight";
 
-export class Store {
+export default class Store {
   cameraMode: CameraMode = "follow";
 
   correctCount = 0;
   countryIndex = -1;
-  countries: Country[];
+  countries: Country[] = [];
 
   initialized = false;
   animationMode: AnimationMode = "zoomToCountry";
@@ -57,7 +57,7 @@ export class Store {
   };
 
   checkCapital = (potentialAnswer: string): boolean => {
-    if (doesTextRoughlyMatch(potentialAnswer, this.currentCountry.capital)) {
+    if (doesTextRoughlyMatch(potentialAnswer, this.currentCountry!.capital)) {
       this.countryIndex++;
       this.correctCount++;
       return true;

@@ -1,5 +1,6 @@
 import { Shape, Vector2 } from "three";
-import { Continent } from "./RawCountry";
+
+import { Continent, LonLatList, Status } from "@/modules/capitalizer/models/RawCountry";
 
 type Bounds = {
   minX: number;
@@ -8,15 +9,15 @@ type Bounds = {
   maxY: number;
 };
 
-export class Country {
+export default class Country {
   capital: string;
-  boundaryData: number[][][];
-  status: "Member State" | "unknown"; // more statuses are possible
+  boundaryData: LonLatList[];
+  status: Status;
   name: string;
   continent: Continent;
   centerCoordinates: { lon: number; lat: number };
   bounds: Bounds;
-  shapes: Shape[];
+  shapes: Shape[] = [];
 
   get width() {
     // Special case for those countries with bounds on either side of the prime anti-meridian (e.g. Fiji)

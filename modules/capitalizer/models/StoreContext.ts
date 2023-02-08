@@ -1,5 +1,8 @@
 import { createContext } from "react";
-import { Store } from "./Store";
+
+import Store from "@/modules/capitalizer/models/Store";
 
 // Keep this in its own file so that it is not refreshed upon a next fast refresh
-export const StoreContext = createContext<Store>(null);
+const StoreContext = createContext<Store>(new Store());
+
+export default StoreContext;

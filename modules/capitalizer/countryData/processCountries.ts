@@ -1,15 +1,15 @@
-import { saveJson } from "../../common/helpers";
-import { UnhydratedCountry } from "../models/Country";
-import { RawCountry } from "../models/RawCountry";
-import { countries, capitals } from "../countryCapitalData";
-import countryDataOverrides from "./countryDataOverrides";
+import { saveJson } from "@/modules/common/helpers";
+import { UnhydratedCountry } from "@/modules/capitalizer/models/Country";
+import { LonLatListList, RawCountry } from "@/modules/capitalizer/models/RawCountry";
+import { countries, capitals } from "@/modules/capitalizer/countryCapitalData";
+import countryDataOverrides from "@/modules/capitalizer/countryData/countryDataOverrides";
 
 const rawCountryData: RawCountry[] = require("./boundaryData.json");
 
 class CountryProcessor {
   countryData: { [name: string]: UnhydratedCountry } = {};
 
-  constructor(rawCountries) {
+  constructor(rawCountries: RawCountry[]) {
     for (const country of rawCountries) {
       const { geo_shape, status, name, continent, geo_point_2d } = country;
       const { geometry } = geo_shape;
@@ -37,7 +37,7 @@ class CountryProcessor {
 
       this.countryData[name] = {
         capital,
-        boundaryData,
+        boundaryData: boundaryData,
         status,
         name,
         continent,
@@ -48,7 +48,7 @@ class CountryProcessor {
     }
   }
 
-  private computeBounds = (boundaryData) => {
+  private computeBounds = (boundaryData: LonLatListList) => {
     const point = boundaryData[0][0];
     let minX = point[0];
     let minY = point[1];
