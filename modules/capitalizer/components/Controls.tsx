@@ -1,12 +1,12 @@
-import { useContext, useEffect, useMemo, useRef } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { Vector3 } from "three";
 import CameraControls from "camera-controls";
 import { useFrame, useThree } from "@react-three/fiber";
 import { observer } from "mobx-react-lite";
-
-import { StoreContext } from "../models/Store";
 import { OrbitControls } from "@react-three/drei";
+
+import { StoreContext } from "../models/StoreContext";
 
 CameraControls.install({ THREE });
 

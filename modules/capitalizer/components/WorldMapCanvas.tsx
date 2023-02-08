@@ -11,8 +11,8 @@ import { Perf } from "r3f-perf";
 
 import { Country } from "../models/Country";
 import { Continent } from "../models/RawCountry";
-import { StoreContext } from "../models/Store";
 import Controls from "./Controls";
+import { StoreContext } from "../models/StoreContext";
 
 const continentColor: Record<Continent, number | string> = {
   Antarctica: 0xffffff,
@@ -34,6 +34,10 @@ const BORDER_BASE_Z = 0.002;
 const COUNTRY_BASE_Z = 0;
 const TEXT_BASE_Z = 0.21;
 
+const MIN_FONT_SIZE = 0.15;
+const MAX_FONT_SIZE = 0.8;
+const FONT_SIZE_FACTOR = 0.08;
+
 const CountryMesh = ({ isSelected, country }: CountryWrappedProps) => {
   const { shapes, name, continent, centerCoordinates, width } = country;
 
@@ -53,7 +57,7 @@ const CountryMesh = ({ isSelected, country }: CountryWrappedProps) => {
     textRef.current.position.setZ(newZ + 0.1);
   });
 
-  const fontSize = Math.min(Math.max(width * 0.08, 0.1), 0.8);
+  const fontSize = Math.min(Math.max(width * FONT_SIZE_FACTOR, MIN_FONT_SIZE), MAX_FONT_SIZE);
   const countryObject = (
     <>
       <Text

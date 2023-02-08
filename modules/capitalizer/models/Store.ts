@@ -7,6 +7,8 @@ const countryDataRaw: {
   [name: string]: UnhydratedCountry;
 } = require("../countryData/countryData.json");
 
+const DEBUG_COUNTRY = "";
+
 type CameraMode = "follow" | "control-start" | "control";
 
 type AnimationMode = "zoomToCountry" | "countrySpotlight";
@@ -42,7 +44,14 @@ export class Store {
 
     shuffleArray(memberCountries);
     this.countries = [...memberCountries, ...nonMemberCountries];
-    this.countryIndex = 0;
+
+    if (DEBUG_COUNTRY) {
+      this.countryIndex = this.countries.findIndex((country) => country.name === DEBUG_COUNTRY);
+      console.log("Debugging country:", DEBUG_COUNTRY);
+      console.log(this.countries[this.countryIndex]);
+    } else {
+      this.countryIndex = 0;
+    }
 
     this.initialized = true;
   };
@@ -65,5 +74,3 @@ export class Store {
     this.cameraMode = this.cameraMode === "follow" ? "control-start" : "follow";
   };
 }
-
-export const StoreContext = createContext<Store>(null);

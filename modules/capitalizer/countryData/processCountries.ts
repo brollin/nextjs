@@ -2,6 +2,7 @@ import { saveJson } from "../../common/helpers";
 import { UnhydratedCountry } from "../models/Country";
 import { RawCountry } from "../models/RawCountry";
 import { countries, capitals } from "../countryCapitalData";
+import countryDataOverrides from "./countryDataOverrides";
 
 const rawCountryData: RawCountry[] = require("./boundaryData.json");
 
@@ -27,8 +28,6 @@ class CountryProcessor {
 
       // TODO: mercator projection computation
 
-      const bounds = this.computeBounds(boundaryData);
-
       let capital = "";
       if (status === "Member State") {
         const index = countries.indexOf(name);
@@ -36,14 +35,15 @@ class CountryProcessor {
         else console.log("no country name match for:", name);
       }
 
-      this.countryData[country.name] = {
+      this.countryData[name] = {
         capital,
         boundaryData,
         status,
         name,
         continent,
         centerCoordinates: geo_point_2d,
-        bounds,
+        bounds: this.computeBounds(boundaryData),
+        ...this.getCountryOverrideData(name),
       };
     }
   }
@@ -64,6 +64,8 @@ class CountryProcessor {
     }
     return { minX, minY, maxX, maxY };
   };
+
+  private getCountryOverrideData = (countryName: string) => countryDataOverrides[countryName] ?? {};
 }
 
 const countryLoader = new CountryProcessor(rawCountryData);

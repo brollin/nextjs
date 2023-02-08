@@ -19,6 +19,8 @@ export class Country {
   shapes: Shape[];
 
   get width() {
+    // Special case for those countries with bounds on either side of the prime anti-meridian (e.g. Fiji)
+    if (this.bounds.maxX > 170 && this.bounds.minX < -170) return this.bounds.minX + 360 - this.bounds.maxX;
     return this.bounds.maxX - this.bounds.minX;
   }
 

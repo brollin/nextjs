@@ -7,7 +7,8 @@ import { observer } from "mobx-react-lite";
 import Quiz from "./Quiz";
 import WorldMapCanvas from "./WorldMapCanvas";
 import { theme } from "../theme";
-import { Store, StoreContext } from "../models/Store";
+import { Store } from "../models/Store";
+import { StoreContext } from "../models/StoreContext";
 
 const Capitalizer = observer(() => {
   const store = useContext(StoreContext);

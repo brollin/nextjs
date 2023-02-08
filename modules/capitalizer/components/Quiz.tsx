@@ -3,7 +3,7 @@ import { BsFillCameraVideoFill, BsFillCameraVideoOffFill } from "react-icons/bs"
 import { Button, HStack, Input, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 
-import { StoreContext } from "../models/Store";
+import { StoreContext } from "../models/StoreContext";
 
 const Quiz = observer(() => {
   const store = useContext(StoreContext);
