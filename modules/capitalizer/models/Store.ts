@@ -7,7 +7,7 @@ const countryDataRaw: {
   [name: string]: UnhydratedCountry;
 } = require("../countryData/countryData.json");
 
-const DEBUG_COUNTRY = "Russian Federation";
+const DEBUG_COUNTRY = "";
 
 type CameraMode = "follow" | "control-start" | "control";
 
