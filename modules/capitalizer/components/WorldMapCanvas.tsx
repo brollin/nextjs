@@ -39,7 +39,7 @@ const MAX_FONT_SIZE = 0.8;
 const FONT_SIZE_FACTOR = 0.08;
 
 const CountryMesh = ({ isSelected, country }: CountryMeshProps) => {
-  const { shapes, name, continent, centerCoordinates, width } = country;
+  const { shapes, displayName, name, continent, centerCoordinates, width } = country;
 
   const meshRef = useRef<Mesh>(null);
   const textRef = useRef<Object3D>(null);
@@ -67,7 +67,7 @@ const CountryMesh = ({ isSelected, country }: CountryMeshProps) => {
         color={0xffffff}
         position={new Vector3(centerCoordinates.lon, centerCoordinates.lat, TEXT_BASE_Z)}
       >
-        {name}
+        {displayName}
       </Text>
       <mesh key={name} ref={meshRef}>
         <shapeGeometry attach="geometry" args={[shapes]} />

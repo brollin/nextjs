@@ -14,6 +14,7 @@ export default class Country {
   boundaryData: LonLatList[];
   status: Status;
   name: string;
+  displayName: string;
   continent: Continent;
   centerCoordinates: { lon: number; lat: number };
   bounds: Bounds;
@@ -34,6 +35,7 @@ export default class Country {
     this.boundaryData = country.boundaryData;
     this.status = country.status;
     this.name = country.name;
+    this.displayName = country.displayName;
     this.continent = country.continent;
     this.centerCoordinates = country.centerCoordinates;
     this.bounds = country.bounds;
@@ -48,5 +50,5 @@ export default class Country {
 
 export type UnhydratedCountry = Pick<
   Country,
-  "capital" | "boundaryData" | "status" | "name" | "continent" | "centerCoordinates" | "bounds"
+  "capital" | "boundaryData" | "status" | "name" | "displayName" | "continent" | "centerCoordinates" | "bounds"
 >;

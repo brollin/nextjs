@@ -40,6 +40,7 @@ class CountryProcessor {
         boundaryData: boundaryData,
         status,
         name,
+        displayName: name,
         continent,
         centerCoordinates: geo_point_2d,
         bounds: this.computeBounds(boundaryData),

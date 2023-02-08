@@ -20,13 +20,13 @@ const Quiz = observer(() => {
     <>
       {store.previousCountry ? (
         <Text as="span" color="blue.300">
-          {store.previousCountry.name} - {store.previousCountry.capital}
+          {store.previousCountry.displayName} - {store.previousCountry.capital}
         </Text>
       ) : null}
       <Text textAlign="center">
         What is the capital of{" "}
         <Text as="span" color="green.300">
-          {store.currentCountry?.name}
+          {store.currentCountry?.displayName}
         </Text>
         ?
       </Text>
