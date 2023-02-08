@@ -22,7 +22,7 @@ export default function Chess() {
   }, []);
 
   const logout = () => {
-    me.logout();
+    me?.logout();
     setMe(null);
   };
 

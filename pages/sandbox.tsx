@@ -4,14 +4,14 @@ import Head from "next/head";
 import { main } from "../modules/sandbox/three";
 
 const App = () => {
-  const loaded = useRef(false);
-  const canvasRef = useRef<HTMLCanvasElement>();
+  const loaded = useRef<boolean>(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     if (loaded.current) return;
 
     loaded.current = true;
-    main(canvasRef.current);
+    main(canvasRef.current!);
   }, []);
 
   return (

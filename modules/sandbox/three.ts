@@ -49,7 +49,7 @@ export const main = (canvas: HTMLCanvasElement) => {
     rotation: 0,
     materialMode: "color",
     color: 0x00ff00,
-    texture: null,
+    texture: new THREE.Texture(),
     wireframe: false,
     loadFile: () => fileInput.click(),
     cloneObject: () => handleCloneObject(),
@@ -60,10 +60,10 @@ export const main = (canvas: HTMLCanvasElement) => {
   const fileReader = new FileReader();
   fileReader.onload = () => {
     parameters.materialMode = "texture";
-    parameters.texture = textureLoader.load(fileReader.result.toString());
+    parameters.texture = textureLoader.load(fileReader.result!.toString());
     handleParametersChange();
   };
-  const fileInput = document.getElementById("fileInput");
+  const fileInput = document.getElementById("fileInput")!;
   fileInput.onchange = (event) => {
     const files = (event.target as HTMLInputElement).files;
     if (files?.length) fileReader.readAsDataURL(files[0]);
@@ -97,7 +97,7 @@ export const main = (canvas: HTMLCanvasElement) => {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
-    const newSelectedObject = objects.find((o) => o.id === objectId);
+    const newSelectedObject = objects.find((o) => o.id === objectId)!;
     parameters.selectedObject = objects.findIndex((o) => o.id === objectId);
     parameters.x = newSelectedObject.position.x;
     parameters.y = newSelectedObject.position.y;

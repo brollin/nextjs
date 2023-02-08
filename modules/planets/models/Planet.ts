@@ -52,6 +52,8 @@ export class Planet {
       // but more dense are giants.
       return this.jupiterMasses() > 0.5 ? "ice or gas giant" : "rocky";
     } else if (density < 3) return "ice or gas giant";
+
+    return "unknown";
   };
 
   type = (): PlanetType => {

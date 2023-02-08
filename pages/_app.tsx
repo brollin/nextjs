@@ -1,10 +1,8 @@
+import { AppProps } from "next/app";
+
 import "../styles/globals.css";
+import "../styles/Planets.css"; // Module-specific global styling
 
-// Module-specific global styling
-import "../styles/Planets.css";
-
-function MyApp({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps }: AppProps) {
   return <Component {...pageProps} />;
 }
-
-export default MyApp;

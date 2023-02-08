@@ -1,4 +1,10 @@
-const EarthView = ({ className, cx, cy, r }) => (
+type EarthViewProps = {
+  className: string;
+  cx: number;
+  cy: number;
+  r: number;
+};
+const EarthView = ({ className, cx, cy, r }: EarthViewProps) => (
   <>
     <defs>
       <radialGradient id="earthGradient" cx="0.5" cy="0.5" r="0.8" fx="0.25" fy="0.25">

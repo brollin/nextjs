@@ -126,7 +126,7 @@ const OrbitView: ModeView = ({ planet }) => {
   );
 };
 
-const SurfaceView: ModeView = ({ planet }) => {
+const SurfaceView: ModeView = ({ planet }: { planet: Planet }) => {
   // The fewer total stellar radii, the more we should zoom
   const stellarAngularSize = angularSize(planet.stellarRadius, planet.orbitalSemiMajorAxis);
   const totalAngularSize = 0.5 + stellarAngularSize;
@@ -145,7 +145,7 @@ const SurfaceView: ModeView = ({ planet }) => {
   );
 };
 
-const PlanetInfo = ({ planet }) => (
+const PlanetInfo = ({ planet }: { planet: Planet }) => (
   <>
     <span className={classnames(styles.fadeInRise, styles.planetName)} key={`${planet.id}name`}>
       {planet.name}

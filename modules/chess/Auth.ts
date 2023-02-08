@@ -29,7 +29,7 @@ export class Auth {
     }
 
     // remove the state and code from the query parameters
-    window.history.replaceState(null, null, window.location.pathname);
+    window.history.replaceState(null, "", window.location.pathname);
   };
 
   login = async () => {
