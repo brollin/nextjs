@@ -1,8 +1,8 @@
-import { saveJson } from "@/modules/common/helpers";
-import { UnhydratedCountry } from "@/modules/capitalizer/models/Country";
-import { LonLatListList, RawCountry } from "@/modules/capitalizer/models/RawCountry";
-import { countries, capitals } from "@/modules/capitalizer/countryCapitalData";
-import countryDataOverrides from "@/modules/capitalizer/countryData/countryDataOverrides";
+import { saveJson } from "../../../modules/common/helpers";
+import { UnhydratedCountry } from "../../../modules/capitalizer/models/Country";
+import { LonLatListList, RawCountry } from "../../../modules/capitalizer/models/RawCountry";
+import { countries, capitals } from "../../../modules/capitalizer/countryCapitalData";
+import countryDataOverrides from "../../../modules/capitalizer/countryData/countryDataOverrides";
 
 const rawCountryData: RawCountry[] = require("./boundaryData.json");
 

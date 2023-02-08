@@ -1,4 +1,4 @@
-import { UnhydratedCountry } from "@/modules/capitalizer/models/Country";
+import { UnhydratedCountry } from "../../../modules/capitalizer/models/Country";
 
 const countryDataOverrides: Record<string, Partial<UnhydratedCountry>> = {
   Fiji: {
