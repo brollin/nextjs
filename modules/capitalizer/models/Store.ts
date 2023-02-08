@@ -14,6 +14,7 @@ type CameraMode = "follow" | "control-start" | "control";
 type AnimationMode = "zoomToCountry" | "countrySpotlight";
 
 export default class Store {
+  animationMode: AnimationMode = "zoomToCountry";
   cameraMode: CameraMode = "follow";
 
   correctCount = 0;
@@ -21,7 +22,6 @@ export default class Store {
   countries: Country[] = [];
 
   initialized = false;
-  animationMode: AnimationMode = "zoomToCountry";
 
   get previousCountry(): Country | undefined {
     return !this.initialized || this.countryIndex - 1 < 0 ? undefined : this.countries[this.countryIndex - 1];
