@@ -11,7 +11,10 @@ import { OrbitControls } from "@react-three/drei";
 CameraControls.install({ THREE });
 
 const VIEWING_MARGIN = 2;
-const TILT_ANGLE = 3.5;
+const MIN_TILT_ANGLE = 2.5;
+const MAX_TILT_ANGLE = 15;
+const TILT_FACTOR = 1.8;
+const TILT_OFFSET = 0.5;
 const NEAR_CAMERA_LIMIT = 3;
 const FAR_CAMERA_LIMIT = 80;
 
@@ -20,17 +23,13 @@ const Controls = observer(() => {
   const { camera, gl } = useThree();
   const cameraControls = useMemo(() => new CameraControls(camera, gl.domElement), [camera, gl.domElement]);
 
-  const { minX, minY, maxX, maxY } = store.currentCountry.bounds;
-  const distance = cameraControls.getDistanceToFitBox(
-    (maxX - minX) * VIEWING_MARGIN,
-    (maxY - minY) * VIEWING_MARGIN,
-    0.01
-  );
+  const { centerCoordinates, width, height } = store.currentCountry;
+  const distance = cameraControls.getDistanceToFitBox(width * VIEWING_MARGIN, height * VIEWING_MARGIN, 0.01);
 
-  const { centerCoordinates } = store.currentCountry;
+  const tiltAngle = Math.min(Math.max(width / TILT_FACTOR + TILT_OFFSET, MIN_TILT_ANGLE), MAX_TILT_ANGLE);
   const positionFinal = new Vector3(
     centerCoordinates.lon,
-    centerCoordinates.lat - TILT_ANGLE,
+    centerCoordinates.lat - tiltAngle,
     Math.min(Math.max(distance, NEAR_CAMERA_LIMIT), FAR_CAMERA_LIMIT)
   );
   const targetFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);

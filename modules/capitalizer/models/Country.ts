@@ -18,6 +18,14 @@ export class Country {
   bounds: Bounds;
   shapes: Shape[];
 
+  get width() {
+    return this.bounds.maxX - this.bounds.minX;
+  }
+
+  get height() {
+    return this.bounds.maxY - this.bounds.minY;
+  }
+
   constructor(country: UnhydratedCountry) {
     this.capital = country.capital;
     this.boundaryData = country.boundaryData;
@@ -35,4 +43,7 @@ export class Country {
   };
 }
 
-export type UnhydratedCountry = Omit<Country, "shapes">;
+export type UnhydratedCountry = Pick<
+  Country,
+  "capital" | "boundaryData" | "status" | "name" | "continent" | "centerCoordinates" | "bounds"
+>;
