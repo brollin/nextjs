@@ -25,7 +25,7 @@ const continentColor: Record<Continent, number | string> = {
 
 const selectedColor = "darkslateblue";
 
-type CountryWrappedProps = {
+type CountryMeshProps = {
   isSelected: boolean;
   country: Country;
 };
@@ -38,7 +38,7 @@ const MIN_FONT_SIZE = 0.15;
 const MAX_FONT_SIZE = 0.8;
 const FONT_SIZE_FACTOR = 0.08;
 
-const CountryMesh = ({ isSelected, country }: CountryWrappedProps) => {
+const CountryMesh = ({ isSelected, country }: CountryMeshProps) => {
   const { shapes, name, continent, centerCoordinates, width } = country;
 
   const meshRef = useRef<Mesh>(null);

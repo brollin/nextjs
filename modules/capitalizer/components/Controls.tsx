@@ -15,7 +15,7 @@ const MIN_TILT_ANGLE = 2.5;
 const MAX_TILT_ANGLE = 15;
 const TILT_FACTOR = 1.8;
 const TILT_OFFSET = 0.5;
-const NEAR_CAMERA_LIMIT = 3;
+const NEAR_CAMERA_LIMIT = 5;
 const FAR_CAMERA_LIMIT = 80;
 
 const Controls = observer(() => {
