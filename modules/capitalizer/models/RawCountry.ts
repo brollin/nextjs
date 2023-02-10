@@ -1,4 +1,4 @@
-export type LonLat = number[];
+export type LonLat = [number, number];
 export type LonLatList = LonLat[];
 export type LonLatListList = LonLatList[];
 
@@ -33,6 +33,6 @@ export type RawCountry = {
   name: string;
   continent: Continent;
   region: string;
-  iso_3166_1_alpha_2_codes: string;
+  iso_3166_1_alpha_2_codes: string | null;
   french_short: string;
 };

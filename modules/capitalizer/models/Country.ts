@@ -11,6 +11,7 @@ type Bounds = {
 
 export default class Country {
   capital: string;
+  capitalCoordinates?: { lon: number; lat: number };
   boundaryData: LonLatList[];
   status: Status;
   name: string;
@@ -19,6 +20,7 @@ export default class Country {
   centerCoordinates: { lon: number; lat: number };
   bounds: Bounds;
   shapes: Shape[] = [];
+  countryCode?: string; // iso_3166_1_alpha_2_code
 
   get width() {
     // Special case for those countries with bounds on either side of the prime anti-meridian (e.g. Fiji)
@@ -39,6 +41,8 @@ export default class Country {
     this.continent = country.continent;
     this.centerCoordinates = country.centerCoordinates;
     this.bounds = country.bounds;
+    this.countryCode = country.countryCode;
+    this.capitalCoordinates = country.capitalCoordinates;
 
     this.hydrate();
   }
@@ -50,5 +54,14 @@ export default class Country {
 
 export type UnhydratedCountry = Pick<
   Country,
-  "capital" | "boundaryData" | "status" | "name" | "displayName" | "continent" | "centerCoordinates" | "bounds"
+  | "capital"
+  | "boundaryData"
+  | "status"
+  | "name"
+  | "displayName"
+  | "continent"
+  | "centerCoordinates"
+  | "bounds"
+  | "countryCode"
+  | "capitalCoordinates"
 >;

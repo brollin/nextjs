@@ -3,6 +3,7 @@ import { UnhydratedCountry } from "../../../modules/capitalizer/models/Country";
 import { LonLatListList, RawCountry } from "../../../modules/capitalizer/models/RawCountry";
 import { countries, capitals } from "../../../modules/capitalizer/countryCapitalData";
 import countryDataOverrides from "../../../modules/capitalizer/countryData/countryDataOverrides";
+import countryCapitalData from "../countryCapitalData2";
 
 const rawCountryData: RawCountry[] = require("./boundaryData.json");
 
@@ -11,7 +12,7 @@ class CountryProcessor {
 
   constructor(rawCountries: RawCountry[]) {
     for (const country of rawCountries) {
-      const { geo_shape, status, name, continent, geo_point_2d } = country;
+      const { geo_shape, status, name, continent, geo_point_2d, iso_3166_1_alpha_2_codes } = country;
       const { geometry } = geo_shape;
 
       let boundaryData = [];
@@ -28,6 +29,7 @@ class CountryProcessor {
 
       // TODO: mercator projection computation
 
+      // TODO: phase out this dataset in favor of the below one
       let capital = "";
       if (status === "Member State") {
         const index = countries.indexOf(name);
@@ -35,8 +37,22 @@ class CountryProcessor {
         else console.log("no country name match for:", name);
       }
 
+      let capitalCoordinates;
+      if (status === "Member State") {
+        const index = countryCapitalData.findIndex(
+          (countryItem) => countryItem.CountryCode === iso_3166_1_alpha_2_codes
+        );
+
+        if (index >= 0) {
+          const countryCapitalDatum = countryCapitalData[index];
+          capitalCoordinates = {
+            lon: Number(countryCapitalDatum.CapitalLongitude),
+            lat: Number(countryCapitalDatum.CapitalLatitude),
+          };
+        } else console.log("no countryCapitalData CountryCode match for:", iso_3166_1_alpha_2_codes);
+      }
+
       this.countryData[name] = {
-        capital,
         boundaryData: boundaryData,
         status,
         name,
@@ -44,6 +60,8 @@ class CountryProcessor {
         continent,
         centerCoordinates: geo_point_2d,
         bounds: this.computeBounds(boundaryData),
+        capital,
+        capitalCoordinates,
         ...this.getCountryOverrideData(name),
       };
     }
