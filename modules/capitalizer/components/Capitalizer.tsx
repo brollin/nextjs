@@ -23,7 +23,7 @@ const Capitalizer = observer(() => {
       <WorldMapCanvas />
       <VStack h="100vh" justifyContent="end">
         <Card size="md" w={370} marginBottom={5}>
-          <CardBody paddingTop={6}>
+          <CardBody>
             <Quiz />
           </CardBody>
         </Card>

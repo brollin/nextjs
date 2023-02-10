@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 
 import Country, { UnhydratedCountry } from "@/modules/capitalizer/models/Country";
 import { doesTextRoughlyMatch, shuffleArray } from "@/modules/capitalizer/helpers";
+import { Continent } from "./RawCountry";
 
 const countryDataRaw: {
   [name: string]: UnhydratedCountry;
@@ -13,9 +14,15 @@ type CameraMode = "follow" | "control-start" | "control";
 
 type AnimationMode = "zoomToCountry" | "countrySpotlight";
 
+type GameMode = "learn" | "quiz";
+
+export type ContinentSelection = Continent | "All continents";
+
 export default class Store {
   animationMode: AnimationMode = "zoomToCountry";
   cameraMode: CameraMode = "follow";
+  gameMode: GameMode = "learn";
+  continentSelection: ContinentSelection = "All continents";
 
   correctCount = 0;
   countryIndex = -1;
@@ -58,7 +65,7 @@ export default class Store {
 
   checkCapital = (potentialAnswer: string): boolean => {
     if (doesTextRoughlyMatch(potentialAnswer, this.currentCountry!.capital)) {
-      this.countryIndex++;
+      this.advance();
       this.correctCount++;
       return true;
     }
@@ -67,7 +74,25 @@ export default class Store {
   };
 
   advanceAfterIncorrect = () => {
-    this.countryIndex++;
+    this.advance();
+  };
+
+  advance = () => {
+    if (this.continentSelection === "All continents") {
+      this.countryIndex++;
+      return;
+    }
+
+    let newIndex = this.countryIndex + 1;
+    if (newIndex >= this.countries.length) newIndex = 0;
+    while (
+      this.countries[newIndex].continent !== this.continentSelection ||
+      this.countries[newIndex].status !== "Member State"
+    ) {
+      newIndex++;
+      if (newIndex >= this.countries.length) newIndex = 0;
+    }
+    this.countryIndex = newIndex;
   };
 
   toggleCameraMode = () => {

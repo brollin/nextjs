@@ -1,10 +1,12 @@
-import React, { memo, useRef } from "react";
+import React, { useContext, useRef } from "react";
 import { Group, Mesh, Object3D, Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
-import { Circle, Cylinder, Text } from "@react-three/drei";
+import { Circle, Text } from "@react-three/drei";
+import { observer } from "mobx-react-lite";
 
 import Country from "@/modules/capitalizer/models/Country";
 import { Continent } from "@/modules/capitalizer/models/RawCountry";
+import StoreContext from "@/modules/capitalizer/models/StoreContext";
 
 const CONTINENT_COLOR: Record<Continent, number | string> = {
   Antarctica: 0xffffff,
@@ -24,6 +26,9 @@ const CAPITAL_BASE_Z = COUNTRY_BASE_Z + 0.01;
 const MIN_FONT_SIZE = 0.15;
 const MAX_FONT_SIZE = 0.8;
 const FONT_SIZE_FACTOR = 0.08;
+
+const MIN_CAPITAL_OFFSET_SIZE = 0.15;
+const MAX_CAPITAL_OFFSET_SIZE = 0.8;
 const CAPITAL_OFFSET_FACTOR = 0.08;
 
 type CountryMeshProps = {
@@ -31,7 +36,8 @@ type CountryMeshProps = {
   country: Country;
 };
 
-const CountryMesh = ({ isSelected, country }: CountryMeshProps) => {
+const CountryMesh = observer(({ isSelected, country }: CountryMeshProps) => {
+  const store = useContext(StoreContext);
   const meshRef = useRef<Mesh>(null);
   const textRef = useRef<Object3D>(null);
   const capitalRef = useRef<Group>(null);
@@ -54,10 +60,13 @@ const CountryMesh = ({ isSelected, country }: CountryMeshProps) => {
   });
 
   const fontSize = Math.min(Math.max(width * FONT_SIZE_FACTOR, MIN_FONT_SIZE), MAX_FONT_SIZE);
-  const capitalOffset = Math.min(Math.max(width * CAPITAL_OFFSET_FACTOR, MIN_FONT_SIZE), MAX_FONT_SIZE);
+  const capitalOffset = Math.min(
+    Math.max(width * CAPITAL_OFFSET_FACTOR, MIN_CAPITAL_OFFSET_SIZE),
+    MAX_CAPITAL_OFFSET_SIZE
+  );
   return (
     <>
-      {capitalCoordinates && isSelected ? (
+      {capitalCoordinates && isSelected && store.gameMode === "learn" ? (
         <group ref={capitalRef}>
           <Circle
             args={[Math.min(width / 100, 0.5), 18]}
@@ -88,8 +97,6 @@ const CountryMesh = ({ isSelected, country }: CountryMeshProps) => {
       </mesh>
     </>
   );
-};
+});
 
-const CountryMeshMemo = memo(CountryMesh);
-
-export default CountryMeshMemo;
+export default CountryMesh;

@@ -9,7 +9,7 @@ import { Perf } from "r3f-perf";
 
 import Controls from "@/modules/capitalizer/components/Controls";
 import StoreContext from "@/modules/capitalizer/models/StoreContext";
-import CountryMeshMemo from "@/modules/capitalizer/components/CountryMesh";
+import CountryMesh from "@/modules/capitalizer/components/CountryMesh";
 
 const BORDER_BASE_Z = 0.002;
 
@@ -42,11 +42,7 @@ const AllCountries = observer(() => {
   return (
     <>
       {store.countries.map((country) => (
-        <CountryMeshMemo
-          key={country.name}
-          isSelected={store.currentCountry?.name === country.name}
-          country={country}
-        />
+        <CountryMesh key={country.name} isSelected={store.currentCountry?.name === country.name} country={country} />
       ))}
       <AllBorders />
     </>
