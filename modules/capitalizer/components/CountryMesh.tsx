@@ -54,6 +54,8 @@ const CountryMesh = observer(({ isSelected, country }: CountryMeshProps) => {
             material-color="hotpink"
           />
           <Text
+            outlineColor={0x000000}
+            outlineWidth={0.01}
             fontSize={fontSize * 0.65}
             color={0xffffff}
             position={new Vector3(capitalCoordinates.lon, capitalCoordinates.lat + capitalOffset, TEXT_BASE_Z)}
@@ -65,6 +67,7 @@ const CountryMesh = observer(({ isSelected, country }: CountryMeshProps) => {
       <Text
         ref={textRef}
         outlineColor={0x000000}
+        outlineWidth={0.01}
         fontSize={fontSize}
         color={0xffffff}
         position={new Vector3(centerCoordinates.lon, centerCoordinates.lat, TEXT_BASE_Z)}
