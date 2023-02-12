@@ -29,7 +29,7 @@ class CountryProcessor {
 
       // TODO: mercator projection computation
 
-      // TODO: phase out this dataset in favor of the below one
+      // TODO: remove this dataset in favor of the below one
       let capital = "";
       if (status === "Member State") {
         const index = countries.indexOf(name);
@@ -62,6 +62,7 @@ class CountryProcessor {
         bounds: this.computeBounds(boundaryData),
         capital,
         capitalCoordinates,
+        countryCode: iso_3166_1_alpha_2_codes ?? null,
         ...this.getCountryOverrideData(name),
       };
     }

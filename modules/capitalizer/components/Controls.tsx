@@ -7,31 +7,24 @@ import { observer } from "mobx-react-lite";
 import { OrbitControls } from "@react-three/drei";
 
 import StoreContext from "@/modules/capitalizer/models/StoreContext";
+import { useCountryScalingData } from "@/modules/capitalizer/hooks/countryScalingData";
 
 CameraControls.install({ THREE });
-
-const VIEWING_MARGIN = 2;
-const MIN_TILT_ANGLE = 2.5;
-const MAX_TILT_ANGLE = 15;
-const TILT_FACTOR = 1.8;
-const TILT_OFFSET = 0.5;
-const NEAR_CAMERA_LIMIT = 5;
-const FAR_CAMERA_LIMIT = 80;
 
 const Controls = observer(() => {
   const store = useContext(StoreContext);
   const { camera, gl } = useThree();
-  const cameraControls = useMemo(() => new CameraControls(camera, gl.domElement), [camera, gl.domElement]);
-
-  const { centerCoordinates, width, height } = store.currentCountry!;
-  const distance = cameraControls.getDistanceToFitBox(width * VIEWING_MARGIN, height * VIEWING_MARGIN, 0.01);
-
-  const tiltAngle = Math.min(Math.max(width / TILT_FACTOR + TILT_OFFSET, MIN_TILT_ANGLE), MAX_TILT_ANGLE);
-  const positionFinal = new Vector3(
-    centerCoordinates.lon,
-    centerCoordinates.lat - tiltAngle,
-    Math.min(Math.max(distance, NEAR_CAMERA_LIMIT), FAR_CAMERA_LIMIT)
+  const cameraControls = useMemo(
+    () => (store.cameraControls = new CameraControls(camera, gl.domElement)),
+    [camera, gl.domElement, store]
   );
+
+  const { tiltAngle, cameraDistance } = useCountryScalingData();
+
+  const country = store.currentCountry!;
+  const { centerCoordinates } = country;
+
+  const positionFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat - tiltAngle, cameraDistance);
   const targetFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);
   const target = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);
   store.animationMode = "zoomToCountry";

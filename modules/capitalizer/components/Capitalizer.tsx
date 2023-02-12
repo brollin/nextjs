@@ -3,7 +3,7 @@ import Head from "next/head";
 import { Card, CardBody, ChakraProvider, VStack } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 
-import Quiz from "@/modules/capitalizer/components/Quiz";
+import UserInterface from "@/modules/capitalizer/components/UserInterface";
 import WorldMapCanvas from "@/modules/capitalizer/components/WorldMapCanvas";
 import theme from "@/modules/capitalizer/theme";
 import Store from "@/modules/capitalizer/models/Store";
@@ -22,10 +22,8 @@ const Capitalizer = observer(() => {
       </Head>
       <WorldMapCanvas />
       <VStack h="100vh" justifyContent="end">
-        <Card size="md" w={370} marginBottom={5}>
-          <CardBody>
-            <Quiz />
-          </CardBody>
+        <Card size="md" w={370} padding={3} marginBottom={5}>
+          <UserInterface />
         </Card>
       </VStack>
     </>

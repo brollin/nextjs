@@ -1,8 +1,9 @@
 import { makeAutoObservable } from "mobx";
+import CameraControls from "camera-controls";
 
 import Country, { UnhydratedCountry } from "@/modules/capitalizer/models/Country";
 import { doesTextRoughlyMatch, shuffleArray } from "@/modules/capitalizer/helpers";
-import { Continent } from "./RawCountry";
+import { Continent } from "@/modules/capitalizer/models/RawCountry";
 
 const countryDataRaw: {
   [name: string]: UnhydratedCountry;
@@ -29,6 +30,8 @@ export default class Store {
   countries: Country[] = [];
 
   initialized = false;
+
+  cameraControls?: CameraControls;
 
   get previousCountry(): Country | undefined {
     return !this.initialized || this.countryIndex - 1 < 0 ? undefined : this.countries[this.countryIndex - 1];
@@ -97,5 +100,9 @@ export default class Store {
 
   toggleCameraMode = () => {
     this.cameraMode = this.cameraMode === "follow" ? "control-start" : "follow";
+  };
+
+  toggleGameMode = () => {
+    this.gameMode = this.gameMode === "quiz" ? "learn" : "quiz";
   };
 }

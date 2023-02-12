@@ -20,7 +20,7 @@ export default class Country {
   centerCoordinates: { lon: number; lat: number };
   bounds: Bounds;
   shapes: Shape[] = [];
-  countryCode?: string; // iso_3166_1_alpha_2_code
+  countryCode: string | null; // iso_3166_1_alpha_2_code
 
   get width() {
     // Special case for those countries with bounds on either side of the prime anti-meridian (e.g. Fiji)
