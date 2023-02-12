@@ -1,6 +1,6 @@
 .fadeInRise {
   animation-name: fadeInRise;
-  animation-duration: 0.7s;
+  animation-duration: 0.5s;
   animation-timing-function: ease-in-out;
 }
 
@@ -28,5 +28,20 @@
   }
   100% {
     transform: rotate(90deg);
+  }
+}
+
+.glowFade {
+  animation-name: glowFade;
+  animation-duration: 0.3s;
+  animation-timing-function: linear;
+}
+
+@keyframes glowFade {
+  0% {
+    background-color: grey;
+  }
+  100% {
+    background-color: transparent;
   }
 }

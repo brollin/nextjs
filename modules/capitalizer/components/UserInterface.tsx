@@ -103,7 +103,12 @@ const LearnView = observer(({ togglePanel, isPanelOpen }: LearnViewProps) => {
         </GridItem>
         <GridItem>
           <VStack justify="center" alignItems="flex-end" height="100%">
-            <Box onClick={store.advance}>
+            <Box
+              key={store.currentCountry!.countryCode}
+              className={styles.glowFade}
+              borderRadius={35}
+              onClick={store.advance}
+            >
               <BsArrowRightCircle size={35} />
             </Box>
           </VStack>
