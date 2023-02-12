@@ -14,3 +14,19 @@
     transform: translate3d(0, 0, 0);
   }
 }
+
+.rotate {
+  animation-name: rotate;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(90deg);
+  }
+}

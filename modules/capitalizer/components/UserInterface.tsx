@@ -57,19 +57,24 @@ const UserInterface = observer(() => {
               ))}
             </Select>
           </VStack>
-          <Divider marginTop={1} marginBottom={3} />
+          <Divider marginTop={2} marginBottom={3} />
         </>
       ) : null}
-      {store.gameMode === "quiz" ? <QuizView togglePanel={togglePanel} /> : <LearnView togglePanel={togglePanel} />}
+      {store.gameMode === "quiz" ? (
+        <QuizView isPanelOpen={isPanelOpen} togglePanel={togglePanel} />
+      ) : (
+        <LearnView isPanelOpen={isPanelOpen} togglePanel={togglePanel} />
+      )}
     </>
   );
 });
 
 type LearnViewProps = {
   togglePanel: () => void;
+  isPanelOpen: boolean;
 };
 
-const LearnView = observer(({ togglePanel }: LearnViewProps) => {
+const LearnView = observer(({ togglePanel, isPanelOpen }: LearnViewProps) => {
   const store = useContext(StoreContext);
   return (
     <>
@@ -93,7 +98,7 @@ const LearnView = observer(({ togglePanel }: LearnViewProps) => {
         </GridItem>
         <GridItem>
           <VStack alignItems="flex-end">
-            <BsFillGearFill onClick={togglePanel} size={15} />
+            <BsFillGearFill className={isPanelOpen ? styles.rotate : ""} onClick={togglePanel} size={15} />
           </VStack>
         </GridItem>
         <GridItem>
@@ -110,9 +115,10 @@ const LearnView = observer(({ togglePanel }: LearnViewProps) => {
 
 type QuizViewProps = {
   togglePanel: () => void;
+  isPanelOpen: boolean;
 };
 
-const QuizView = observer(({ togglePanel }: QuizViewProps) => {
+const QuizView = observer(({ togglePanel, isPanelOpen }: QuizViewProps) => {
   const store = useContext(StoreContext);
 
   const [answerText, setAnswerText] = useState("");
@@ -127,7 +133,7 @@ const QuizView = observer(({ togglePanel }: QuizViewProps) => {
   return (
     <>
       <HStack justify="flex-end" alignContent="center" marginBottom={2}>
-        <BsFillGearFill onClick={togglePanel} size={15} />
+        <BsFillGearFill className={isPanelOpen ? styles.rotate : ""} onClick={togglePanel} size={15} />
       </HStack>
       {store.previousCountry ? (
         <Text marginBottom={2} textAlign="center" color="blue.300">
