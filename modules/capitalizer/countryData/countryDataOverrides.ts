@@ -59,6 +59,9 @@ const countryDataOverrides: Record<string, Partial<UnhydratedCountry>> = {
   "United Republic of Tanzania": {
     displayName: "Tanzania",
   },
+  "South Africa": {
+    holeIndices: [1],
+  },
 };
 
 export default countryDataOverrides;

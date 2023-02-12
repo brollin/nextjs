@@ -61,6 +61,9 @@ class CountryProcessor {
       switch (geometry.type) {
         case "Polygon":
           boundaryData.push(geometry.coordinates[0]);
+
+          // For south africa, I found a hole saved as a second boundary on a polygon
+          if (geometry.coordinates.length > 1) boundaryData.push(geometry.coordinates[1]);
           break;
         case "MultiPolygon":
           for (const coordinatesList of geometry.coordinates) boundaryData.push(coordinatesList[0]);
@@ -98,7 +101,7 @@ class CountryProcessor {
       continentCountryCount[country.continent]++;
 
       this.countryData[name] = {
-        boundaryData: boundaryData,
+        boundaryData,
         status,
         name,
         displayName: name,
@@ -109,6 +112,7 @@ class CountryProcessor {
         capitalCoordinates,
         countryCode: iso_3166_1_alpha_2_codes ?? null,
         color,
+        holeIndices: [],
         ...this.getCountryOverrideData(name),
       };
     }

@@ -1,4 +1,4 @@
-import { Shape, Vector2 } from "three";
+import { Path, Shape, Vector2 } from "three";
 
 import { Continent, LonLatList, Status } from "@/modules/capitalizer/models/RawCountry";
 
@@ -20,6 +20,7 @@ export default class Country {
   centerCoordinates: { lon: number; lat: number };
   bounds: Bounds;
   shapes: Shape[] = [];
+  holeIndices: number[];
   countryCode: string | null; // iso_3166_1_alpha_2_code
   color: string;
 
@@ -45,12 +46,25 @@ export default class Country {
     this.countryCode = country.countryCode;
     this.capitalCoordinates = country.capitalCoordinates;
     this.color = country.color;
+    this.holeIndices = country.holeIndices;
 
     this.hydrate();
   }
 
   private hydrate = () => {
-    this.shapes = this.boundaryData.map((countryPart) => new Shape(countryPart.map(([x, y]) => new Vector2(x, y))));
+    this.shapes = this.boundaryData
+      .map((countryPart, index) =>
+        this.holeIndices.includes(index) ? null : new Shape(countryPart.map(([x, y]) => new Vector2(x, y)))
+      )
+      .filter((s) => !!s) as Shape[];
+
+    if (this.holeIndices.length) {
+      console.log(this.name);
+      console.log("length of boundary data", this.boundaryData.length);
+      this.shapes[0].holes = this.holeIndices.map(
+        (holeIndex) => new Path(this.boundaryData[holeIndex].map(([x, y]) => new Vector2(x, y)))
+      );
+    }
   };
 }
 
@@ -67,4 +81,5 @@ export type UnhydratedCountry = Pick<
   | "countryCode"
   | "capitalCoordinates"
   | "color"
+  | "holeIndices"
 >;
