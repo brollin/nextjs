@@ -33,9 +33,7 @@ export default class Store {
 
   cameraControls?: CameraControls;
 
-  get previousCountry(): Country | undefined {
-    return !this.initialized || this.countryIndex - 1 < 0 ? undefined : this.countries[this.countryIndex - 1];
-  }
+  previousCountry: Country | undefined;
 
   get currentCountry(): Country | undefined {
     return !this.initialized || this.countryIndex < 0 ? undefined : this.countries[this.countryIndex];
@@ -81,6 +79,8 @@ export default class Store {
   };
 
   advance = () => {
+    this.previousCountry = this.currentCountry;
+
     if (this.continentSelection === "All continents") {
       this.countryIndex++;
       return;
