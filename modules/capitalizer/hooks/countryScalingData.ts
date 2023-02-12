@@ -1,5 +1,7 @@
-import StoreContext from "@/modules/capitalizer/models/StoreContext";
 import { useContext, useMemo } from "react";
+
+import Country from "@/modules/capitalizer/models/Country";
+import StoreContext from "@/modules/capitalizer/models/StoreContext";
 
 const VIEWING_MARGIN = 2;
 const NEAR_CAMERA_LIMIT = 5;
@@ -25,7 +27,7 @@ type CountryScalingData = {
   capitalOffset: number;
 };
 
-export const useCountryScalingData = (): CountryScalingData => {
+export const useCountryScalingData = (country: Country): CountryScalingData => {
   const store = useContext(StoreContext);
   const { currentCountry, cameraControls } = store;
 
@@ -44,10 +46,8 @@ export const useCountryScalingData = (): CountryScalingData => {
   }, [currentCountry]);
 
   const fontSize = useMemo(() => {
-    if (!currentCountry) return MIN_FONT_SIZE;
-
-    return Math.min(Math.max(currentCountry.width * FONT_SIZE_FACTOR, MIN_FONT_SIZE), MAX_FONT_SIZE);
-  }, [currentCountry]);
+    return Math.min(Math.max(country.width * FONT_SIZE_FACTOR, MIN_FONT_SIZE), MAX_FONT_SIZE);
+  }, [country]);
 
   const capitalOffset = useMemo(() => {
     if (!store.currentCountry || !store.currentCountry.capitalCoordinates) return MAX_CAPITAL_OFFSET_SIZE;

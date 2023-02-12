@@ -19,9 +19,9 @@ const Controls = observer(() => {
     [camera, gl.domElement, store]
   );
 
-  const { tiltAngle, cameraDistance } = useCountryScalingData();
-
   const country = store.currentCountry!;
+  const { tiltAngle, cameraDistance } = useCountryScalingData(country);
+
   const { centerCoordinates } = country;
 
   const positionFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat - tiltAngle, cameraDistance);
