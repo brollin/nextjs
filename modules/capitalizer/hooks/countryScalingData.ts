@@ -14,10 +14,15 @@ const MIN_FONT_SIZE = 0.15;
 const MAX_FONT_SIZE = 0.8;
 const FONT_SIZE_FACTOR = 0.08;
 
+const MIN_CAPITAL_OFFSET_SIZE = 0.15;
+const MAX_CAPITAL_OFFSET_SIZE = 0.8;
+const CAPITAL_OFFSET_FACTOR = 0.03;
+
 type CountryScalingData = {
   cameraDistance: number;
   tiltAngle: number;
   fontSize: number;
+  capitalOffset: number;
 };
 
 export const useCountryScalingData = (): CountryScalingData => {
@@ -44,5 +49,20 @@ export const useCountryScalingData = (): CountryScalingData => {
     return Math.min(Math.max(currentCountry.width * FONT_SIZE_FACTOR, MIN_FONT_SIZE), MAX_FONT_SIZE);
   }, [currentCountry]);
 
-  return { cameraDistance, tiltAngle, fontSize };
+  const capitalOffset = useMemo(() => {
+    if (!store.currentCountry || !store.currentCountry.capitalCoordinates) return MAX_CAPITAL_OFFSET_SIZE;
+
+    const direction =
+      store.currentCountry.centerCoordinates.lat > store.currentCountry.capitalCoordinates.lat ? -1.5 : 1;
+
+    return (
+      direction *
+      Math.min(
+        Math.max(store.currentCountry.width * CAPITAL_OFFSET_FACTOR, MIN_CAPITAL_OFFSET_SIZE),
+        MAX_CAPITAL_OFFSET_SIZE
+      )
+    );
+  }, [store.currentCountry]);
+
+  return { cameraDistance, tiltAngle, fontSize, capitalOffset };
 };

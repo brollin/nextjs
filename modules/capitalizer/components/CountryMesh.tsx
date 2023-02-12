@@ -5,28 +5,14 @@ import { Circle, Text } from "@react-three/drei";
 import { observer } from "mobx-react-lite";
 
 import Country from "@/modules/capitalizer/models/Country";
-import { Continent } from "@/modules/capitalizer/models/RawCountry";
 import StoreContext from "@/modules/capitalizer/models/StoreContext";
 import { useCountryScalingData } from "@/modules/capitalizer/hooks/countryScalingData";
-
-const CONTINENT_COLOR: Record<Continent, number | string> = {
-  Antarctica: 0xffffff,
-  Asia: "indianred",
-  Europe: "cornflowerblue",
-  Americas: "darkseagreen",
-  Africa: "darkgoldenrod",
-  Oceania: "darkcyan",
-};
 
 const SELECTED_COLOR = "rebeccapurple";
 
 const COUNTRY_BASE_Z = 0;
 const TEXT_BASE_Z = 0.21;
 const CAPITAL_BASE_Z = COUNTRY_BASE_Z + 0.01;
-
-const MIN_CAPITAL_OFFSET_SIZE = 0.15;
-const MAX_CAPITAL_OFFSET_SIZE = 0.8;
-const CAPITAL_OFFSET_FACTOR = 0.08;
 
 type CountryMeshProps = {
   isSelected: boolean;
@@ -38,11 +24,10 @@ const CountryMesh = observer(({ isSelected, country }: CountryMeshProps) => {
   const meshRef = useRef<Mesh>(null);
   const textRef = useRef<Object3D>(null);
   const capitalRef = useRef<Group>(null);
+  const { fontSize, capitalOffset } = useCountryScalingData();
 
-  const { fontSize } = useCountryScalingData();
+  const { shapes, displayName, name, color, centerCoordinates, width, capital, capitalCoordinates } = country;
 
-  const { shapes, displayName, name, continent, color, centerCoordinates, width, capital, capitalCoordinates } =
-    country;
   useFrame(() => {
     if (!isSelected) {
       if (meshRef.current?.position.z !== 0) {
@@ -59,10 +44,6 @@ const CountryMesh = observer(({ isSelected, country }: CountryMeshProps) => {
     capitalRef.current?.position.setZ(newZ + CAPITAL_BASE_Z);
   });
 
-  const capitalOffset = Math.min(
-    Math.max(width * CAPITAL_OFFSET_FACTOR, MIN_CAPITAL_OFFSET_SIZE),
-    MAX_CAPITAL_OFFSET_SIZE
-  );
   return (
     <>
       {capitalCoordinates && isSelected && store.gameMode === "learn" ? (
@@ -75,7 +56,7 @@ const CountryMesh = observer(({ isSelected, country }: CountryMeshProps) => {
           <Text
             fontSize={fontSize * 0.65}
             color={0xffffff}
-            position={new Vector3(capitalCoordinates.lon, capitalCoordinates.lat - capitalOffset, TEXT_BASE_Z)}
+            position={new Vector3(capitalCoordinates.lon, capitalCoordinates.lat + capitalOffset, TEXT_BASE_Z)}
           >
             {capital}
           </Text>
