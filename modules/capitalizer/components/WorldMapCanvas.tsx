@@ -44,7 +44,6 @@ const AllCountries = observer(() => {
       {store.countries.map((country) => (
         <CountryMesh key={country.name} isSelected={store.currentCountry?.name === country.name} country={country} />
       ))}
-      <AllBorders />
     </>
   );
 });
@@ -57,6 +56,7 @@ const WorldMapCanvas = observer(() => {
         {/* <Perf /> */}
         {store.currentCountry ? <Controls /> : null}
         {store.countries ? <AllCountries /> : null}
+        {store.countries ? <AllBorders /> : null}
       </Canvas>
     </Box>
   );

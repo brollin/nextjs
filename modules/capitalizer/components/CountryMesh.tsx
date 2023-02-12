@@ -11,7 +11,7 @@ import { useCountryScalingData } from "@/modules/capitalizer/hooks/countryScalin
 const SELECTED_COLOR = "rebeccapurple";
 
 const COUNTRY_BASE_Z = 0;
-const TEXT_BASE_Z = 0.21;
+const TEXT_BASE_Z = 0.225;
 const CAPITAL_BASE_Z = COUNTRY_BASE_Z + 0.01;
 
 type CountryMeshProps = {
