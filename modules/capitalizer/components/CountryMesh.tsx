@@ -18,7 +18,7 @@ const CONTINENT_COLOR: Record<Continent, number | string> = {
   Oceania: "darkcyan",
 };
 
-const SELECTED_COLOR = "darkslateblue";
+const SELECTED_COLOR = "rebeccapurple";
 
 const COUNTRY_BASE_Z = 0;
 const TEXT_BASE_Z = 0.21;
@@ -41,7 +41,8 @@ const CountryMesh = observer(({ isSelected, country }: CountryMeshProps) => {
 
   const { fontSize } = useCountryScalingData();
 
-  const { shapes, displayName, name, continent, centerCoordinates, width, capital, capitalCoordinates } = country;
+  const { shapes, displayName, name, continent, color, centerCoordinates, width, capital, capitalCoordinates } =
+    country;
   useFrame(() => {
     if (!isSelected) {
       if (meshRef.current?.position.z !== 0) {
@@ -91,7 +92,7 @@ const CountryMesh = observer(({ isSelected, country }: CountryMeshProps) => {
       </Text>
       <mesh key={name} ref={meshRef}>
         <shapeGeometry attach="geometry" args={[shapes]} />
-        <meshBasicMaterial attach="material" color={isSelected ? SELECTED_COLOR : CONTINENT_COLOR[continent]} />
+        <meshBasicMaterial attach="material" color={isSelected ? SELECTED_COLOR : color} />
       </mesh>
     </>
   );

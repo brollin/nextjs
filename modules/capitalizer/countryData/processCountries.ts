@@ -1,16 +1,58 @@
 import { saveJson } from "../../../modules/common/helpers";
 import { UnhydratedCountry } from "../../../modules/capitalizer/models/Country";
-import { LonLatListList, RawCountry } from "../../../modules/capitalizer/models/RawCountry";
+import { Continent, LonLatListList, RawCountry } from "../../../modules/capitalizer/models/RawCountry";
 import { countries, capitals } from "../../../modules/capitalizer/countryCapitalData";
 import countryDataOverrides from "../../../modules/capitalizer/countryData/countryDataOverrides";
 import countryCapitalData from "../countryCapitalData2";
+import chroma from "chroma-js";
 
 const rawCountryData: RawCountry[] = require("./boundaryData.json");
 
+const COLOR_BOUNDS: Record<Continent, string[]> = {
+  Antarctica: ["white", "white"],
+  Asia: ["darkred", "indianred"],
+  Europe: ["darkblue", "cornflowerblue"],
+  Americas: ["darkgreen", "darkseagreen"],
+  Africa: ["#dfc520", "darkgoldenrod"],
+  Oceania: ["turquoise", "darkcyan"],
+};
+
 class CountryProcessor {
-  countryData: { [name: string]: UnhydratedCountry } = {};
+  countryData: Record<string, UnhydratedCountry> = {};
 
   constructor(rawCountries: RawCountry[]) {
+    let continentCountryCount: Record<Continent, number> = {
+      Antarctica: 0,
+      Asia: 0,
+      Europe: 0,
+      Americas: 0,
+      Africa: 0,
+      Oceania: 0,
+    };
+
+    // First pass through rawCountries
+    for (const country of rawCountries) {
+      const { continent } = country;
+      continentCountryCount[continent]++;
+    }
+
+    const continentColorScales: Partial<Record<Continent, string[]>> = {};
+    for (const [continent, count] of Object.entries(continentCountryCount))
+      continentColorScales[continent as Continent] = chroma
+        .bezier(COLOR_BOUNDS[continent as Continent])
+        .scale()
+        .colors(count);
+
+    continentCountryCount = {
+      Antarctica: 0,
+      Asia: 0,
+      Europe: 0,
+      Americas: 0,
+      Africa: 0,
+      Oceania: 0,
+    };
+
+    // Second pass through rawCountries
     for (const country of rawCountries) {
       const { geo_shape, status, name, continent, geo_point_2d, iso_3166_1_alpha_2_codes } = country;
       const { geometry } = geo_shape;
@@ -52,6 +94,9 @@ class CountryProcessor {
         } else console.log("no countryCapitalData CountryCode match for:", iso_3166_1_alpha_2_codes);
       }
 
+      const color = continentColorScales[country.continent]![continentCountryCount[country.continent]];
+      continentCountryCount[country.continent]++;
+
       this.countryData[name] = {
         boundaryData: boundaryData,
         status,
@@ -63,6 +108,7 @@ class CountryProcessor {
         capital,
         capitalCoordinates,
         countryCode: iso_3166_1_alpha_2_codes ?? null,
+        color,
         ...this.getCountryOverrideData(name),
       };
     }

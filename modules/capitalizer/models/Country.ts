@@ -21,6 +21,7 @@ export default class Country {
   bounds: Bounds;
   shapes: Shape[] = [];
   countryCode: string | null; // iso_3166_1_alpha_2_code
+  color: string;
 
   get width() {
     // Special case for those countries with bounds on either side of the prime anti-meridian (e.g. Fiji)
@@ -43,6 +44,7 @@ export default class Country {
     this.bounds = country.bounds;
     this.countryCode = country.countryCode;
     this.capitalCoordinates = country.capitalCoordinates;
+    this.color = country.color;
 
     this.hydrate();
   }
@@ -64,4 +66,5 @@ export type UnhydratedCountry = Pick<
   | "bounds"
   | "countryCode"
   | "capitalCoordinates"
+  | "color"
 >;
