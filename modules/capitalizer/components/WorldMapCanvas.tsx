@@ -54,7 +54,7 @@ const WorldMapCanvas = observer(() => {
     <Box position="fixed" h="100vh" w="100vw">
       <Canvas className={styles.canvas} shadows={true}>
         {/* <Perf /> */}
-        {store.currentCountry ? <Controls /> : null}
+        {store.currentCountry ? <Controls currentCountry={store.currentCountry} /> : null}
         {store.countries ? <AllCountries /> : null}
         {store.countries ? <AllBorders /> : null}
       </Canvas>

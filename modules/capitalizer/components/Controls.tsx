@@ -2,28 +2,29 @@ import { useContext, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { Vector3 } from "three";
 import CameraControls from "camera-controls";
-import { useFrame, useThree } from "@react-three/fiber";
 import { observer } from "mobx-react-lite";
+import { useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 
 import StoreContext from "@/modules/capitalizer/models/StoreContext";
-import { useCountryScalingData } from "@/modules/capitalizer/hooks/countryScalingData";
+import { computeCameraDistance, computeTiltAngle } from "@/modules/capitalizer/cameraHelpers";
+import Country from "@/modules/capitalizer/models/Country";
 
 CameraControls.install({ THREE });
 
-const Controls = observer(() => {
+type ControlsProps = {
+  currentCountry: Country;
+};
+
+const Controls = observer(({ currentCountry }: ControlsProps) => {
   const store = useContext(StoreContext);
   const { camera, gl } = useThree();
-  const cameraControls = useMemo(
-    () => (store.cameraControls = new CameraControls(camera, gl.domElement)),
-    [camera, gl.domElement, store]
-  );
+  const cameraControls = useMemo(() => new CameraControls(camera, gl.domElement), [camera, gl.domElement]);
 
-  const country = store.currentCountry!;
-  const { tiltAngle, cameraDistance } = useCountryScalingData(country);
+  const cameraDistance = computeCameraDistance(currentCountry, cameraControls);
+  const tiltAngle = computeTiltAngle(currentCountry);
 
-  const { centerCoordinates } = country;
-
+  const { centerCoordinates } = currentCountry;
   const positionFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat - tiltAngle, cameraDistance);
   const targetFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);
   const target = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);

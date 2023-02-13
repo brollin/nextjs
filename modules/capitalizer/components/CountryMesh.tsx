@@ -1,18 +1,15 @@
 import React, { useContext, useRef } from "react";
 import { Group, Mesh, Object3D, Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
-import { Circle, Text } from "@react-three/drei";
+import { Text } from "@react-three/drei";
 import { observer } from "mobx-react-lite";
 
 import Country from "@/modules/capitalizer/models/Country";
 import StoreContext from "@/modules/capitalizer/models/StoreContext";
-import { useCountryScalingData } from "@/modules/capitalizer/hooks/countryScalingData";
+import CapitalGroup from "@/modules/capitalizer/components/CapitalGroup";
+import { countryLabelFontSize, TEXT_BASE_Z, CAPITAL_BASE_Z, COUNTRY_BASE_Z } from "@/modules/capitalizer/helpers";
 
 const SELECTED_COLOR = "rebeccapurple";
-
-const COUNTRY_BASE_Z = 0;
-const TEXT_BASE_Z = 0.225;
-const CAPITAL_BASE_Z = COUNTRY_BASE_Z + 0.01;
 
 type CountryMeshProps = {
   isSelected: boolean;
@@ -24,10 +21,8 @@ const CountryMesh = observer(({ isSelected, country }: CountryMeshProps) => {
   const meshRef = useRef<Mesh>(null);
   const textRef = useRef<Object3D>(null);
   const capitalRef = useRef<Group>(null);
-  const { fontSize, capitalOffset } = useCountryScalingData(country);
 
-  console.log(country.name);
-  const { shapes, displayName, name, color, centerCoordinates, width, capital, capitalCoordinates } = country;
+  const { shapes, displayName, name, color, centerCoordinates } = country;
 
   useFrame(() => {
     if (!isSelected) {
@@ -47,29 +42,12 @@ const CountryMesh = observer(({ isSelected, country }: CountryMeshProps) => {
 
   return (
     <>
-      {capitalCoordinates && isSelected && store.gameMode === "learn" ? (
-        <group ref={capitalRef}>
-          <Circle
-            args={[Math.min(width / 100, 0.2), 12]}
-            position={new Vector3(capitalCoordinates.lon, capitalCoordinates.lat, CAPITAL_BASE_Z)}
-            material-color="hotpink"
-          />
-          <Text
-            outlineColor={0x000000}
-            outlineWidth={0.01}
-            fontSize={fontSize * 0.65}
-            color={0xffffff}
-            position={new Vector3(capitalCoordinates.lon, capitalCoordinates.lat + capitalOffset, TEXT_BASE_Z)}
-          >
-            {capital}
-          </Text>
-        </group>
-      ) : null}
+      {isSelected && store.gameMode === "learn" ? <CapitalGroup country={country} ref={capitalRef} /> : null}
       <Text
         ref={textRef}
         outlineColor={0x000000}
         outlineWidth={0.01}
-        fontSize={fontSize}
+        fontSize={countryLabelFontSize(country)}
         color={0xffffff}
         position={new Vector3(centerCoordinates.lon, centerCoordinates.lat, TEXT_BASE_Z)}
       >

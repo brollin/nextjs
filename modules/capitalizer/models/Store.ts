@@ -1,5 +1,4 @@
 import { makeAutoObservable } from "mobx";
-import CameraControls from "camera-controls";
 
 import Country, { UnhydratedCountry } from "@/modules/capitalizer/models/Country";
 import { doesTextRoughlyMatch, shuffleArray } from "@/modules/capitalizer/helpers";
@@ -30,8 +29,6 @@ export default class Store {
   countries: Country[] = [];
 
   initialized = false;
-
-  cameraControls?: CameraControls;
 
   previousCountry: Country | undefined;
 
