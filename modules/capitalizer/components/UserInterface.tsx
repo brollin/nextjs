@@ -1,6 +1,5 @@
 import styles from "@/styles/UserInterface.module.css";
 import React, { useEffect, useState, useRef, useContext } from "react";
-import { BsFillCameraVideoFill, BsFillCameraVideoOffFill } from "react-icons/bs";
 import {
   Box,
   Button,
@@ -15,17 +14,17 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { action } from "mobx";
 import { observer } from "mobx-react-lite";
 import { BsFillGearFill, BsArrowRightCircle } from "react-icons/bs";
 
 import StoreContext from "@/modules/capitalizer/models/StoreContext";
-import { ContinentSelection } from "../models/Store";
-import { action } from "mobx";
+import { ContinentSelection } from "@/modules/capitalizer/models/Store";
 
 const UserInterface = observer(() => {
   const store = useContext(StoreContext);
   const [isPanelOpen, setPanelOpen] = useState(false);
-  const [hasOpened, setHasOpened] = useState(false);
+  const [, setHasOpened] = useState(false); // currently not using
 
   const togglePanel = () => {
     setPanelOpen(!isPanelOpen);
@@ -159,9 +158,6 @@ const QuizView = observer(({ togglePanel, isPanelOpen }: QuizViewProps) => {
           value={answerText}
         />
         <Button onClick={() => store.advanceAfterIncorrect()}>idk</Button>
-        {/* <Button onClick={store.toggleCameraMode}>
-          {store.cameraMode === "follow" ? <BsFillCameraVideoOffFill /> : <BsFillCameraVideoFill />}
-        </Button> */}
       </HStack>
     </>
   );

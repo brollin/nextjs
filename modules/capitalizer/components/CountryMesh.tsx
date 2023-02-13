@@ -7,7 +7,12 @@ import { observer } from "mobx-react-lite";
 import Country from "@/modules/capitalizer/models/Country";
 import StoreContext from "@/modules/capitalizer/models/StoreContext";
 import CapitalGroup from "@/modules/capitalizer/components/CapitalGroup";
-import { countryLabelFontSize, TEXT_BASE_Z, CAPITAL_BASE_Z, COUNTRY_BASE_Z } from "@/modules/capitalizer/helpers";
+import {
+  countryLabelFontSize,
+  TEXT_BASE_Z,
+  CAPITAL_BASE_Z,
+  COUNTRY_BASE_Z,
+} from "@/modules/capitalizer/countryHelpers";
 
 const SELECTED_COLOR = "rebeccapurple";
 

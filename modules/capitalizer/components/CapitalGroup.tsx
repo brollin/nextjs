@@ -2,7 +2,12 @@ import { forwardRef, Ref } from "react";
 import { Group, Vector3 } from "three";
 import { Circle, Text } from "@react-three/drei";
 
-import { capitalLabelOffset, CAPITAL_BASE_Z, countryLabelFontSize, TEXT_BASE_Z } from "@/modules/capitalizer/helpers";
+import {
+  capitalLabelOffset,
+  CAPITAL_BASE_Z,
+  countryLabelFontSize,
+  TEXT_BASE_Z,
+} from "@/modules/capitalizer/countryHelpers";
 import Country from "@/modules/capitalizer/models/Country";
 
 type CapitalGroupProps = {

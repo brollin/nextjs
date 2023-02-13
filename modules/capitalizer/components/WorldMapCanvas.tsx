@@ -5,7 +5,6 @@ import * as THREE from "three";
 import { Box } from "@chakra-ui/react";
 import { Canvas } from "@react-three/fiber";
 import { mergeBufferGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import { Perf } from "r3f-perf";
 
 import Controls from "@/modules/capitalizer/components/Controls";
 import StoreContext from "@/modules/capitalizer/models/StoreContext";
