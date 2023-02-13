@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Checkbox, Divider, Heading, Select, VStack } from "@chakra-ui/react";
 import { action } from "mobx";
 import { observer } from "mobx-react-lite";
@@ -12,6 +12,13 @@ const UserInterface = observer(() => {
   const store = useContext(StoreContext);
   const [isPanelOpen, setPanelOpen] = useState(false);
   const [, setHasOpened] = useState(false); // currently not using
+
+  useEffect(() => {
+    const handleKeypress = action((e: KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") store.advance();
+    });
+    document.addEventListener("keydown", handleKeypress);
+  }, [store]);
 
   const togglePanel = () => {
     setPanelOpen(!isPanelOpen);
