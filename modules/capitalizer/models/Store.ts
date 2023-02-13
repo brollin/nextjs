@@ -23,6 +23,7 @@ export default class Store {
   cameraMode: CameraMode = "follow";
   gameMode: GameMode = "learn";
   continentSelection: ContinentSelection = "All continents";
+  gridEnabled = false;
 
   correctCount = 0;
   countryIndex = -1;

@@ -9,6 +9,7 @@ import { mergeBufferGeometries } from "three/examples/jsm/utils/BufferGeometryUt
 import Controls from "@/modules/capitalizer/components/Controls";
 import StoreContext from "@/modules/capitalizer/models/StoreContext";
 import CountryMesh from "@/modules/capitalizer/components/CountryMesh";
+import { Grid } from "@react-three/drei";
 
 const BORDER_BASE_Z = 0.002;
 
@@ -52,10 +53,12 @@ const WorldMapCanvas = observer(() => {
   return (
     <Box position="fixed" h="100vh" w="100vw">
       <Canvas className={styles.canvas} shadows={true}>
-        {/* <Perf /> */}
         {store.currentCountry ? <Controls currentCountry={store.currentCountry} /> : null}
-        {store.countries ? <AllCountries /> : null}
-        {store.countries ? <AllBorders /> : null}
+        {store.initialized ? <AllCountries /> : null}
+        {store.initialized ? <AllBorders /> : null}
+        {store.initialized && store.gridEnabled ? (
+          <Grid position={[0, 0, -0.1]} rotation-x={Math.PI / 2} args={[360, 180]} fadeDistance={180} />
+        ) : null}
       </Canvas>
     </Box>
   );

@@ -42,6 +42,9 @@ const UserInterface = observer(() => {
             <Checkbox isChecked={store.gameMode === "quiz"} onChange={store.toggleGameMode}>
               Quiz mode
             </Checkbox>
+            <Checkbox isChecked={store.gridEnabled} onChange={() => (store.gridEnabled = !store.gridEnabled)}>
+              Show grid (1° of longitude/latitude)
+            </Checkbox>
             <Select iconSize="50" onChange={(e) => handleContinentChange(e.target.value as ContinentSelection)}>
               {["All continents", "Africa", "Americas", "Asia", "Europe", "Oceania"].map((continent) => (
                 <option value={continent} key={continent}>
