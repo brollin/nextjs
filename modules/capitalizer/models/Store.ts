@@ -27,6 +27,7 @@ export default class Store {
   correctCount = 0;
   countryIndex = -1;
   countries: Country[] = [];
+  countriesByName: Record<string, Country> = {};
 
   initialized = false;
 
@@ -42,7 +43,9 @@ export default class Store {
 
   initializeCountries = () => {
     // logic that should only be performed on the client
-    const countries = Object.values(dehydratedCountryData).map((country) => new Country(country));
+    const countries = Object.values(dehydratedCountryData).map(
+      (country) => (this.countriesByName[country.name] = new Country(country))
+    );
 
     const memberCountries = countries.filter(({ status }) => status === "Member State");
     const nonMemberCountries = countries.filter(({ status }) => status !== "Member State");
@@ -75,8 +78,13 @@ export default class Store {
     this.advance();
   };
 
-  advance = () => {
+  advance = (countryName?: string) => {
     this.previousCountry = this.currentCountry;
+
+    if (countryName && this.countriesByName[countryName]) {
+      this.countryIndex = this.countries.indexOf(this.countriesByName[countryName]);
+      return;
+    }
 
     if (this.continentSelection === "All continents") {
       this.countryIndex++;

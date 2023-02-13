@@ -3,6 +3,7 @@ import { Group, Mesh, Object3D, Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
 import { observer } from "mobx-react-lite";
+import { action } from "mobx";
 
 import Country from "@/modules/capitalizer/models/Country";
 import StoreContext from "@/modules/capitalizer/models/StoreContext";
@@ -58,7 +59,12 @@ const CountryMesh = observer(({ isSelected, country }: CountryMeshProps) => {
       >
         {displayName}
       </Text>
-      <mesh key={name} ref={meshRef}>
+      <mesh
+        userData={{ name }}
+        onClick={action((e) => store.advance(e.eventObject.userData.name))}
+        key={name}
+        ref={meshRef}
+      >
         <shapeGeometry attach="geometry" args={[shapes]} />
         <meshBasicMaterial attach="material" color={isSelected ? SELECTED_COLOR : color} />
       </mesh>
