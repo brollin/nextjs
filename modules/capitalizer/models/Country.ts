@@ -34,7 +34,7 @@ export default class Country {
     return this.bounds.maxY - this.bounds.minY;
   }
 
-  constructor(country: UnhydratedCountry) {
+  constructor(country: DehydratedCountry) {
     this.capital = country.capital;
     this.boundaryData = country.boundaryData;
     this.status = country.status;
@@ -65,7 +65,7 @@ export default class Country {
   };
 }
 
-export type UnhydratedCountry = Pick<
+export type DehydratedCountry = Pick<
   Country,
   | "capital"
   | "boundaryData"

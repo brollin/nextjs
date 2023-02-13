@@ -1,5 +1,5 @@
 import { saveJson } from "../../../modules/common/helpers";
-import { UnhydratedCountry } from "../../../modules/capitalizer/models/Country";
+import { DehydratedCountry } from "../../../modules/capitalizer/models/Country";
 import { Continent, LonLatListList, RawCountry } from "../../../modules/capitalizer/models/RawCountry";
 import { countries, capitals } from "../../../modules/capitalizer/countryCapitalData";
 import countryDataOverrides from "../../../modules/capitalizer/countryData/countryDataOverrides";
@@ -18,7 +18,7 @@ const COLOR_BOUNDS: Record<Continent, string[]> = {
 };
 
 class CountryProcessor {
-  countryData: Record<string, UnhydratedCountry> = {};
+  countryData: Record<string, DehydratedCountry> = {};
 
   constructor(rawCountries: RawCountry[]) {
     let continentCountryCount: Record<Continent, number> = {

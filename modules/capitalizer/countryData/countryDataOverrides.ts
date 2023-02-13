@@ -1,6 +1,6 @@
-import { UnhydratedCountry } from "../../../modules/capitalizer/models/Country";
+import { DehydratedCountry } from "../../../modules/capitalizer/models/Country";
 
-const countryDataOverrides: Record<string, Partial<UnhydratedCountry>> = {
+const countryDataOverrides: Record<string, Partial<DehydratedCountry>> = {
   Fiji: {
     centerCoordinates: { lon: 177.96485, lat: -17.681347 },
   },

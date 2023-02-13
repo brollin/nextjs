@@ -1,11 +1,11 @@
 import { makeAutoObservable } from "mobx";
 
-import Country, { UnhydratedCountry } from "@/modules/capitalizer/models/Country";
+import Country, { DehydratedCountry } from "@/modules/capitalizer/models/Country";
 import { doesTextRoughlyMatch, shuffleArray } from "@/modules/capitalizer/helpers";
 import { Continent } from "@/modules/capitalizer/models/RawCountry";
 
-const countryDataRaw: {
-  [name: string]: UnhydratedCountry;
+const dehydratedCountryData: {
+  [name: string]: DehydratedCountry;
 } = require("../countryData/countryData.json");
 
 const DEBUG_COUNTRY = "";
@@ -42,7 +42,7 @@ export default class Store {
 
   initializeCountries = () => {
     // logic that should only be performed on the client
-    const countries = Object.values(countryDataRaw).map((country) => new Country(country));
+    const countries = Object.values(dehydratedCountryData).map((country) => new Country(country));
 
     const memberCountries = countries.filter(({ status }) => status === "Member State");
     const nonMemberCountries = countries.filter(({ status }) => status !== "Member State");
@@ -80,6 +80,7 @@ export default class Store {
 
     if (this.continentSelection === "All continents") {
       this.countryIndex++;
+      if (this.countryIndex >= this.countries.length) this.countryIndex = 0;
       return;
     }
 
