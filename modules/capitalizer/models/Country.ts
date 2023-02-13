@@ -58,13 +58,10 @@ export default class Country {
       )
       .filter((s) => !!s) as Shape[];
 
-    if (this.holeIndices.length) {
-      console.log(this.name);
-      console.log("length of boundary data", this.boundaryData.length);
+    if (this.holeIndices.length)
       this.shapes[0].holes = this.holeIndices.map(
         (holeIndex) => new Path(this.boundaryData[holeIndex].map(([x, y]) => new Vector2(x, y)))
       );
-    }
   };
 }
 

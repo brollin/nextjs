@@ -1,4 +1,4 @@
-import styles from "../../../styles/Capitalizer.module.css";
+import styles from "@/styles/Capitalizer.module.css";
 import React, { useContext } from "react";
 import { observer } from "mobx-react-lite";
 import * as THREE from "three";

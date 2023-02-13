@@ -20,23 +20,23 @@ import { BsFillGearFill, BsArrowRightCircle } from "react-icons/bs";
 
 import StoreContext from "@/modules/capitalizer/models/StoreContext";
 import { ContinentSelection } from "../models/Store";
+import { action } from "mobx";
 
 const UserInterface = observer(() => {
   const store = useContext(StoreContext);
   const [isPanelOpen, setPanelOpen] = useState(false);
   const [hasOpened, setHasOpened] = useState(false);
 
-  if (!store.currentCountry) return null;
-
   const togglePanel = () => {
     setPanelOpen(!isPanelOpen);
     setHasOpened(true);
   };
 
-  const handleContinentChange = (newContinentSelection: ContinentSelection) => {
+  // wrap as a mobx action so that it creates a transaction of two underlying actions
+  const handleContinentChange = action((newContinentSelection: ContinentSelection) => {
     store.continentSelection = newContinentSelection;
     store.advance();
-  };
+  });
 
   return (
     <>

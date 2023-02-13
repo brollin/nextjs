@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import Head from "next/head";
-import { Card, CardBody, ChakraProvider, VStack } from "@chakra-ui/react";
+import { Card, ChakraProvider, VStack } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 
 import UserInterface from "@/modules/capitalizer/components/UserInterface";
@@ -20,12 +20,16 @@ const Capitalizer = observer(() => {
       <Head>
         <title>World Capitalizer</title>
       </Head>
-      <WorldMapCanvas />
-      <VStack h="100vh" justifyContent="end">
-        <Card size="md" w={370} padding={3} marginBottom={5}>
-          <UserInterface />
-        </Card>
-      </VStack>
+      {store.initialized ? (
+        <>
+          <WorldMapCanvas />
+          <VStack h="100vh" justifyContent="end">
+            <Card size="md" w={370} padding={3} marginBottom={5}>
+              <UserInterface />
+            </Card>
+          </VStack>
+        </>
+      ) : null}
     </>
   );
 });
