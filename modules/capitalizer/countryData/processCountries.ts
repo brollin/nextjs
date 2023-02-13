@@ -1,9 +1,8 @@
 import { saveJson } from "../../../modules/common/helpers";
 import { DehydratedCountry } from "../../../modules/capitalizer/models/Country";
 import { Continent, LonLatListList, RawCountry } from "../../../modules/capitalizer/models/RawCountry";
-import { countries, capitals } from "../../../modules/capitalizer/countryCapitalData";
 import countryDataOverrides from "../../../modules/capitalizer/countryData/countryDataOverrides";
-import countryCapitalData from "../countryCapitalData2";
+import countryCapitalData from "../countryCapitalData";
 import chroma from "chroma-js";
 
 const rawCountryData: RawCountry[] = require("./boundaryData.json");
@@ -30,7 +29,7 @@ class CountryProcessor {
       Oceania: 0,
     };
 
-    // First pass through rawCountries
+    // First pass through rawCountries: collect metadata
     for (const country of rawCountries) {
       const { continent } = country;
       continentCountryCount[continent]++;
@@ -52,7 +51,7 @@ class CountryProcessor {
       Oceania: 0,
     };
 
-    // Second pass through rawCountries
+    // Second pass through rawCountries: assembled dehydrated countries
     for (const country of rawCountries) {
       const { geo_shape, status, name, continent, geo_point_2d, iso_3166_1_alpha_2_codes } = country;
       const { geometry } = geo_shape;
@@ -72,16 +71,7 @@ class CountryProcessor {
           throw new Error(`Unknown type of geometry encountered: ${geometry.type}`);
       }
 
-      // TODO: mercator projection computation
-
-      // TODO: remove this dataset in favor of the below one
       let capital = "";
-      if (status === "Member State") {
-        const index = countries.indexOf(name);
-        if (index >= 0) capital = capitals[index];
-        else console.log("no country name match for:", name);
-      }
-
       let capitalCoordinates;
       if (status === "Member State") {
         const index = countryCapitalData.findIndex(
@@ -90,6 +80,7 @@ class CountryProcessor {
 
         if (index >= 0) {
           const countryCapitalDatum = countryCapitalData[index];
+          capital = countryCapitalDatum.CapitalName;
           capitalCoordinates = {
             lon: Number(countryCapitalDatum.CapitalLongitude),
             lat: Number(countryCapitalDatum.CapitalLatitude),
