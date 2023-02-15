@@ -2,8 +2,8 @@ import CameraControls from "camera-controls";
 import Country from "@/modules/capitalizer/models/Country";
 
 const VIEWING_MARGIN = 2;
-const NEAR_CAMERA_LIMIT = 5;
-const FAR_CAMERA_LIMIT = 80;
+export const NEAR_CAMERA_LIMIT = 5;
+export const FAR_CAMERA_LIMIT = 80;
 
 export const computeCameraDistance = (country?: Country, cameraControls?: CameraControls) => {
   if (!country || !cameraControls) return FAR_CAMERA_LIMIT;

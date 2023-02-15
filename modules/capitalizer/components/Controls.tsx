@@ -25,7 +25,11 @@ const Controls = observer(({ currentCountry }: ControlsProps) => {
   const tiltAngle = computeTiltAngle(currentCountry);
 
   const { centerCoordinates } = currentCountry;
-  const positionFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat - tiltAngle, cameraDistance);
+  const positionFinal = new Vector3(
+    centerCoordinates.lon,
+    centerCoordinates.lat - tiltAngle,
+    cameraDistance + store.cameraDelta
+  );
   const targetFinal = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);
   const target = new Vector3(centerCoordinates.lon, centerCoordinates.lat, 0);
   store.animationMode = "zoomToCountry";
@@ -35,10 +39,24 @@ const Controls = observer(({ currentCountry }: ControlsProps) => {
     camera.position.set(0, 0, 130);
   }, [camera]);
 
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => store.zoomCamera(-e.deltaY / 100);
+    document.addEventListener("wheel", handleWheel);
+  }, [store]);
+
   useFrame((state, delta) => {
     if (store.cameraMode === "follow") {
       if (store.animationMode === "zoomToCountry") {
         if (state.camera.position.distanceTo(positionFinal) < 0.01) store.animationMode = "countrySpotlight";
+
+        // update tilt angle
+        const newTiltAngle =
+          tiltAngle *
+          (store.cameraDelta > 0 ? 1 : Math.max(0, (positionFinal.z + store.cameraDelta) / positionFinal.z));
+        positionFinal.setY(centerCoordinates.lat - newTiltAngle);
+
+        // update zoom distance
+        positionFinal.setZ(cameraDistance + store.cameraDelta);
 
         state.camera.position.lerp(positionFinal, 0.08);
         target.copy(state.camera.position).setZ(0).lerp(targetFinal, 0.5);
@@ -53,9 +71,6 @@ const Controls = observer(({ currentCountry }: ControlsProps) => {
         );
         cameraControls.update(delta);
       }
-    } else if (store.cameraMode === "control-start") {
-      camera.lookAt(targetFinal);
-      store.cameraMode = "control";
     }
   });
 

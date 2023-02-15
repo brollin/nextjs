@@ -3,6 +3,7 @@ import { makeAutoObservable } from "mobx";
 import Country, { DehydratedCountry } from "@/modules/capitalizer/models/Country";
 import { doesTextRoughlyMatch, shuffleArray } from "@/modules/capitalizer/helpers";
 import { Continent } from "@/modules/capitalizer/models/RawCountry";
+import { FAR_CAMERA_LIMIT, NEAR_CAMERA_LIMIT } from "@/modules/capitalizer/cameraHelpers";
 
 const dehydratedCountryData: {
   [name: string]: DehydratedCountry;
@@ -24,6 +25,7 @@ export default class Store {
   gameMode: GameMode = "learn";
   continentSelection: ContinentSelection = "All continents";
   gridEnabled = false;
+  cameraDelta: number = 0;
 
   correctCount = 0;
   countryIndex = -1;
@@ -111,5 +113,9 @@ export default class Store {
 
   toggleGameMode = () => {
     this.gameMode = this.gameMode === "quiz" ? "learn" : "quiz";
+  };
+
+  zoomCamera = (delta: number) => {
+    this.cameraDelta = Math.min(Math.max(this.cameraDelta + delta, -NEAR_CAMERA_LIMIT + 0.5), FAR_CAMERA_LIMIT);
   };
 }

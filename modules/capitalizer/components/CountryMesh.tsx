@@ -56,6 +56,8 @@ const CountryMesh = observer(({ isSelected, country }: CountryMeshProps) => {
         fontSize={countryLabelFontSize(country)}
         color={0xffffff}
         position={new Vector3(centerCoordinates.lon, centerCoordinates.lat, TEXT_BASE_Z)}
+        userData={{ name }}
+        onClick={action((e) => store.advance(e.eventObject.userData.name))}
       >
         {displayName}
       </Text>
