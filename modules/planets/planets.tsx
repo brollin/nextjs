@@ -4,11 +4,11 @@ import chroma from "chroma-js";
 import classnames from "classnames";
 import Link from "next/link";
 
+import styles from "@/styles/Planets.module.css";
 import { Planet } from "./models/Planet";
 import EarthView from "./earth";
 import planetData from "./planetaryData/planets.json";
 import PlanetView from "./planet";
-import styles from "../../styles/Planets.module.css";
 import { RawPlanet } from "./models/RawPlanet";
 import MoonView from "./moon";
 import StarView from "./star";
