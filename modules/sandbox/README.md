@@ -1,5 +1,7 @@
 # Sandbox
 
+3D sandbox environment for playing with ThreeJS concepts.
+
 ## Ideas
 
 - reflective objects with cool environment maps, lesson 12
