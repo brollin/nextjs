@@ -6,10 +6,11 @@ import { observer } from "mobx-react-lite";
 import { useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 
+import Country from "@/modules/capitalizer/models/Country";
 import StoreContext from "@/modules/capitalizer/models/StoreContext";
 import { computeCameraDistance, computeTiltAngle } from "@/modules/capitalizer/cameraHelpers";
 import { usePinchZooming } from "@/modules/capitalizer/hooks/pinchZooming";
-import Country from "@/modules/capitalizer/models/Country";
+import { useWheelZooming } from "@/modules/capitalizer/hooks/wheelZooming";
 
 CameraControls.install({ THREE });
 
@@ -41,6 +42,7 @@ const Controls = observer(({ currentCountry }: ControlsProps) => {
   }, [camera]);
 
   usePinchZooming(store);
+  useWheelZooming(store);
 
   useFrame((state, delta) => {
     if (store.cameraMode === "follow") {

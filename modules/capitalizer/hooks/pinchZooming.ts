@@ -14,11 +14,6 @@ const computeTouchDistance = (event: TouchEvent): number => {
 
 export const usePinchZooming = (store: Store) => {
   useEffect(() => {
-    // TODO: re implement wheel scrolling
-    // const handleWheel = (e: WheelEvent) => store.zoomCamera(-e.deltaY / 100);
-    // this.cameraDelta = Math.min(Math.max(this.cameraDelta + delta, -NEAR_CAMERA_LIMIT + 0.5), FAR_CAMERA_LIMIT);
-    // document.addEventListener("wheel", handleWheel);
-
     let _cameraZoomStart = store.cameraZoom;
     let _touchDistanceStart = 0;
     let _touchDistanceEnd = 0;
