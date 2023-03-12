@@ -3,7 +3,9 @@ import { makeAutoObservable } from "mobx";
 import Country, { DehydratedCountry } from "@/modules/capitalizer/models/Country";
 import { doesTextRoughlyMatch, shuffleArray } from "@/modules/capitalizer/helpers";
 import { Continent } from "@/modules/capitalizer/models/RawCountry";
-import { FAR_CAMERA_LIMIT, NEAR_CAMERA_LIMIT } from "@/modules/capitalizer/cameraHelpers";
+import { computeCameraDelta } from "@/modules/capitalizer/cameraHelpers";
+// TODO: use clamp in more places
+import { clamp } from "three/src/math/MathUtils";
 
 const dehydratedCountryData: {
   [name: string]: DehydratedCountry;
@@ -17,6 +19,7 @@ type AnimationMode = "zoomToCountry" | "countrySpotlight";
 
 type GameMode = "learn" | "quiz";
 
+// TODO: refactor into an enum
 export type ContinentSelection = Continent | "All continents";
 
 export default class Store {
@@ -25,14 +28,43 @@ export default class Store {
   gameMode: GameMode = "learn";
   continentSelection: ContinentSelection = "All continents";
   gridEnabled = false;
-  cameraDelta: number = 0;
 
   correctCount = 0;
   countryIndex = -1;
   countries: Country[] = [];
   countriesByName: Record<string, Country> = {};
-
   initialized = false;
+
+  /**
+   * A percentage describing the cameras current zoom level. 0 is all the way zoomed in, 1 is all
+   * the way zoomed out.
+   *
+   * @type {number}
+   * @memberof Store
+   */
+  private _cameraZoom: number = 0.03;
+
+  get cameraZoom(): number {
+    return this._cameraZoom;
+  }
+
+  set cameraZoom(newZoom: number) {
+    this._cameraZoom = clamp(newZoom, 0, 1);
+    this._cameraDelta = computeCameraDelta(this._cameraZoom);
+  }
+
+  /**
+   * The additional distance away that the camera should be placed based on the current cameraZoom.
+   *
+   * @readonly
+   * @type {number}
+   * @memberof Store
+   */
+  private _cameraDelta: number = computeCameraDelta(this._cameraZoom);
+
+  get cameraDelta(): number {
+    return this._cameraDelta;
+  }
 
   previousCountry: Country | undefined;
 
@@ -113,9 +145,5 @@ export default class Store {
 
   toggleGameMode = () => {
     this.gameMode = this.gameMode === "quiz" ? "learn" : "quiz";
-  };
-
-  zoomCamera = (delta: number) => {
-    this.cameraDelta = Math.min(Math.max(this.cameraDelta + delta, -NEAR_CAMERA_LIMIT + 0.5), FAR_CAMERA_LIMIT);
   };
 }

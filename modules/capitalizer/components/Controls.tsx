@@ -8,6 +8,7 @@ import { OrbitControls } from "@react-three/drei";
 
 import StoreContext from "@/modules/capitalizer/models/StoreContext";
 import { computeCameraDistance, computeTiltAngle } from "@/modules/capitalizer/cameraHelpers";
+import { usePinchZooming } from "@/modules/capitalizer/hooks/pinchZooming";
 import Country from "@/modules/capitalizer/models/Country";
 
 CameraControls.install({ THREE });
@@ -39,10 +40,7 @@ const Controls = observer(({ currentCountry }: ControlsProps) => {
     camera.position.set(0, 0, 130);
   }, [camera]);
 
-  useEffect(() => {
-    const handleWheel = (e: WheelEvent) => store.zoomCamera(-e.deltaY / 100);
-    document.addEventListener("wheel", handleWheel);
-  }, [store]);
+  usePinchZooming(store);
 
   useFrame((state, delta) => {
     if (store.cameraMode === "follow") {
