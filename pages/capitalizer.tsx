@@ -1,3 +1,3 @@
-import Capitalizer from "@/modules/capitalizer/components/Capitalizer";
+import CapitalizerApp from "@/modules/capitalizer/components/Capitalizer";
 
-export default Capitalizer;
+export default CapitalizerApp;
