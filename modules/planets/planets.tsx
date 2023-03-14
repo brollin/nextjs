@@ -96,6 +96,9 @@ export default function Planets() {
           <Link href="/capitalizer">...capitalize</Link>
         </span>
         <span className={styles.link}>
+          <Link href="/cosmere">...cosmere</Link>
+        </span>
+        <span className={styles.link}>
           <Link href="/sandbox">...sandbox</Link>
         </span>
         <span className={styles.link}>
