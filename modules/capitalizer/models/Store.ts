@@ -19,7 +19,6 @@ type AnimationMode = "zoomToCountry" | "countrySpotlight";
 
 type GameMode = "learn" | "quiz";
 
-// TODO: refactor into an enum
 export type ContinentSelection = Continent | "All continents";
 
 export default class Store {
@@ -28,12 +27,12 @@ export default class Store {
   gameMode: GameMode = "learn";
   continentSelection: ContinentSelection = "All continents";
   gridEnabled = false;
+  initialized = false;
 
   correctCount = 0;
   countryIndex = -1;
   countries: Country[] = [];
   countriesByName: Record<string, Country> = {};
-  initialized = false;
 
   /**
    * A percentage describing the cameras current zoom level. 0 is all the way zoomed in, 1 is all
