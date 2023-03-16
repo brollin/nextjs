@@ -19,12 +19,11 @@ const Cosmere = observer(() => {
       {store.initialized ? (
         <>
           <Tour />
-          <VStack h="100vh" justifyContent="end">
+          {/* <VStack h="100vh" justifyContent="end">
             <Card size="md" w={370} padding={3} marginBottom={5}>
               testing
-              {/* <UserInterface /> */}
             </Card>
-          </VStack>
+          </VStack> */}
         </>
       ) : null}
     </>

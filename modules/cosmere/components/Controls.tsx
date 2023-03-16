@@ -3,6 +3,7 @@ import * as THREE from "three";
 import CameraControls from "camera-controls";
 import { observer } from "mobx-react-lite";
 import { useThree } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
 
 CameraControls.install({ THREE });
 
@@ -16,10 +17,9 @@ const Controls = observer(({}: ControlsProps) => {
   // set initial camera position
   useEffect(() => {
     camera.position.set(0, 0, 30);
-    console.log("testing");
   }, [camera]);
 
-  return null;
+  return <OrbitControls />;
 });
 
 export default Controls;
