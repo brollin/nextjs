@@ -26,3 +26,16 @@ For finding environment maps:
 
 - https://polyhaven.com/
 - HDRI to environment map: https://matheowis.github.io/HDRI-to-CubeMap/
+
+For particles:
+
+- https://www.kenney.nl/assets/particle-pack
+
+For shaders:
+
+- book of shaders https://thebookofshaders.com/06/
+- curve shapes https://thebookofshaders.com/05/kynd.png
+- easing functions animated https://easings.net/
+- easing functions GLSL https://thebookofshaders.com/edit.php#06/easing.frag
+- HSB to RYB colors https://sighack.com/post/procedural-color-algorithms-hsb-vs-ryb
+- shaders in react three fiber https://blog.maximeheckel.com/posts/the-study-of-shaders-with-react-three-fiber/
