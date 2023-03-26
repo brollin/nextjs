@@ -33,7 +33,7 @@ For particles:
 
 For shaders:
 
-- book of shaders https://thebookofshaders.com/06/
+- book of shaders https://thebookofshaders.com/08/
 - curve shapes https://thebookofshaders.com/05/kynd.png
 - easing functions animated https://easings.net/
 - easing functions GLSL https://thebookofshaders.com/edit.php#06/easing.frag

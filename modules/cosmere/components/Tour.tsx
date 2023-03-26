@@ -1,11 +1,9 @@
 import styles from "@/styles/Cosmere.module.css";
 import { observer } from "mobx-react-lite";
 import { Box } from "@chakra-ui/react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Sphere, Text } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import { Text } from "@react-three/drei";
 import Controls from "@/modules/cosmere/components/Controls";
-import { Vector3 } from "three";
-import { useRef } from "react";
 import Planet from "@/modules/cosmere/components/Planet";
 
 const Tour = observer(() => {
@@ -18,7 +16,8 @@ const Tour = observer(() => {
           Welcome to the Cosmere
         </Text>
         <Planet />
-        <ambientLight />
+        <ambientLight intensity={0.1} />
+        <directionalLight args={[0xffffff, 1]} position={[0, 0, 100]} />
         <Controls />
       </Canvas>
     </Box>

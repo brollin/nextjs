@@ -58,7 +58,6 @@ void main() {
     vec3 color = circle(vec2(0.5), 0.1 + 0.01 * easeBounceIn(sin(u_time * 5.))) * vec3(1.0, 0.0, 0.0) +
         circle(vec2(0.1), 0.05 + 0.001 * easeBounceIn(sin(u_time * 6.))) * vec3(1.0, 0.0, 0.0) +
         circle(vec2(0.9), 0.05 + 0.001 * easeBounceIn(sin(u_time * 7.))) * vec3(1.0, 0.0, 0.0);
-    // vec3 color = vec3(1. - smoothstep(0.3999, 0.4, pct));
 
     gl_FragColor = vec4(color, 1.0);
 }

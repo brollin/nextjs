@@ -2,6 +2,7 @@ uniform vec3 viewVector;
 uniform float c;
 uniform float p;
 varying float intensity;
+
 void main() {
     vec3 vNormal = normalize(normalMatrix * normal);
     vec3 vNormel = normalize(normalMatrix * viewVector);
