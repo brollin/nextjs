@@ -6,14 +6,14 @@ import Link from "next/link";
 
 import styles from "@/styles/Planets.module.css";
 import { Planet } from "./models/Planet";
-import EarthView from "./earth";
+import EarthView from "./Earth";
 import planetData from "./planetaryData/planets.json";
-import PlanetView from "./planet";
+import PlanetView from "./Planet";
 import { RawPlanet } from "./models/RawPlanet";
-import MoonView from "./moon";
-import StarView from "./star";
+import MoonView from "./Moon";
+import StarView from "./Star";
 import { angularSize, lerp } from "./mathUtils";
-import Layout from "./layout";
+import Layout from "./Layout";
 
 // UP NEXT
 // TODO surface: show second or third sun
@@ -68,7 +68,7 @@ export default function Planets() {
     <Layout className={styles.container}>
       <svg width="100%" height={500} viewBox={`0 0 ${viewWidth} ${viewHeight}`}>
         <SwitchTransition>
-          <CSSTransition key={`${planet.id}${mode}}`} nodeRef={nodeRef} timeout={500} classNames="fade">
+          <CSSTransition key={`${planet.id}${mode}}`} nodeRef={nodeRef} timeout={500} className="fade">
             <ModeView planet={planet} />
           </CSSTransition>
         </SwitchTransition>
