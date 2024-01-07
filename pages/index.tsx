@@ -1,3 +1,3 @@
-import Planets from "@/modules/planets/planets";
+import Landing from "@/modules/landing/Landing";
 
-export default Planets;
+export default Landing;
