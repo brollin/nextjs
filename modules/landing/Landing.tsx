@@ -14,6 +14,7 @@ export default function Landing() {
       <VStack width="100vw" height="100vh" justify="center">
         <MdConstruction size={200} />
         <Link href="/capitalizer">capitalizer</Link>
+        <Link href="/planets">planets</Link>
         <Link href="/health">health</Link>
         <Link href="/sandbox">sandbox</Link>
         <Link href="/chess">chess</Link>
