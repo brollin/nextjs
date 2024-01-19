@@ -92,18 +92,6 @@ export default function Planets() {
           </button>
         </div>
         {showMore ? <PlanetInfo planet={planet} /> : <a onClick={() => setShowMore(true)}>Show me more...</a>}
-        <span className={styles.link}>
-          <Link href="/capitalizer">...capitalize</Link>
-        </span>
-        <span className={styles.link}>
-          <Link href="/cosmere">...cosmere</Link>
-        </span>
-        <span className={styles.link}>
-          <Link href="/sandbox">...sandbox</Link>
-        </span>
-        <span className={styles.link}>
-          <Link href="/chess">...chess</Link>
-        </span>
       </div>
     </Layout>
   );
