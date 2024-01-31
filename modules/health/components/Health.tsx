@@ -13,8 +13,8 @@ const Health = () => (
       <link rel="icon" href="/favicon.ico" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     </Head>
-    <VStack as="article" width="100vw" justify="center" py={10} px={2}>
-      <VStack maxWidth="40rem">
+    <VStack as="article" width="100vw" justify="center">
+      <VStack py={10} px={2} textAlign="left" justify="start" maxWidth="40rem">
         <StyledMarkdown>{healthStory}</StyledMarkdown>
       </VStack>
     </VStack>
