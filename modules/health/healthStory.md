@@ -2,8 +2,7 @@
 
 I decided to set up this page as a place to document my health journey. The main purpose will be to provide information
 for any medical professionals that I work with in the future who need to be brought up to speed on my situation. For
-that reason, I won't include information that a medical professional would likely know, but I will attempt to provide
-Wikipedia links for the curious.
+that reason, I won't include information that a medical professional would likely know.
 
 Maybe in the future I will provide a layman's version of this story. For now, friends and family can utilize the
 excellent [TOS Outreach](https://www.tosoutreach.com/friends-family-info) website to learn more about this condition.
@@ -14,8 +13,9 @@ In May of 2020 I came down with a severe case of bilateral thoracic outlet syndr
 times but at the very end of 2020 I finally understood what I was dealing with. In 2021 I had two first rib resection
 (FRRS) surgeries, once on each side. Following the second surgery on the right side, I had a lot of new nerve pain in my
 right arm and hand. Over several months some of the most acute new symptoms subsided. All told, I've gotten worse since
-the original onset of the condition. The certainty of a flareup from doing anything significant with my arms or hands
-severely limits what activities I am capable of doing. The chronic pain I experience is significant.
+the original onset of the condition. Painful flareups that last for 2-3 weeks are very common. Many activities could
+lead to such a flareup: sleeping wrong, standing too long, sitting in a chair without a very specific kind of armrest,
+talking at length, or doing anything with my hands or arms. The chronic pain I experience is debilitating.
 
 ## Timeline
 
@@ -115,8 +115,6 @@ It was in this month that I began seeing Steve Talajkowski, a physical therapist
 more confidence that this was what I was facing. However, after several sessions of physical therapy, he recommended
 that I consider different treatment given the severity of my condition and lack of improvement up to that point.
 
-### Mid to late 2021
-
 I received Dr Scott Werden's MRI which is especially geared towards imaging TOS. This confirmed that I had bilateral
 neurogenic thoracic outlet syndrome. Here is the summary:
 
@@ -124,22 +122,29 @@ neurogenic thoracic outlet syndrome. Here is the summary:
 evidence of tension on hyperabduction, as well as abnormal signal intensity of the right brachial plexus. Significant
 extrinsic venous compression with the arms in neutral position, worsening on hyperabduction."
 
-Upon discussing the results, I ultimately opted to go the route of surgery. I had first rib resection (FRRS),
+### Mid to late 2021
+
+Upon discussing the results of the MRI, I ultimately opted to go the route of surgery. I had first rib resection (FRRS),
 scalenectomy, and pec minor tenotomy (also known as the "trifecta" surgery) done on both sides. I first had it down on
 the left side in June 2021, and then again on the right side in October 2021. The first surgery in June seemed to go
-relatively well, with no new nerve symptoms but also no obvious immediate relief from past nerve symptoms.
+relatively well, with no new nerve symptoms but also no obvious immediate relief from past nerve symptoms. In short, no
+real change.
 
 ### October 2021 - December 2021
 
 Following the second surgery on the right side, I had many new painful nerve symptoms, primarily along the ulnar nerve.
 Also, my right arm was swollen with edema for these several months. I was in excruciating pain and severe discomfort for
-these several months, and used gabapentin during this time to manage the pain.
+these several months, and used gabapentin to manage the pain until I began having disconcerting side effects like
+inability to focus.
 
-Over the following years, sum of the new nerve symptoms on the right side would eventually go away, but the original
+Over the following years, some of the new nerve symptoms on the right side would eventually go away, but the original
 nerve issues remained on both sides. Basically, these surgeries did not seem to affect my nerve issues in any positive
 way. Additionally, after the edema subsided on the right side, there was notable atrophy of many muscles on the right
-side of my body: the pec, right bicep, tricep, forearm, and various parts of the hand. I also had been cradling my right
-arm and wasn't able to move my right shoulder enough that I developed a frozen shoulder.
+side of my body: the pec, right bicep, tricep, forearm, and various parts of the hand.
+
+I also had been cradling my right arm and wasn't able to move my right shoulder enough that I developed a frozen
+shoulder and an inability to straighten my right elbow. My right shoulder and elbow remain stiff and I don't have a full
+range of motion.
 
 ### 2022 - November 2023
 
@@ -149,7 +154,7 @@ my nerve symptoms largely stayed the same or slightly worsened.
 ### November 2023 - Now
 
 Finally in November 2023, I had a flareup for no apparent reason besides hot weather that left me very noticeably worse
-off. The new symptoms included a weak feeling in my hands/fingers and spasming muscles.
+off. The new symptoms included a weak feeling in my hands/fingers and spasming muscles. The pain I felt
 
 ## Current condition
 
@@ -161,10 +166,10 @@ family.
 Other things that can lead to a flareup:
 
 - keeping my neck turned off from center for a minute or more
-- talking loudly at length
+- talking loudly
 - consuming alcohol
 - walking or standing for 15 minutes or more
-- sitting in any chair except for very specific ones that keep me relatively comfortable
+- sitting in any chair except for very specific ones (padded arm rests, legs raised)
 - lying down
 
-At home, I sit in a very specifically padded chair and use a footrest.
+At home, I sit in a specifically padded chair and use a footrest.
