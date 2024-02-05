@@ -4,18 +4,19 @@ I decided to set up this page as a place to document my health journey. The main
 for any medical professionals that I work with in the future who need to be brought up to speed on my situation. For
 that reason, I won't include information that a medical professional would likely know.
 
-Maybe in the future I will provide a layman's version of this story. For now, friends and family can utilize the
-excellent [TOS Outreach](https://www.tosoutreach.com/friends-family-info) website to learn more about this condition.
+For now, friends and family can utilize the excellent [TOS Outreach](https://www.tosoutreach.com/friends-family-info)
+website to learn more about this condition.
 
 ## Overview
 
-In May of 2020 I came down with a severe case of bilateral thoracic outlet syndrome. It was misdiagnosed a number of
-times but at the very end of 2020 I finally understood what I was dealing with. In 2021 I had two first rib resection
+In May of 2020 I came down with a severe case of bilateral thoracic outlet syndrome (TOS). It was misdiagnosed a number
+of times but at the very end of 2020 I finally understood what I was dealing with. In 2021 I had two first rib resection
 (FRRS) surgeries, once on each side. Following the second surgery on the right side, I had a lot of new nerve pain in my
-right arm and hand. Over several months some of the most acute new symptoms subsided. All told, I've gotten worse since
-the original onset of the condition. Painful flareups that last for 2-3 weeks are very common. Many activities could
-lead to such a flareup: sleeping wrong, standing too long, sitting in a chair without a very specific kind of armrest,
-talking at length, or doing anything with my hands or arms. The chronic pain I experience is debilitating.
+right arm and hand. Over several months some of the most acute new symptoms subsided, but the original symptoms
+remained. All told, I've gotten worse since the original onset of the condition. Painful flareups that last for 2-3
+weeks are very common. Many activities could lead to such a flareup: sleeping wrong, standing too long, sitting in a
+chair without a very specific kind of armrest, talking at length, or doing anything with my hands or arms. The chronic
+pain I experience is debilitating.
 
 ## Timeline
 
@@ -29,26 +30,27 @@ hobbies, and then the leading indicators of TOS that I noticed during this perio
 
 #### Relevant hobbies
 
-In my childhood up to the onset of TOS, I spent a lot of time rock climbing, playing guitar, playing computer games, and
-fire spinning.
+In my childhood up to the onset of TOS, I spent a lot of time **rock climbing, playing guitar, using a computer**, and
+**fire spinning**.
 
-From high school onwards, I was rock climbing very often. I competed on a team which involved training long hours during
-high school. There were stretches of weeks where I was at the climbing gym every day. I have climbed outdoors many
-times, and have made many trips for the express purpose of rock climbing outdoors. Hopefully it's becoming clear just
-how much time I've spent rock climbing! I think what's most important to note is that I spent many hours bouldering
-overhanging routes. Bouldering is a type of climbing that is shorter and more intense then other styles of climbing. The
-end result is that I spent a lot of time with my full body weight on both arms, with my arms fully extended above my
-head. Since high school, I have also been an avid fan of doing pullups, and would crank out a lot of them without
-properly warming up (whoops). My personal best was 42!
+From high school onwards, I was **rock climbing** very often. I competed on a team which involved training long hours
+during high school. There were stretches of weeks where I was at the climbing gym every day. I have climbed outdoors
+many times, and have made many trips for the express purpose of rock climbing outdoors.
+
+Hopefully it's becoming clear just how much time I've spent rock climbing! I think what's most important to note is that
+I spent many hours bouldering overhanging routes. Bouldering is a type of climbing that is shorter and more intense then
+other styles of climbing. The end result is that I spent a lot of time with my full body weight on both arms, with my
+arms fully extended above my head. Since high school, I have also been an avid fan of doing pullups, and would crank out
+a lot of them without properly warming up (whoops). My personal best was 42!
 
 ![Rock climbing](/images/amarillo_sunset.jpg)
 
-For both playing guitar and computer, I spent a long time doing these things with (probably) poor posture. Both involve
-lots of repeated hand movements for long periods of time. I did both of these extensively from an early age.
+**Playing guitar** and **using the computer**: I spent a lot of time doing these things with (probably) poor posture
+from an early age. Both involve lots of repeated hand movements for long periods of time.
 
-From 2014 onwards I also began fire spinning, and started doing so very often. Fire spinning (or more specifically
-spinning poi, my prop of choice) involves moving one's arms around one's body for long periods of time. It can be a
-serious shoulder workout! Below is a video of some relatively calm spinning.
+From 2014 onwards I also began **fire spinning**, and started doing so very often. Fire spinning (or more specifically
+spinning poi, the particular prop I use) involves moving one's arms around one's body for long periods of time. It can
+be a serious shoulder workout! Below is a video of some relatively calm spinning.
 
 <iframe
 width="560"
@@ -75,17 +77,14 @@ I would just continue despite the numbness. It never progressed to pain during t
 
 Around May 15th 2020, I injured my right shoulder's rotator cuff while servicing my at-home rock climbing wall. I was
 hanging off of the wall with one hand and turning a wrench with the right hand when I felt a pain in my shoulder. I
-stopped what I was doing, but over the next couple of weeks until the clear onset of TOS, I continued to spin poi and
-type on my computer, which felt funny and occasionally a little painful. I could not raise my right arm above my
-shoulder, and found myself supporting my right arm with my left arm occasionally.
+stopped what I was doing, but over the next couple of weeks until the clear onset of TOS, I continued to type on my
+computer, which felt a bit funny. I can remember during this time as I was working long hours feeling a bit
+uncomfortable, and believe I might have been hunching my shoulders slightly differently to manage that feeling. I could
+not raise my right arm above my shoulder, and found myself supporting my right arm with my left arm occasionally.
 
-Another point that may be relevant: I feel like in the weeks following the rotator cuff injury, as I was typing long
-hours for my work as a software developer, I believe that I was hunching my shoulders slightly differently to feel more
-comfortable.
+### May 2020 - December 2020: Onset of TOS
 
-### May 2020 - December 2020
-
-On May 28th, about two weeks after my rotator cuff injury, I was typing on my computer for work when all a sudden I
+On May 28th 2020, about two weeks after my rotator cuff injury, I was typing on my computer for work when all a sudden I
 began feeling burning pain in both forearms. I typed a message to my manager and team that I would need to go on short
 term disability.
 
@@ -99,23 +98,27 @@ even for very short periods of time, or for seemingly no identifiable reason.
 
 ### Early 2021
 
-I began learning about thoracic outlet syndrome (TOS) thanks to Dr Scott Werden's videos on YouTube. It overwhelmingly
-felt like the correct diagnosis for my condition.
+I began learning about thoracic outlet syndrome (TOS) thanks to
+[Dr. Scott Werden's YouTube channel](https://www.youtube.com/@tosmri). It overwhelmingly felt like the correct diagnosis
+for my condition.
 
-I saw a neurologist in San Francisco who administered a electromyography (EMG) test. This found nothing out of the
-ordinary. The neurologist interpreted it as showing that I did not have carpal tunnel syndrome or cubital tunnel
-syndrome, which I agreed with. However, she also told me that I was negative for neurogenic thoracic outlet syndrome.
-Other imaging results after this would show strong evidence that I had TOS. Many doctors familiar with TOS would say
-that an EMG cannot conclusively determine if someone has TOS, but my neurologist was of the other camp. Had I not done
-my own research to understand this, I believe that my health could have been set back even further. I certainly look
-forward to the day when most neurologists have a basic understanding of TOS and our ability (or lack thereof) to detect
-it with different tools.
+In January, I saw a neurologist in San Francisco who administered a electromyography (EMG) test. This found nothing out
+of the ordinary. The neurologist interpreted it as showing that I did not have carpal tunnel syndrome or cubital tunnel
+syndrome, which I agreed with.
 
-It was in this month that I began seeing Steve Talajkowski, a physical therapist who understands TOS well. He gave me
-more confidence that this was what I was facing. However, after several sessions of physical therapy, he recommended
-that I consider different treatment given the severity of my condition and lack of improvement up to that point.
+However, she also told me that I was negative for neurogenic thoracic outlet syndrome. Other imaging results after this
+would show strong evidence that I had TOS. Many doctors familiar with TOS would say that an EMG cannot conclusively
+determine if someone has TOS ([example](https://youtu.be/57YqZde9Z5I?si=Yum2fvWYGbO1qQYM&t=52)), but my neurologist was
+of the other camp. Had I not done my own research to understand this, I believe that my health could have been set back
+even further. I certainly look forward to the day when most neurologists have a basic understanding of TOS and our
+ability (or lack thereof) to detect it with different tools.
 
-I received Dr Scott Werden's MRI which is especially geared towards imaging TOS. This confirmed that I had bilateral
+It was in this month that I began seeing Steve Talajkowski, a physical therapist who understands TOS well, given that he
+worked under Peter Edgelow, a well known TOS physical therapist. He gave me more confidence that this was what I was
+facing. However, after several sessions of physical therapy, he recommended that I consider different treatment given
+the severity of my condition and lack of improvement up to that point.
+
+I received Dr. Scott Werden's MRI which is especially geared towards imaging TOS. This confirmed that I had bilateral
 neurogenic thoracic outlet syndrome. Here is the summary:
 
 "No spinal stenosis. Bilateral multipoint soft tissue and bony compression of the brachial plexuses, with additional

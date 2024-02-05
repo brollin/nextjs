@@ -1,8 +1,8 @@
 import Markdown from "react-markdown";
-import { Heading, Text } from "@chakra-ui/react";
+import { Heading, Link, Text } from "@chakra-ui/react";
 import { ReactNode } from "react";
 import rehypeRaw from "rehype-raw";
-import Link from "next/link";
+import NextLink from "next/link";
 
 type Level = 1 | 2 | 3 | 4 | 5;
 
@@ -51,7 +51,13 @@ export const StyledMarkdown = ({ children }: StyledMarkdownProps) => {
         h4: getHeadingComponent(4),
         h5: getHeadingComponent(5),
         p: ({ children }) => <Text>{children}</Text>,
-        a: ({ children, href }) => <Link href={href as string}>{children}</Link>,
+        a: ({ children, href }) => (
+          // Note: this has to change when upgrading to Nextjs 13
+          // https://chakra-ui.com/docs/components/link
+          <NextLink href={href as string} passHref>
+            <Link>{children}</Link>
+          </NextLink>
+        ),
       }}
     >
       {children}

@@ -32,6 +32,12 @@ const TextComponentStyle: ComponentStyleConfig = {
   },
 };
 
+const LinkComponentStyle: ComponentStyleConfig = {
+  baseStyle: {
+    color: "cyan.500",
+  },
+};
+
 const config: ThemeConfig = {
   initialColorMode: "dark",
   useSystemColorMode: false,
@@ -40,7 +46,7 @@ const config: ThemeConfig = {
 const theme = extendTheme({
   fonts: { heading: "Kanit, sans-serif", body: "Roboto, sans-serif" },
   config,
-  components: { Heading: HeadingComponentStyle, Text: TextComponentStyle },
+  components: { Heading: HeadingComponentStyle, Text: TextComponentStyle, Link: LinkComponentStyle },
 });
 
 export default theme;
