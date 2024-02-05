@@ -125,7 +125,7 @@ neurogenic thoracic outlet syndrome. Here is the summary:
 evidence of tension on hyperabduction, as well as abnormal signal intensity of the right brachial plexus. Significant
 extrinsic venous compression with the arms in neutral position, worsening on hyperabduction."
 
-### Mid to late 2021
+### Mid to late 2021: First surgery
 
 Upon discussing the results of the MRI, I ultimately opted to go the route of surgery. I had first rib resection (FRRS),
 scalenectomy, and pec minor tenotomy (also known as the "trifecta" surgery) done on both sides. I first had it down on
@@ -133,7 +133,7 @@ the left side in June 2021, and then again on the right side in October 2021. Th
 relatively well, with no new nerve symptoms but also no obvious immediate relief from past nerve symptoms. In short, no
 real change.
 
-### October 2021 - December 2021
+### October 2021 - December 2021: Second surgery
 
 Following the second surgery on the right side, I had many new painful nerve symptoms, primarily along the ulnar nerve.
 Also, my right arm was swollen with edema for these several months. I was in excruciating pain and severe discomfort for
@@ -157,13 +157,13 @@ my nerve symptoms largely stayed the same or slightly worsened.
 ### November 2023 - Now
 
 Finally in November 2023, I had a flareup for no apparent reason besides hot weather that left me very noticeably worse
-off. The new symptoms included a weak feeling in my hands/fingers and spasming muscles. The pain I felt
+off. The new symptoms included a weak feeling in my hands/fingers and spasming muscles.
 
 ## Current condition
 
 I currently have a baseline level of pain that is hard to quantify, but is always at least a little distracting, and at
-worst completely debilitating. Using my arms for most tasks will reliably lead to a flareup, so I keep my arm usage to
-basically just eating, dressing, showering, and receive help with as many other activities as I can from friends and
+worst completely debilitating. Using my arms for most tasks will consistently lead to a flareup, so I keep my arm usage
+to basically just eating, dressing, showering, and receive help with as many other activities as I can from friends and
 family.
 
 Other things that can lead to a flareup:
