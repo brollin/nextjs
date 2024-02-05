@@ -173,6 +173,30 @@ Other things that can lead to a flareup:
 - consuming alcohol
 - walking or standing for 15 minutes or more
 - sitting in any chair except for very specific ones (padded arm rests, legs raised)
+- traveling in a car or any other vehicle (because of the above reason)
 - lying down
 
-At home, I sit in a specifically padded chair and use a footrest.
+## How I get comfortable
+
+At home, I sit in a specifically padded chair and use a footrest. I use the "stretch sit cushion"
+([link](https://www.amazon.com/Gokhale-Method-Stretchsit-Cushion-backrest/dp/B01LXSGF8O)) to raise my scapula and create
+more space in the thoracic outlet. Using a footrest for mysterious reasons is important for my comfort. PTs in the past
+have hypothesised that spine flexion is an important aspect. Whatever the reason, having my legs straight out in front
+of me is an important part of my comfort.
+
+## Needed accommodations
+
+If I am to travel for instance for a doctor's appointment, there is the risk that I could cause myself another multiple
+week-long flare up if I don't take certain precautions. This is simply because moving around, traveling in a car,
+sitting in a less than ideal chair, speaking with people, etc. will all chip away at nerve comfort. For this reason, I
+may be expressing certain needs before or during the appointment to optimize my comfort.
+
+Generally, I will just bring some armrest cushions, a backrest, and perhaps a seat cushion, and request that I be able
+to use a chair with armrests. Having my feet elevated also greatly helps, and depending on the length of the visit I may
+brings something for this.
+
+## In conclusion
+
+Obviously I'm definitely hoping to get some useful medical help soon. If there is more information that could help, I'm
+very happy to provide it, and if you've read this far please give me feedback on this page, because I'd like to improve
+it for future visitors. Thank you!
