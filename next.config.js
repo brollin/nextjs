@@ -6,6 +6,7 @@ const nextConfig = {
     config.module.rules.push({ test: /\.(glsl|vs|fs|vert|frag)$/, use: ["raw-loader", "glslify-loader"] });
     // Use raw-loader for Markdown files
     config.module.rules.push({ test: /\.md$/, use: "raw-loader" });
+    config.experiments = { ...config.experiments, topLevelAwait: true };
     return config;
   },
 };
