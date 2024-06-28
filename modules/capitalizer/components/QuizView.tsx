@@ -26,7 +26,7 @@ const QuizView = observer(({ togglePanel, isPanelOpen }: QuizViewProps) => {
   return (
     <>
       <HStack justify="flex-end" alignContent="center" marginBottom={2}>
-        <BsFillGearFill className={isPanelOpen ? styles.rotate : ""} onClick={togglePanel} size={15} />
+        <BsFillGearFill role="button" className={isPanelOpen ? styles.rotate : ""} onClick={togglePanel} size={15} />
       </HStack>
       {store.previousCountry ? (
         <Text marginBottom={2} textAlign="center" color="blue.300">
@@ -45,7 +45,6 @@ const QuizView = observer(({ togglePanel, isPanelOpen }: QuizViewProps) => {
 
       <HStack>
         <Input
-          onKeyDown={(e) => (e.key === "Enter" ? store.advanceAfterIncorrect() : null)}
           ref={initialFocusRef}
           placeholder="Enter capital"
           onChange={(e) => handleAnswerChange(e.target.value)}

@@ -21,6 +21,7 @@ const UserInterface = observer(() => {
       if (e.key === " ") store.advance();
     });
     document.addEventListener("keydown", handleKeypress);
+    return () => document.removeEventListener("keydown", handleKeypress);
   }, [store]);
 
   const togglePanel = () => {
@@ -60,7 +61,7 @@ const UserInterface = observer(() => {
         </>
       ) : null}
       {store.gameMode === "quiz" ? (
-        <QuizView isPanelOpen={isPanelOpen} togglePanel={togglePanel} />
+        <QuizView key={store.currentCountry?.name} isPanelOpen={isPanelOpen} togglePanel={togglePanel} />
       ) : (
         <LearnView isPanelOpen={isPanelOpen} togglePanel={togglePanel} />
       )}
