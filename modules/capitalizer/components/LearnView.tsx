@@ -34,11 +34,11 @@ const LearnView = observer(({ togglePanel, isPanelOpen }: LearnViewProps) => {
       </GridItem>
       <GridItem>
         <VStack alignItems="flex-end">
-          <BsFillGearFill className={isPanelOpen ? styles.rotate : ""} onClick={togglePanel} size={15} />
+          <BsFillGearFill role="button" className={isPanelOpen ? styles.rotate : ""} onClick={togglePanel} size={15} />
         </VStack>
       </GridItem>
       <GridItem>
-        <VStack onClick={() => store.advance()} justify="center" alignItems="flex-end" height="100%">
+        <VStack role="button" onClick={() => store.advance()} justify="center" alignItems="flex-end" height="100%">
           <Box key={store.currentCountry!.countryCode} className={styles.glowFade} borderRadius={35}>
             <BsArrowRightCircle size={35} />
           </Box>

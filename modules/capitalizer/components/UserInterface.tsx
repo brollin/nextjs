@@ -15,7 +15,10 @@ const UserInterface = observer(() => {
 
   useEffect(() => {
     const handleKeypress = action((e: KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === " ") store.advance();
+      // check if an input is focused
+      if (e.key === "Enter") store.advance();
+      if (document.activeElement instanceof HTMLInputElement) return;
+      if (e.key === " ") store.advance();
     });
     document.addEventListener("keydown", handleKeypress);
   }, [store]);
