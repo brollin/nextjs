@@ -1,9 +1,8 @@
 import { StyledMarkdown } from "@/modules/health/components/StyledMarkdown";
 import theme from "@/modules/health/theme";
-import { ChakraProvider, Link, VStack } from "@chakra-ui/react";
+import { ChakraProvider, VStack } from "@chakra-ui/react";
 import Head from "next/head";
 import healthStory from "@/modules/health/healthStory.md";
-import NextLink from "next/link";
 
 // TODO: dynamic table of contents: https://blog.logrocket.com/create-table-contents-highlighting-react/
 
