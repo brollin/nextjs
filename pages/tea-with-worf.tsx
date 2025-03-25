@@ -8,13 +8,12 @@ export default function TeaWithWorf() {
       <Head>
         <title>Tea With Worf</title>
         <link rel="icon" href="/favicon.ico" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=450" />
       </Head>
-      <VStack as="article" width="100vw" justify="center">
-        <VStack py={10} px={2} textAlign="left" justify="start" maxWidth="40rem">
-          <div>
-            <Heading>Tea with Worf</Heading>
-            <pre>{`
+      <VStack as="article" width="450px">
+        <VStack px={2} py={10} textAlign="left" align="start">
+          <Heading>Tea with Worf</Heading>
+          <pre>{`
 I am Worf, son of Mogh
 And I've written this ode
 To invite a man to tea with me.
@@ -55,9 +54,8 @@ Today is a good day to dine
 With a new hero of mine
 If Tony would have tea with me.
 `}</pre>
-            <VStack py={6}></VStack>
-            <p>- A poem for Dad by Ben Rollin</p>
-          </div>
+          <VStack py={6}></VStack>
+          <p>- A poem for Dad by Ben Rollin</p>
         </VStack>
       </VStack>
     </ChakraProvider>
