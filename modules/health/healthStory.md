@@ -84,10 +84,11 @@ brain tends to shut off and make you really tired when you're in a social situat
 guess! But then you get in bed and feel pretty dang awake...
 
 The pattern here is that we all can relate with the concept that your emotional state can lead to bodily symptoms in
-these short term examples. This is the "acute" part. So why then is the idea that a distressed emotional state leading
-to chronic problems such a foreign concept?
+these short term examples. This is the "acute" part. So why then is such a foreign and unbelievable concept that
+distressed emotional states could lead to chronic physical symptoms?
 
-This is what happened to me: a chronic state of emotional distress led to the manifestation of physical symptoms.
+This is what happened to me: a chronic state of emotional distress led to the chronic manifestation of physical
+symptoms.
 
 It's happened to many people it turns out, and if you just for fun take the above statement as true, it can connect a
 lot of dots. There have been so many stories of people experiencing miraculous cures from dubious methods. But if what
@@ -104,7 +105,7 @@ are notoriously difficult to quantify, and so drawing conclusive results is hamp
 But anecdotally, there are a LOT of people who are curing health problems with the mind-body approach (which I'll
 describe shortly): people have cured their nerve pain, chronic fatigue syndrome, psoriasis, cyclical vomiting... the
 list is long. But maybe it doesn't seem likely that these conditions could have been caused ultimately by emotions?
-Reasonable, and I do think these conditions are real and sometimes strucural, where a mind-body approach won't
+Reasonable, and I do think these conditions are real and sometimes structural, where a mind-body approach won't
 completely resolve them. But at the same time, think about the acute conditions I described at the beginning of this
 section and compare to these more chronic versions of those symptoms. Wouldn't it be reasonable to believe that there is
 a chronic analogue to those acute conditions, when the emotional problem is itself a long lived and chronic thing too?
@@ -112,7 +113,8 @@ a chronic analogue to those acute conditions, when the emotional problem is itse
 ### How it works
 
 The book Mind your Body by Nicole Sachs describes this disregulated nervous system condition as tension myoneural
-syndrome (TMS). Here are a few key terms defined in a reductive way here:
+syndrome (TMS), but the name of the condition isn't important. Let's just start with a few key terms defined in a
+reductive way here:
 
 1. Nervous system. The entity inside you that is responsible for keeping you safe
 2. Emotional reservoir. An internal reservoir which holds negative feelings, such as dread, despair, grief, terror,
@@ -124,13 +126,14 @@ your negative emotions build up in some kind of container inside of you, and nee
 
 I grew up always bottling my negative emotions. At some point I learned that showing these emotions was strictly bad. By
 voicing anger or fear, I thought I was just inviting more of that emotion into existence. So I rarely voiced my fears,
-anger, sadness, etc, except when it became too much.
+anger, sadness, etc, except when it became too much to contain, and then it spilled out in uncontrolled waves. Not the
+best way to go about life.
 
 Nicole Sachs describes what happens when you fill up your emotional reservoir as follows. Eventually, you have so much
 negative emotion bottled up that you can't really get away from it. Let's say you've got this sense of despair about the
 state of politics. Well, any number of news headlines or friends' off-handed mentioning of some political event would
-direct your mind, at least in some small way, back to the bottled up despair. So a seemingly innocuous comment by a
-loved one about thew news might trigger feelings of despair.
+direct your mind, at least in some small and subconscious way, back to the bottled up despair. So a seemingly innocuous
+comment by a loved one about the news might trigger feelings of despair.
 
 When this happens often enough, your nervous system (the other entity defined above) takes notice. It says "hey, when
 you think about this stuff, you feel BAD. this stuff is dangerous." And what does the nervous system do to communicate
@@ -144,16 +147,17 @@ This is the essential mechanism that a chronically full emotional reservoir trig
 to send pain signals (or maybe its fatigue signals as in chronic fatigue syndrome, etc) upon experiencing those negative
 emotions too often.
 
+### Learned pain
+
 Now, when you feel chronic pain, something additional happens. Neurologists will say "nerves that fire together, wire
 together" to describe the phenomenon of neuroplasticity. What this is saying is, when things happen to occur together,
-our brains and neural tissue has this habit of wiring those things together. You're neurons are literally learning the
-pain. This has a name: neuroplastic pain.
+our brains and neural tissue has this habit of wiring those things together. When it happens a lot, there are lots of
+opportunities to wire those things together really well. You're neurons are literally learning the pain. This has a
+name: neuroplastic pain.
 
 The crazy thing is that this pain is exactly as real as normal, structural pain. In both cases, the pain signals end up
 in the same place in your central nervous system (brain), giving the same message. Nicole says "the pain is not in your
 head, but the solution is not in your body". To be honest, I find this statement very difficult to reason about.
-
-### Learned pain
 
 If someone asked me, "so it was all in your head?" I might reply "Yeah, because ALL pain is in your head". And then I'd
 probably argue my point with lots more words and examples of lived experience.
@@ -171,7 +175,7 @@ Instead, imagine you're Ben who is very tired. Deeply tired. All you want to do 
 comfortable, in no pain at the moment. It feels so right not to be moving, in that way where every part of your body and
 mind seem to completely agree that: it is now time to sleep. It is one of those nights where it will be very easy to
 fall asleep, it'll take mere seconds. Sleep comes on slowly, and you experience the mind drifting sensation as parts of
-my conscious mind shut down.
+your conscious mind shut down.
 
 BAM. You're awake. Why are you awake? Because your arms are experiencing bursts of lancing pain, elbow to pinky. Whyy?
 You were so completely comfortable and you didn't move an inch. You're still dead tired, but now you gotta deal with
@@ -179,7 +183,8 @@ this and reposition your body to ease the symptoms somehow.
 
 This happened to me many times. I tell it as a way to illustrate how deeply the pain is learned. I'm of the firm opinion
 that in these moments, I wasn't experiencing any pain related to a structural problem. Instead, perhaps some dream
-thought formulated that triggered my nervous system into thinking: DANGER. And then the pain comes.
+thought formulated that triggered my nervous system into thinking: DANGER. And then the pain comes, because the "fire
+together, wire together" process has connected mental danger to physical pain.
 
 So rather than it being a conscious-mind controlled thing, it is this deep part of you capable of turning on the pain.
 It's wild. As wild as it is to fully realize that, it's equally wild to experience how very real methods can be employed
@@ -193,12 +198,12 @@ So I really recommend being kind to your nervous system and taking care of it. A
 
 ### Journalspeak + Meditation
 
-Nicole Sachs describes in her book the process of journalspeak, and I really recommend using that as a source. The
-problem is, I expect that if you've read this far, there will be a temptation to take my description of the method of
-journalspeak and just go for it. The problem is, the prework is really necessary. Nicole spends the first many chapters
-of the book preparing you in so many ways so that you are correctly primed. So that you actually believe that the
-process will help. She does an amazing job of convincing even the most skeptical that this process can work; it worked
-on me! So know that what I say here is the tip of the iceberg basically.
+Nicole Sachs describes in her book the process of journalspeak, and I really recommend using that as a source. I expect
+that if you've read this far, there will be a temptation to take my description of the method of journalspeak and just
+go for it. The problem is, the prework is really necessary. Nicole spends the first many chapters of the book preparing
+you in so many ways so that you are correctly primed. So that you actually believe that the process will help. She does
+an amazing job of convincing even the most skeptical that this process can work; it worked on me! So know that what I
+say here is the tip of the iceberg basically.
 
 The goal is to, every day, journal for 20 minutes in a very particular way, followed by meditating for 10 minutes in any
 way you like. The journaling should be done in a completely safe space where you feel free to feel. You can write or do
@@ -215,13 +220,14 @@ Drain that emotional reservoir. You'll write things that feel good to write, but
 something that feels wayyy too harsh but you realize it's how you really felt. Whether it's true or not doesn't always
 matter, but how true it FEELS does matter.
 
-It's easy to just waste time not being honest with yourself. But the spirit of the exercise is to air those negative
-emotions, and to teach your nervous system that in fact, the terror, despair, etc associated with certain thoughts
-doesn't have to exist. You can think of those things, experiencing negative emotions, and when those emotions pass,
-those subjects that haunted you internally for so long aren't nearly as scary as they once were.
+It's easy to just waste time not being honest with yourself. But the spirit of the exercise is to finally be real and
+say the thing that felt unforgivable or too terrifying to say or think until now. Air those negative emotions, and to
+teach your nervous system that in fact, the terror, despair, etc associated with certain thoughts doesn't have to exist.
+You can think of those things, experience the negative emotions they bring on, and when those emotions pass, those
+subjects that haunted you internally for so long aren't nearly as scary as they once were.
 
-Here's an important part: after 20 minutes, you destroy the entry. It was never meant for future you to read or anyone
-else. By some stroke of luck, it turns out that getting these things out once, in any manner, even if you're not
+Here's an important part: after 20 minutes, you destroy the entry. It was never meant for future you or anyone else to
+read. By some stroke of luck, it turns out that getting these things out once, in any manner, even if you're not
 communicating those things to another human, is sufficient for retraining your nervous system. You're finding those
 parts of your thoughts and mind that are the scariest, most trauma-ridden, most rage-filled corners and shining a light
 for a brief moment, and then walking away.
@@ -244,16 +250,18 @@ It was my neurologist, a very mainstream, respected doctor in San Francisco, Dr.
 book to me. I think that western medicine is catching up to the power of this kind of mind-body work, and it's about
 time.
 
-It was immediately that I started feeling better. The pain was 80% better within a day, and then it got mostly better
-for several weeks after. 3 months later, I'd say I'm 99% better. Whereas it hurt to type, stand, walk, sit, and simply
-exist before, I can climb, run, and wiggle my arms rhythmically if I feel like it. That transformation over such a short
-time period and deeply connecting with how my body and mind function all amounted to a minor spiritual experience but I
-won't get into that here. I'm still figuring it out, really, but I'm finally listening and understanding what my body
-needs, and I've never felt better about my life.
+It was immediately that I started feeling better. The pain was 50% better within a week, and then it got to maybe 80%
+several weeks later. 3 months later, I'd say I'm 99% better. Whereas it hurt to type, stand, walk, sit, and simply exist
+before, I can climb, run, and wiggle my arms rhythmically if I feel like it. That transformation over such a short time
+period and deeply connecting with how my body and mind function all amounted to a minor spiritual experience but I won't
+get into that here. I'm still figuring it out, really, but I'm finally listening and understanding what my body needs,
+and I've never felt better about my life.
 
 I still have lingering symptoms: my arms go numb when holding on to a vibrating electric razor or a blender for
-instance, and if I get anxious my arms can go numb. But after just 3 months and so much positive change, I have no doubt
-that I'll continue to unlearn those neuroplastic things that can be unlearned, and the rest I'll happily to deal with.
+instance, and if I get anxious my arms can go numb. For these reasons and others, I'm convinced I did have some amount
+of structural issues with my nerves. But certainly by April 2025 when I discovered mind-body medicine, my condition was
+mostly an emotional one. After just 3 months and so much positive change, I have no doubt that I'll continue to unlearn
+those neuroplastic things that can be unlearned, and the rest I'll happily deal with.
 
 If you helped me during my years of extreme disability, I'm more grateful than I can ever express. Given how desperately
 low the lows got, you may just have saved my life by being that compassionate support network I needed.
