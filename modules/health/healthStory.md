@@ -84,9 +84,10 @@ again, she recommended a new book:
 [Mind your Body by Nichole Sachs](https://www.amazon.com/Mind-Your-Body-Revolutionary-Program/dp/0593716930). She said
 that the mind-body approach outlined in the book was helping a lot of people cure their chronic pain.
 
-Maybe your hippy-dippy/woo-woo alarm is going off. That was me, but I'm glad: 1. that I was at such a desperate place
-that it was easy to ignore, and 2. that Nichole Sachs is sooo good at making the argument that mind body conditions are
-very real.
+Maybe your hippy-dippy/woo-woo alarm is going off, or has been for some time up to this point. That might have been me,
+but I'm glad: 1. I'd become continually more open minded over time about alternative modalities, 2. that I was at such a
+desperate place that it just didn't matter, and 3. that Nichole Sachs is sooo good at making the argument that mind body
+conditions are very real. I was ready to receive whatever wisdom was in this book.
 
 The eventual, incredible, and very tangible changes in my body have ended up being my irrefutable proof that this stuff
 is real.
@@ -100,8 +101,8 @@ You know when you have to make a speech, and you get butterflies in your stomach
 Or how about when you're so stressed that you get a headache, or wake up covered in hives (this happened to me!).
 
 Or maybe you've got more personal examples of emotions leading to acute conditions in your body. Maybe it's that your
-brain tends to shut off and make you really tired when you're in a social situation you wish you weren't in. Bed time I
-guess! But then you get in bed and feel pretty dang awake...
+brain tends to shut off and makes you feel really tired when you're in a social situation you wish you weren't in. Bed
+time I guess! But then you get in bed and feel pretty dang awake...
 
 The pattern here is that we all can relate with the concept that your emotional state can lead to bodily symptoms in
 these SHORT term examples. This is the "acute" part. So why then is it such a foreign and unbelievable concept that
@@ -110,7 +111,7 @@ chronically distressed emotional states could lead to chronic physical symptoms?
 This is what happened to me: a chronic state of emotional distress led to the chronic manifestation of physical
 symptoms.
 
-It has happened to many people it turns out, and if you just for fun put aside any skepticism and take my claims as
+It has happened to many people it turns out, and if you just for fun put aside any skepticism and entertain my claims as
 true, it might just connect a lot of dots. There have been so many stories of people experiencing miraculous cures from
 methods considered dubious by the western medical community. But if we just said that emotional distress can cause
 physical symptoms, and if what underlies those "dubious" methods is some kind of process that affects the patient
@@ -118,7 +119,8 @@ emotionally, then that change can lead to healing.
 
 Here's some more dots I feel I've connected. Think of all of those conditions which list as a risk factor "stress", and
 how a doctor says to reduce stress in order to help ease a symptom. It's actually a LOT of conditions that we know can
-be exacerbated by stress, which might make these broader claims make sense for you.
+be exacerbated by stress. That fact alone points back to the broader claim I've made here: chronic negative emotions can
+lead to chronic physical symptoms.
 
 To me, western medicine just hasn't quite caught up to the power of mind body medicine because of the very real
 difficulties in measuring results in an objective way. When we're talking about emotions and pain levels, these things
@@ -131,7 +133,8 @@ Reasonable, and I do believe these conditions are real and are sometimes structu
 approach won't completely resolve them. For instance, sometimes you have compression of a nerve, and mind body medicine
 can't relieve that very real structural issue. Importantly, Nicole Sachs and other advocates for this type of medicine
 would NOT make claims otherwise. Sometimes, the problem is structural, and sometimes it's emotional or neuroplastic in
-nature, which requires a different treatment.
+nature, which requires a different treatment. It seems to me like oftentimes there is a structural and emotional
+component which means multiple treatments is ideal.
 
 So if it doesn't seem likely to you that the above listed chronic conditions could be caused by emotional problems,
 think about the acute conditions I described at the beginning of this section and compare to these more chronic versions
