@@ -4,7 +4,7 @@ I have been on a pretty long and crazy health journey, and now that I've figured
 recovered in big ways, I thought I would write about it. I want this page to be a one-stop place for people who may have
 zero history of my past as well as those who have followed along at different points but are trying to connect the dots
 or learn about my current condition. Spoiler alert, my current condition is about 95% better than it was at its worst,
-and I'm back to rock climbing, guitar, fire spinning, and using my arms for whatever I feel like. Thanks Nichole Sachs!
+and I'm back to rock climbing, guitar, fire spinning, and using my arms for whatever I feel like. Thanks Nicole Sachs!
 
 ## Before
 
@@ -81,12 +81,12 @@ play guitar, fire spin, etc again.
 
 Finally, I read the book that changed everything for me, to my continual astonishment. After seeing my neurologist
 again, she recommended a new book:
-[Mind your Body by Nichole Sachs](https://www.amazon.com/Mind-Your-Body-Revolutionary-Program/dp/0593716930). She said
+[Mind your Body by Nicole Sachs](https://www.amazon.com/Mind-Your-Body-Revolutionary-Program/dp/0593716930). She said
 that the mind-body approach outlined in the book was helping a lot of people cure their chronic pain.
 
 Maybe your hippy-dippy/woo-woo alarm is going off, or has been for some time up to this point. That might have been me,
 but I'm glad: 1. I'd become continually more open minded over time about alternative modalities, 2. that I was at such a
-desperate place that it just didn't matter, and 3. that Nichole Sachs is sooo good at making the argument that mind body
+desperate place that it just didn't matter, and 3. that Nicole Sachs is sooo good at making the argument that mind body
 conditions are very real. I was ready to receive whatever wisdom was in this book.
 
 The eventual, incredible, and very tangible changes in my body have ended up being my irrefutable proof that this stuff
