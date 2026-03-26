@@ -49,10 +49,67 @@ function buildHillPath(
   return d;
 }
 
-/** Azimuth: radians from south toward west (SunCalc). Maps east→left, west→right. */
-function azimuthToX(azimuth: number, width: number): number {
-  const margin = 72;
-  return width * 0.5 + (width * 0.5 - margin) * Math.sin(azimuth);
+/**
+ * Visible portion of the viewBox when the SVG uses `preserveAspectRatio="xMidYMid slice"`.
+ * Narrow / tall viewports crop the sides; wide / short ones crop top and bottom.
+ */
+function getVisibleViewBoxSlice(
+  viewportW: number,
+  viewportH: number,
+  vbW: number,
+  vbH: number,
+): { xMin: number; xMax: number } {
+  const scale = Math.max(viewportW / vbW, viewportH / vbH);
+  let xMin = 0;
+  let xMax = vbW;
+  if (vbW * scale > viewportW) {
+    const visibleW = viewportW / scale;
+    xMin = vbW / 2 - visibleW / 2;
+    xMax = vbW / 2 + visibleW / 2;
+  }
+  return { xMin, xMax };
+}
+
+function getSunriseSunsetAzimuth(
+  day: Date,
+  lat: number,
+  lng: number,
+): { azSunrise: number; azSunset: number } | null {
+  const times = SunCalc.getTimes(day, lat, lng);
+  if (Number.isNaN(times.sunrise.getTime()) || Number.isNaN(times.sunset.getTime())) {
+    return null;
+  }
+  const azSunrise = SunCalc.getPosition(times.sunrise, lat, lng).azimuth;
+  const azSunset = SunCalc.getPosition(times.sunset, lat, lng).azimuth;
+  return { azSunrise, azSunset };
+}
+
+/**
+ * Map azimuth to the visible horizontal band: sunrise azimuth → left edge, sunset → right edge.
+ * If `riseSet` is null, uses the legacy sine mapping and clamps to the visible band.
+ */
+function azimuthToX(
+  azimuth: number,
+  vbW: number,
+  xMin: number,
+  xMax: number,
+  riseSet: { azSunrise: number; azSunset: number } | null,
+): number {
+  const pad = SUN_RADIUS + 6;
+  let left = xMin + pad;
+  let right = xMax - pad;
+  if (right <= left) {
+    left = (xMin + xMax) / 2;
+    right = left;
+  }
+
+  if (riseSet == null || Math.abs(riseSet.azSunset - riseSet.azSunrise) < 1e-6) {
+    const margin = 72;
+    const raw = vbW * 0.5 + (vbW * 0.5 - margin) * Math.sin(azimuth);
+    return Math.min(Math.max(raw, left), right);
+  }
+  const t = (azimuth - riseSet.azSunrise) / (riseSet.azSunset - riseSet.azSunrise);
+  return left + t * (right - left);
 }
 
 /** Altitude: radians above horizon. Maps to viewBox y (smaller y = higher in sky). */
@@ -67,12 +124,45 @@ function useSunPosition(lat: number, lng: number, timeOffsetMs: number) {
   const offsetRef = useRef(timeOffsetMs);
   offsetRef.current = timeOffsetMs;
 
+  const viewportRef = useRef({ w: 1200, h: 800 });
+  useEffect(() => {
+    const update = () => {
+      const vv = window.visualViewport;
+      if (vv) {
+        viewportRef.current = { w: vv.width, h: vv.height };
+      } else {
+        viewportRef.current = { w: window.innerWidth, h: window.innerHeight };
+      }
+    };
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    if (typeof window.visualViewport !== "undefined") {
+      window.visualViewport.addEventListener("resize", update);
+      window.visualViewport.addEventListener("scroll", update);
+    }
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+      if (typeof window.visualViewport !== "undefined") {
+        window.visualViewport.removeEventListener("resize", update);
+        window.visualViewport.removeEventListener("scroll", update);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const tick = () => {
       const when = new Date(Date.now() + offsetRef.current);
+      const { w: vw, h: vh } = viewportRef.current;
+      const { xMin, xMax } = getVisibleViewBoxSlice(vw, vh, VB.w, VB.h);
+      const riseSet = getSunriseSunsetAzimuth(when, lat, lng);
+
       const { azimuth, altitude } = SunCalc.getPosition(when, lat, lng);
+      const cx = azimuthToX(azimuth, VB.w, xMin, xMax, riseSet);
+
       setSun({
-        cx: azimuthToX(azimuth, VB.w),
+        cx,
         cy: altitudeToY(altitude, VB.h),
       });
       rafRef.current = requestAnimationFrame(tick);

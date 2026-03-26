@@ -4,10 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { VStack, Box, Text } from "@chakra-ui/react";
 import { MdConstruction } from "react-icons/md";
 import LandscapeBackground from "./LandscapeBackground";
+import { useSmoothedFollow } from "./useSmoothedFollow";
 
 /** Wheel / touch movement → simulated time shift (ms per pixel of delta). */
-const WHEEL_MS_PER_DELTA = 900;
-const TOUCH_MS_PER_PX = 2800;
+const WHEEL_MS_PER_DELTA = 7200;
+const TOUCH_MS_PER_PX = 11200;
 
 const timeFormatter = new Intl.DateTimeFormat(undefined, {
   timeStyle: "medium",
@@ -16,6 +17,8 @@ const timeFormatter = new Intl.DateTimeFormat(undefined, {
 
 export default function Landing() {
   const [timeOffsetMs, setTimeOffsetMs] = useState(0);
+  /** Smoothed toward `timeOffsetMs` so wheel/touch steps don’t jitter the sun and clock. */
+  const smoothedOffsetMs = useSmoothedFollow(timeOffsetMs);
   /** Bumps once per second so the clock label tracks real time while offset is fixed. */
   const [clockTick, setClockTick] = useState(0);
 
@@ -66,13 +69,13 @@ export default function Landing() {
   }, []);
 
   const displayedTime = useMemo(
-    () => timeFormatter.format(new Date(Date.now() + timeOffsetMs)),
-    [clockTick, timeOffsetMs],
+    () => timeFormatter.format(new Date(Date.now() + smoothedOffsetMs)),
+    [clockTick, smoothedOffsetMs],
   );
 
   const isoTime = useMemo(
-    () => new Date(Date.now() + timeOffsetMs).toISOString(),
-    [clockTick, timeOffsetMs],
+    () => new Date(Date.now() + smoothedOffsetMs).toISOString(),
+    [clockTick, smoothedOffsetMs],
   );
 
   return (
@@ -82,7 +85,7 @@ export default function Landing() {
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
-      <LandscapeBackground timeOffsetMs={timeOffsetMs} />
+      <LandscapeBackground timeOffsetMs={smoothedOffsetMs} />
       <Box
         position="fixed"
         top={{ base: "max(12px, env(safe-area-inset-top))", md: 4 }}
