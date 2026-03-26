@@ -1,6 +1,7 @@
-import { useMemo, useEffect, useRef, useState } from "react";
+import { useMemo, useEffect, useRef, useState, useCallback, type MouseEvent, type PointerEvent } from "react";
 import { Box } from "@chakra-ui/react";
 import SunCalc from "suncalc";
+import { createHillLayers, DEFAULT_MOUNTAIN_COUNT, type HillSpec } from "./hillLayers";
 
 /** San Francisco — fixed observer; time is `Date.now() + timeOffsetMs` from the landing page. */
 const SF_LAT = 37.7749;
@@ -12,22 +13,6 @@ const VB = { w: 1200, h: 800 };
 const HORIZON_Y = 392;
 const SUN_RADIUS = 32;
 const SUN_GLOW_RADIUS = 52;
-
-type HillSpec = {
-  baseline: number;
-  amplitude: number;
-  frequency: number;
-  phase: number;
-  fill: string;
-};
-
-const HILL_LAYERS: HillSpec[] = [
-  { baseline: 340, amplitude: 22, frequency: 0.0048, phase: 0.4, fill: "#9EC4E8" },
-  { baseline: 395, amplitude: 28, frequency: 0.0062, phase: 1.15, fill: "#7BA8D9" },
-  { baseline: 455, amplitude: 34, frequency: 0.0075, phase: 2.3, fill: "#5A8CC4" },
-  { baseline: 515, amplitude: 40, frequency: 0.0088, phase: 0.75, fill: "#3D6FA8" },
-  { baseline: 575, amplitude: 36, frequency: 0.0095, phase: 3.1, fill: "#2A5580" },
-];
 
 function buildHillPath(
   width: number,
@@ -177,27 +162,68 @@ function useSunPosition(lat: number, lng: number, timeOffsetMs: number) {
 type LandscapeBackgroundProps = {
   /** Added to `Date.now()` for SunCalc — scroll gestures update this from the landing page. */
   timeOffsetMs?: number;
+  mountainCount?: number;
+  /** Double-click / double-tap the sky (areas not covered by interactive UI) to toggle the dev panel. */
+  onBackgroundDoubleActivate?: () => void;
 };
 
-export default function LandscapeBackground({ timeOffsetMs = 0 }: LandscapeBackgroundProps) {
+export default function LandscapeBackground({
+  timeOffsetMs = 0,
+  mountainCount = DEFAULT_MOUNTAIN_COUNT,
+  onBackgroundDoubleActivate,
+}: LandscapeBackgroundProps) {
   const sun = useSunPosition(SF_LAT, SF_LNG, timeOffsetMs);
+
+  const hillLayers = useMemo(() => createHillLayers(mountainCount), [mountainCount]);
 
   const paths = useMemo(
     () =>
-      HILL_LAYERS.map((layer) =>
+      hillLayers.map((layer: HillSpec) =>
         buildHillPath(VB.w, VB.h, layer.baseline, layer.amplitude, layer.frequency, layer.phase),
       ),
-    [],
+    [hillLayers],
+  );
+
+  const lastTouchTapRef = useRef(0);
+  const handleBackgroundDoubleClick = useCallback(
+    (e: MouseEvent) => {
+      e.preventDefault();
+      onBackgroundDoubleActivate?.();
+    },
+    [onBackgroundDoubleActivate],
+  );
+  const handleBackgroundPointerDown = useCallback(
+    (e: PointerEvent) => {
+      if (e.pointerType !== "touch") return;
+      const now = Date.now();
+      if (now - lastTouchTapRef.current < 420) {
+        lastTouchTapRef.current = 0;
+        e.preventDefault();
+        onBackgroundDoubleActivate?.();
+      } else {
+        lastTouchTapRef.current = now;
+      }
+    },
+    [onBackgroundDoubleActivate],
   );
 
   return (
-    <Box position="fixed" inset={0} zIndex={0} pointerEvents="none" aria-hidden overflow="hidden">
+    <Box
+      position="fixed"
+      inset={0}
+      zIndex={0}
+      pointerEvents="auto"
+      overflow="hidden"
+      onDoubleClick={handleBackgroundDoubleClick}
+      onPointerDown={handleBackgroundPointerDown}
+    >
       <svg
         viewBox={`0 0 ${VB.w} ${VB.h}`}
         preserveAspectRatio="xMidYMid slice"
         width="100%"
         height="100%"
         style={{ minHeight: "100vh", display: "block" }}
+        aria-hidden
       >
         <defs>
           <linearGradient id="landing-sky" x1="0" y1="0" x2="0" y2="1">
@@ -227,8 +253,8 @@ export default function LandscapeBackground({ timeOffsetMs = 0 }: LandscapeBackg
             <circle cx={sun.cx} cy={sun.cy} r={SUN_RADIUS} fill="#FFF8E8" stroke="#F5E6B8" strokeWidth="1.5" />
           </g>
         )}
-        {HILL_LAYERS.map((layer, i) => (
-          <path key={i} d={paths[i]} fill={layer.fill} />
+        {hillLayers.map((layer, i) => (
+          <path key={`${mountainCount}-${i}`} d={paths[i]} fill={layer.fill} />
         ))}
       </svg>
     </Box>

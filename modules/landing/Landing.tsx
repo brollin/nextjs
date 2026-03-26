@@ -5,6 +5,9 @@ import { VStack, Box, Text } from "@chakra-ui/react";
 import { MdConstruction } from "react-icons/md";
 import LandscapeBackground from "./LandscapeBackground";
 import { useSmoothedFollow } from "./useSmoothedFollow";
+import DevPanel from "./DevPanel";
+import { DEV_SHOW_DEV_UI_INIT } from "./devConstants";
+import { DEFAULT_MOUNTAIN_COUNT, MAX_MOUNTAIN_COUNT, MIN_MOUNTAIN_COUNT } from "./hillLayers";
 
 /** Wheel / touch movement → simulated time shift (ms per pixel of delta). */
 const WHEEL_MS_PER_DELTA = 7200;
@@ -21,6 +24,17 @@ export default function Landing() {
   const smoothedOffsetMs = useSmoothedFollow(timeOffsetMs);
   /** Bumps once per second so the clock label tracks real time while offset is fixed. */
   const [clockTick, setClockTick] = useState(0);
+
+  const [devPanelVisible, setDevPanelVisible] = useState(DEV_SHOW_DEV_UI_INIT);
+  const [mountainCount, setMountainCount] = useState(DEFAULT_MOUNTAIN_COUNT);
+
+  const toggleDevPanel = useCallback(() => {
+    setDevPanelVisible((v) => !v);
+  }, []);
+
+  const clampMountainCount = useCallback((v: number) => {
+    return Math.min(MAX_MOUNTAIN_COUNT, Math.max(MIN_MOUNTAIN_COUNT, Math.round(v)));
+  }, []);
 
   useEffect(() => {
     const id = window.setInterval(() => setClockTick((n) => n + 1), 1000);
@@ -85,32 +99,50 @@ export default function Landing() {
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
-      <LandscapeBackground timeOffsetMs={smoothedOffsetMs} />
+      <LandscapeBackground
+        timeOffsetMs={smoothedOffsetMs}
+        mountainCount={mountainCount}
+        onBackgroundDoubleActivate={toggleDevPanel}
+      />
       <Box
         position="fixed"
         top={{ base: "max(12px, env(safe-area-inset-top))", md: 4 }}
         right={{ base: "max(12px, env(safe-area-inset-right))", md: 4 }}
-        zIndex={10}
+        zIndex={20}
         pointerEvents="none"
-        px={3}
-        py={2}
-        borderRadius="md"
-        bg="rgba(255,255,255,0.72)"
-        backdropFilter="blur(10px)"
-        boxShadow="sm"
       >
-        <Text
-          as="time"
-          dateTime={isoTime}
-          suppressHydrationWarning
-          fontFamily='ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
-          fontSize={{ base: "xs", sm: "sm" }}
-          fontWeight="medium"
-          color="#1a3a52"
-          letterSpacing="0.02em"
-        >
-          {displayedTime}
-        </Text>
+        <VStack align="flex-end" spacing={2}>
+          <Box
+            pointerEvents="none"
+            px={3}
+            py={2}
+            borderRadius="md"
+            bg="rgba(255,255,255,0.72)"
+            backdropFilter="blur(10px)"
+            boxShadow="sm"
+          >
+            <Text
+              as="time"
+              dateTime={isoTime}
+              suppressHydrationWarning
+              fontFamily='ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+              fontSize={{ base: "xs", sm: "sm" }}
+              fontWeight="medium"
+              color="#1a3a52"
+              letterSpacing="0.02em"
+            >
+              {displayedTime}
+            </Text>
+          </Box>
+          {devPanelVisible && (
+            <Box pointerEvents="auto">
+              <DevPanel
+                mountainCount={mountainCount}
+                onMountainCountChange={(v) => setMountainCount(clampMountainCount(v))}
+              />
+            </Box>
+          )}
+        </VStack>
       </Box>
       <Box
         as="main"
@@ -127,8 +159,9 @@ export default function Landing() {
         py={{ base: 8, sm: 10 }}
         pb={{ base: "max(2rem, env(safe-area-inset-bottom))", sm: 10 }}
         pt={{ base: "max(1rem, env(safe-area-inset-top))", sm: 10 }}
+        pointerEvents="none"
       >
-        <VStack spacing={6} width="100%" maxW="md" align="center">
+        <VStack spacing={6} width="100%" maxW="md" align="center" pointerEvents="auto">
           <MdConstruction size={120} color="#1a3a52" aria-hidden />
           <VStack spacing={3} width="100%" align="center">
             <Link href="/capitalizer">capitalizer</Link>
