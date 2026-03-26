@@ -1,20 +1,6 @@
+import { Box, FormControl, FormLabel, HStack, IconButton, Input, Text, VStack } from "@chakra-ui/react";
+import { IoChevronDown, IoChevronUp } from "react-icons/io5";
 import {
-  Box,
-  FormControl,
-  FormLabel,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Text,
-} from "@chakra-ui/react";
-import {
-  DEFAULT_FREQUENCY_SPREAD,
-  DEFAULT_HARMONICS_PER_LAYER,
-  DEFAULT_HIGH_FREQ_FALLOFF,
-  DEFAULT_HILL_SEED,
-  DEFAULT_MOUNTAIN_COUNT,
   MAX_FREQUENCY_SPREAD,
   MAX_HARMONICS_PER_LAYER,
   MAX_HIGH_FREQ_FALLOFF,
@@ -26,6 +12,99 @@ import {
   MIN_HILL_SEED,
   MIN_MOUNTAIN_COUNT,
 } from "./hillLayers";
+
+type DevNumberRowProps = {
+  value: number;
+  min: number;
+  max: number;
+  step?: number;
+  isInteger?: boolean;
+  onChange: (value: number) => void;
+};
+
+function clampToStep(value: number, min: number, max: number, step: number, isInteger: boolean): number {
+  let v = Math.min(max, Math.max(min, value));
+  if (isInteger) {
+    return Math.round(v);
+  }
+  const snapped = Math.round((v - min) / step) * step + min;
+  return Math.min(max, Math.max(min, Number(snapped.toFixed(6))));
+}
+
+function DevNumberRow({ value, min, max, step = 1, isInteger = false, onChange }: DevNumberRowProps) {
+  const inc = () => {
+    onChange(clampToStep(value + step, min, max, step, isInteger));
+  };
+  const dec = () => {
+    onChange(clampToStep(value - step, min, max, step, isInteger));
+  };
+
+  return (
+    <HStack spacing={3} align="stretch" w="100%">
+      <Input
+        type="number"
+        value={Number.isFinite(value) ? value : ""}
+        min={min}
+        max={max}
+        step={step}
+        size="md"
+        h="44px"
+        flex={1}
+        minW={0}
+        bg="whiteAlpha.100"
+        borderColor="whiteAlpha.300"
+        color="gray.100"
+        borderRadius="lg"
+        fontSize="sm"
+        onChange={(e) => {
+          const raw = parseFloat(e.target.value);
+          if (!Number.isFinite(raw)) return;
+          onChange(clampToStep(raw, min, max, step, isInteger));
+        }}
+      />
+      <VStack
+        spacing={0}
+        flexShrink={0}
+        w="44px"
+        h="44px"
+        borderWidth="1px"
+        borderColor="whiteAlpha.300"
+        borderRadius="lg"
+        overflow="hidden"
+        bg="whiteAlpha.100"
+      >
+        <IconButton
+          aria-label="Increase"
+          icon={<IoChevronUp size={22} />}
+          variant="ghost"
+          size="sm"
+          flex={1}
+          minH={0}
+          h="50%"
+          borderRadius={0}
+          color="gray.200"
+          _hover={{ bg: "whiteAlpha.200" }}
+          onClick={inc}
+        />
+        <IconButton
+          aria-label="Decrease"
+          icon={<IoChevronDown size={22} />}
+          variant="ghost"
+          size="sm"
+          flex={1}
+          minH={0}
+          h="50%"
+          borderRadius={0}
+          borderTopWidth="1px"
+          borderColor="whiteAlpha.300"
+          color="gray.200"
+          _hover={{ bg: "whiteAlpha.200" }}
+          onClick={dec}
+        />
+      </VStack>
+    </HStack>
+  );
+}
 
 type DevPanelProps = {
   mountainCount: number;
@@ -54,179 +133,105 @@ export default function DevPanel({
 }: DevPanelProps) {
   return (
     <Box
-      minW={{ base: "200px", sm: "240px" }}
+      minW={{ base: "240px", sm: "280px" }}
+      maxW="min(100vw - 32px, 320px)"
       maxH="70vh"
       overflowY="auto"
-      px={3}
-      py={2}
-      borderRadius="md"
-      bg="rgba(20, 30, 45, 0.88)"
-      backdropFilter="blur(10px)"
-      boxShadow="md"
+      m={4}
+      p={4}
+      borderRadius="lg"
+      bg="rgba(20, 30, 45, 0.92)"
+      backdropFilter="blur(12px)"
+      boxShadow="xl"
       borderWidth="1px"
-      borderColor="whiteAlpha.300"
+      borderColor="whiteAlpha.200"
       onPointerDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
       onDoubleClick={(e) => e.stopPropagation()}
     >
-      <Text fontSize="10px" fontWeight="bold" color="whiteAlpha.700" letterSpacing="0.08em" mb={2}>
+      <Text fontSize="11px" fontWeight="bold" color="whiteAlpha.800" letterSpacing="0.12em" mb={5} textAlign="right">
         DEV
       </Text>
 
-      <FormControl size="sm" mb={3}>
-        <FormLabel fontSize="xs" mb={1} color="gray.200">
+      <FormControl size="md" mb={6}>
+        <FormLabel fontSize="sm" mb={2} color="gray.200" fontWeight="medium">
           Seed
         </FormLabel>
-        <NumberInput
-          size="sm"
+        <DevNumberRow
           value={hillSeed}
           min={MIN_HILL_SEED}
           max={MAX_HILL_SEED}
-          clampValueOnBlur
-          onChange={(_, v) => {
-            if (Number.isFinite(v)) onHillSeedChange(v);
-          }}
-        >
-          <NumberInputField
-            bg="whiteAlpha.100"
-            borderColor="whiteAlpha.300"
-            color="gray.100"
-            rounded="md"
-          />
-          <NumberInputStepper>
-            <NumberIncrementStepper borderColor="whiteAlpha.300" color="gray.300" />
-            <NumberDecrementStepper borderColor="whiteAlpha.300" color="gray.300" />
-          </NumberInputStepper>
-        </NumberInput>
-        <Text fontSize="10px" color="whiteAlpha.500" mt={1}>
+          step={1}
+          isInteger
+          onChange={onHillSeedChange}
+        />
+        <Text fontSize="xs" color="whiteAlpha.500" mt={2} lineHeight="short">
           Same seed → same hills; reuse for future random features.
         </Text>
       </FormControl>
 
-      <FormControl size="sm" mb={3}>
-        <FormLabel fontSize="xs" mb={1} color="gray.200">
+      <FormControl size="md" mb={6}>
+        <FormLabel fontSize="sm" mb={2} color="gray.200" fontWeight="medium">
           Mountain layers
         </FormLabel>
-        <NumberInput
-          size="sm"
+        <DevNumberRow
           value={mountainCount}
           min={MIN_MOUNTAIN_COUNT}
           max={MAX_MOUNTAIN_COUNT}
-          clampValueOnBlur
-          onChange={(_, v) => {
-            if (Number.isFinite(v)) onMountainCountChange(v);
-          }}
-        >
-          <NumberInputField
-            bg="whiteAlpha.100"
-            borderColor="whiteAlpha.300"
-            color="gray.100"
-            rounded="md"
-          />
-          <NumberInputStepper>
-            <NumberIncrementStepper borderColor="whiteAlpha.300" color="gray.300" />
-            <NumberDecrementStepper borderColor="whiteAlpha.300" color="gray.300" />
-          </NumberInputStepper>
-        </NumberInput>
+          step={1}
+          isInteger
+          onChange={onMountainCountChange}
+        />
       </FormControl>
 
-      <FormControl size="sm" mb={3}>
-        <FormLabel fontSize="xs" mb={1} color="gray.200">
+      <FormControl size="md" mb={6}>
+        <FormLabel fontSize="sm" mb={2} color="gray.200" fontWeight="medium">
           Harmonics / layer
         </FormLabel>
-        <NumberInput
-          size="sm"
+        <DevNumberRow
           value={harmonicsPerLayer}
           min={MIN_HARMONICS_PER_LAYER}
           max={MAX_HARMONICS_PER_LAYER}
-          clampValueOnBlur
-          onChange={(_, v) => {
-            if (Number.isFinite(v)) onHarmonicsPerLayerChange(v);
-          }}
-        >
-          <NumberInputField
-            bg="whiteAlpha.100"
-            borderColor="whiteAlpha.300"
-            color="gray.100"
-            rounded="md"
-          />
-          <NumberInputStepper>
-            <NumberIncrementStepper borderColor="whiteAlpha.300" color="gray.300" />
-            <NumberDecrementStepper borderColor="whiteAlpha.300" color="gray.300" />
-          </NumberInputStepper>
-        </NumberInput>
-        <Text fontSize="10px" color="whiteAlpha.500" mt={1}>
+          step={1}
+          isInteger
+          onChange={onHarmonicsPerLayerChange}
+        />
+        <Text fontSize="xs" color="whiteAlpha.500" mt={2} lineHeight="short">
           Sine terms summed per ridge (1 = plain sine).
         </Text>
       </FormControl>
 
-      <FormControl size="sm" mb={3}>
-        <FormLabel fontSize="xs" mb={1} color="gray.200">
+      <FormControl size="md" mb={6}>
+        <FormLabel fontSize="sm" mb={2} color="gray.200" fontWeight="medium">
           Frequency spread
         </FormLabel>
-        <NumberInput
-          size="sm"
+        <DevNumberRow
           value={frequencySpread}
           min={MIN_FREQUENCY_SPREAD}
           max={MAX_FREQUENCY_SPREAD}
           step={0.05}
-          clampValueOnBlur
-          onChange={(_, v) => {
-            if (Number.isFinite(v)) onFrequencySpreadChange(v);
-          }}
-        >
-          <NumberInputField
-            bg="whiteAlpha.100"
-            borderColor="whiteAlpha.300"
-            color="gray.100"
-            rounded="md"
-          />
-          <NumberInputStepper>
-            <NumberIncrementStepper borderColor="whiteAlpha.300" color="gray.300" />
-            <NumberDecrementStepper borderColor="whiteAlpha.300" color="gray.300" />
-          </NumberInputStepper>
-        </NumberInput>
-        <Text fontSize="10px" color="whiteAlpha.500" mt={1}>
+          onChange={onFrequencySpreadChange}
+        />
+        <Text fontSize="xs" color="whiteAlpha.500" mt={2} lineHeight="short">
           Each harmonic’s frequency × this vs the previous (detail scale).
         </Text>
       </FormControl>
 
-      <FormControl size="sm" mb={2}>
-        <FormLabel fontSize="xs" mb={1} color="gray.200">
+      <FormControl size="md">
+        <FormLabel fontSize="sm" mb={2} color="gray.200" fontWeight="medium">
           High-freq falloff
         </FormLabel>
-        <NumberInput
-          size="sm"
+        <DevNumberRow
           value={highFrequencyFalloff}
           min={MIN_HIGH_FREQ_FALLOFF}
           max={MAX_HIGH_FREQ_FALLOFF}
           step={0.02}
-          clampValueOnBlur
-          onChange={(_, v) => {
-            if (Number.isFinite(v)) onHighFrequencyFalloffChange(v);
-          }}
-        >
-          <NumberInputField
-            bg="whiteAlpha.100"
-            borderColor="whiteAlpha.300"
-            color="gray.100"
-            rounded="md"
-          />
-          <NumberInputStepper>
-            <NumberIncrementStepper borderColor="whiteAlpha.300" color="gray.300" />
-            <NumberDecrementStepper borderColor="whiteAlpha.300" color="gray.300" />
-          </NumberInputStepper>
-        </NumberInput>
-        <Text fontSize="10px" color="whiteAlpha.500" mt={1}>
+          onChange={onHighFrequencyFalloffChange}
+        />
+        <Text fontSize="xs" color="whiteAlpha.500" mt={2} lineHeight="short">
           Amplitude × this for each higher harmonic (lower = smoother).
         </Text>
       </FormControl>
-
-      <Text fontSize="10px" color="whiteAlpha.500" mt={1}>
-        Defaults: seed {DEFAULT_HILL_SEED}, layers {DEFAULT_MOUNTAIN_COUNT}, harmonics{" "}
-        {DEFAULT_HARMONICS_PER_LAYER}, spread {DEFAULT_FREQUENCY_SPREAD}, falloff {DEFAULT_HIGH_FREQ_FALLOFF} ·
-        double-click sky to hide
-      </Text>
     </Box>
   );
 }

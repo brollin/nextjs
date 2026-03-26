@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Head from "next/head";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { VStack, Box, Text } from "@chakra-ui/react";
+import { VStack, Box, Text, HStack } from "@chakra-ui/react";
 import { MdConstruction } from "react-icons/md";
 import LandscapeBackground from "./LandscapeBackground";
 import { useSmoothedFollow } from "./useSmoothedFollow";
@@ -77,6 +77,20 @@ export default function Landing() {
     return () => window.clearInterval(id);
   }, []);
 
+  /** Disables double-tap zoom on mobile while this page is shown; pinch zoom still works. */
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtml = html.style.touchAction;
+    const prevBody = body.style.touchAction;
+    html.style.touchAction = "manipulation";
+    body.style.touchAction = "manipulation";
+    return () => {
+      html.style.touchAction = prevHtml;
+      body.style.touchAction = prevBody;
+    };
+  }, []);
+
   const applyScrollDeltaToTime = useCallback((deltaY: number) => {
     if (deltaY === 0) return;
     setTimeOffsetMs((o) => o + deltaY * WHEEL_MS_PER_DELTA);
@@ -123,10 +137,7 @@ export default function Landing() {
     [clockTick, smoothedOffsetMs],
   );
 
-  const isoTime = useMemo(
-    () => new Date(Date.now() + smoothedOffsetMs).toISOString(),
-    [clockTick, smoothedOffsetMs],
-  );
+  const isoTime = useMemo(() => new Date(Date.now() + smoothedOffsetMs).toISOString(), [clockTick, smoothedOffsetMs]);
 
   return (
     <>
@@ -146,20 +157,27 @@ export default function Landing() {
       />
       <Box
         position="fixed"
-        top={{ base: "max(12px, env(safe-area-inset-top))", md: 4 }}
-        right={{ base: "max(12px, env(safe-area-inset-right))", md: 4 }}
+        top={0}
+        left={0}
+        right={0}
         zIndex={20}
         pointerEvents="none"
+        pt={{ base: "max(12px, env(safe-area-inset-top))", md: 4 }}
+        pr={{ base: "max(16px, env(safe-area-inset-right))", md: 5 }}
+        pl={{ base: "max(16px, env(safe-area-inset-left))", md: 5 }}
+        display="flex"
+        flexDirection="column"
+        alignItems="flex-end"
       >
-        <VStack align="flex-end" spacing={2}>
+        <HStack alignItems="flex-start" justifyContent="space-between" w="100%" maxW="100%">
           <Box
             pointerEvents="none"
-            px={3}
-            py={2}
-            borderRadius="md"
-            bg="rgba(255,255,255,0.72)"
+            px={4}
+            py={2.5}
+            borderRadius="xl"
+            bg="rgba(255,255,255,0.78)"
             backdropFilter="blur(10px)"
-            boxShadow="sm"
+            boxShadow="md"
           >
             <Text
               as="time"
@@ -175,7 +193,7 @@ export default function Landing() {
             </Text>
           </Box>
           {devPanelVisible && (
-            <Box pointerEvents="auto">
+            <Box pointerEvents="auto" m={10}>
               <DevPanel
                 mountainCount={mountainCount}
                 onMountainCountChange={(v) => setMountainCount(clampMountainCount(v))}
@@ -190,7 +208,7 @@ export default function Landing() {
               />
             </Box>
           )}
-        </VStack>
+        </HStack>
       </Box>
       <Box
         as="main"
