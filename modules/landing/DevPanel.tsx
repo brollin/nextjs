@@ -137,8 +137,8 @@ export default function DevPanel({
       maxW="min(100vw - 32px, 320px)"
       maxH="70vh"
       overflowY="auto"
-      m={4}
-      p={4}
+      m={0}
+      p={5}
       borderRadius="lg"
       bg="rgba(20, 30, 45, 0.92)"
       backdropFilter="blur(12px)"
@@ -149,7 +149,7 @@ export default function DevPanel({
       onClick={(e) => e.stopPropagation()}
       onDoubleClick={(e) => e.stopPropagation()}
     >
-      <Text fontSize="11px" fontWeight="bold" color="whiteAlpha.800" letterSpacing="0.12em" mb={5} textAlign="right">
+      <Text fontSize="11px" fontWeight="bold" color="whiteAlpha.800" letterSpacing="0.12em" mb={5} textAlign="left">
         DEV
       </Text>
 
