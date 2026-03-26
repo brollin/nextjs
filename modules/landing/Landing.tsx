@@ -1,8 +1,9 @@
-import Link from "next/link";
+import NextLink from "next/link";
 import Head from "next/head";
+import { keyframes } from "@emotion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { VStack, Box, Text, HStack, Button } from "@chakra-ui/react";
-import { MdConstruction } from "react-icons/md";
+import { VStack, Box, Text, HStack, Button, IconButton, Heading } from "@chakra-ui/react";
+import { IoSettingsOutline } from "react-icons/io5";
 import LandscapeBackground from "./LandscapeBackground";
 import { useSmoothedFollow } from "./useSmoothedFollow";
 import DevPanel from "./DevPanel";
@@ -27,7 +28,7 @@ import {
 
 /** Wheel / touch movement → simulated time shift (ms per pixel of delta). */
 const WHEEL_MS_PER_DELTA = 7200;
-const TOUCH_MS_PER_PX = 11200;
+const TOUCH_MS_PER_PX = 44800;
 
 /** Exponential smoothing for time offset: snappy for scroll; see `OFFSET_SMOOTH_RESET` after “Now”. */
 const OFFSET_SMOOTH_FAST = 20;
@@ -39,6 +40,19 @@ const timeFormatter = new Intl.DateTimeFormat(undefined, {
   hour12: true,
 });
 
+const devGearKeyframes = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
+
+const NAV_LINKS = [
+  { href: "/capitalizer", label: "capitalizer" },
+  { href: "/planets", label: "planets" },
+  { href: "/health", label: "health" },
+  { href: "/sandbox", label: "sandbox" },
+  { href: "/chess", label: "chess" },
+] as const;
+
 export default function Landing() {
   const [timeOffsetMs, setTimeOffsetMs] = useState(0);
   const [offsetSmoothRate, setOffsetSmoothRate] = useState(OFFSET_SMOOTH_FAST);
@@ -46,6 +60,9 @@ export default function Landing() {
   const smoothedOffsetMs = useSmoothedFollow(timeOffsetMs, offsetSmoothRate);
   /** Bumps once per second so the clock label tracks real time while offset is fixed. */
   const [clockTick, setClockTick] = useState(0);
+
+  /** Hides “Now” as soon as it’s clicked; cleared when offset is synced or user scrolls time again. */
+  const [nowButtonSuppressed, setNowButtonSuppressed] = useState(false);
 
   const [devPanelVisible, setDevPanelVisible] = useState(DEV_SHOW_DEV_UI_INIT);
   const [mountainCount, setMountainCount] = useState(DEFAULT_MOUNTAIN_COUNT);
@@ -57,6 +74,22 @@ export default function Landing() {
   const toggleDevPanel = useCallback(() => {
     setDevPanelVisible((v) => !v);
   }, []);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = e.target as HTMLElement | null;
+      if (el?.closest("input, textarea, select") || el?.closest('[contenteditable="true"]')) {
+        return;
+      }
+      if (e.key !== "d" && e.key !== "D") return;
+      e.preventDefault();
+      toggleDevPanel();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [toggleDevPanel]);
 
   const clampMountainCount = useCallback((v: number) => {
     return Math.min(MAX_MOUNTAIN_COUNT, Math.max(MIN_MOUNTAIN_COUNT, Math.round(v)));
@@ -83,17 +116,26 @@ export default function Landing() {
     return () => window.clearInterval(id);
   }, []);
 
-  /** Disables double-tap zoom on mobile while this page is shown; pinch zoom still works. */
+  /**
+   * Mobile: `touch-action: manipulation` avoids double-tap zoom (pinch still works).
+   * `overscroll-behavior-y: none` reduces pull-to-refresh / rubber-band at scroll edges.
+   */
   useEffect(() => {
     const html = document.documentElement;
     const body = document.body;
-    const prevHtml = html.style.touchAction;
-    const prevBody = body.style.touchAction;
+    const prevHtmlTouch = html.style.touchAction;
+    const prevBodyTouch = body.style.touchAction;
+    const prevHtmlOver = html.style.overscrollBehaviorY;
+    const prevBodyOver = body.style.overscrollBehaviorY;
     html.style.touchAction = "manipulation";
     body.style.touchAction = "manipulation";
+    html.style.overscrollBehaviorY = "none";
+    body.style.overscrollBehaviorY = "none";
     return () => {
-      html.style.touchAction = prevHtml;
-      body.style.touchAction = prevBody;
+      html.style.touchAction = prevHtmlTouch;
+      body.style.touchAction = prevBodyTouch;
+      html.style.overscrollBehaviorY = prevHtmlOver;
+      body.style.overscrollBehaviorY = prevBodyOver;
     };
   }, []);
 
@@ -141,8 +183,15 @@ export default function Landing() {
   useEffect(() => {
     if (timeOffsetMs !== 0) {
       setOffsetSmoothRate(OFFSET_SMOOTH_FAST);
+      setNowButtonSuppressed(false);
     }
   }, [timeOffsetMs]);
+
+  useEffect(() => {
+    if (Math.abs(smoothedOffsetMs) < 500) {
+      setNowButtonSuppressed(false);
+    }
+  }, [smoothedOffsetMs]);
 
   useEffect(() => {
     if (Math.abs(smoothedOffsetMs) < 500 && offsetSmoothRate < OFFSET_SMOOTH_FAST) {
@@ -157,8 +206,7 @@ export default function Landing() {
 
   const isoTime = useMemo(() => new Date(Date.now() + smoothedOffsetMs).toISOString(), [clockTick, smoothedOffsetMs]);
 
-  /** Show reset while shifted or while smoothing back to real time after reset. */
-  const showTimeReset = Math.abs(smoothedOffsetMs) > 500;
+  const showTimeReset = Math.abs(smoothedOffsetMs) > 500 && !nowButtonSuppressed;
 
   return (
     <>
@@ -174,7 +222,6 @@ export default function Landing() {
         harmonicsPerLayer={harmonicsPerLayer}
         frequencySpread={frequencySpread}
         highFrequencyFalloff={highFrequencyFalloff}
-        onBackgroundDoubleActivate={toggleDevPanel}
       />
       <Box
         position="fixed"
@@ -196,11 +243,16 @@ export default function Landing() {
               px={4}
               py={2.5}
               borderRadius="xl"
-              bg="rgba(255,255,255,0.78)"
-              backdropFilter="blur(10px)"
-              boxShadow="md"
+              bg="rgba(248, 250, 252, 0.88)"
+              borderWidth="1px"
+              borderColor="rgba(26, 58, 82, 0.14)"
+              backdropFilter="blur(8px)"
+              boxShadow="none"
               display="flex"
               alignItems="center"
+              pointerEvents="none"
+              cursor="default"
+              userSelect="none"
             >
               <Text
                 as="time"
@@ -209,7 +261,7 @@ export default function Landing() {
                 fontFamily='ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
                 fontSize={{ base: "xs", sm: "sm" }}
                 fontWeight="medium"
-                color="#1a3a52"
+                color="rgba(26, 58, 82, 0.88)"
                 letterSpacing="0.02em"
               >
                 {displayedTime}
@@ -228,12 +280,15 @@ export default function Landing() {
                 bg="rgba(255,255,255,0.78)"
                 backdropFilter="blur(10px)"
                 boxShadow="md"
+                borderWidth="1px"
+                borderColor="rgba(255,255,255,0.65)"
                 minH={0}
                 h="unset"
                 whiteSpace="nowrap"
                 _hover={{ bg: "rgba(255,255,255,0.9)" }}
                 _active={{ bg: "rgba(255,255,255,0.85)" }}
                 onClick={() => {
+                  setNowButtonSuppressed(true);
                   setTimeOffsetMs(0);
                   setOffsetSmoothRate(OFFSET_SMOOTH_RESET);
                 }}
@@ -242,24 +297,59 @@ export default function Landing() {
               </Button>
             )}
           </HStack>
-          {devPanelVisible && (
-            <Box pointerEvents="auto" m={10}>
-              <DevPanel
-                mountainCount={mountainCount}
-                onMountainCountChange={(v) => setMountainCount(clampMountainCount(v))}
-                hillSeed={hillSeed}
-                onHillSeedChange={(v) => setHillSeed(clampHillSeed(v))}
-                harmonicsPerLayer={harmonicsPerLayer}
-                onHarmonicsPerLayerChange={(v) => setHarmonicsPerLayer(clampHarmonicsPerLayer(v))}
-                frequencySpread={frequencySpread}
-                onFrequencySpreadChange={(v) => setFrequencySpread(clampFrequencySpread(v))}
-                highFrequencyFalloff={highFrequencyFalloff}
-                onHighFrequencyFalloffChange={(v) => setHighFrequencyFalloff(clampHighFrequencyFalloff(v))}
-              />
-            </Box>
-          )}
+          <HStack pointerEvents="auto" spacing={3} alignItems="flex-start" justifyContent="flex-end" flexShrink={0}>
+            <IconButton
+              aria-label="Toggle dev settings"
+              icon={
+                <Box
+                  as="span"
+                  display="inline-flex"
+                  lineHeight={0}
+                  animation={devPanelVisible ? `${devGearKeyframes} 4s linear infinite` : undefined}
+                >
+                  <IoSettingsOutline size={18} />
+                </Box>
+              }
+              size="sm"
+              variant="ghost"
+              color="#1a3a52"
+              bg="rgba(255,255,255,0.78)"
+              backdropFilter="blur(10px)"
+              boxShadow="md"
+              borderWidth="1px"
+              borderColor="rgba(255,255,255,0.65)"
+              borderRadius="xl"
+              flexShrink={0}
+              _hover={{ bg: "rgba(255,255,255,0.9)" }}
+              _active={{ bg: "rgba(255,255,255,0.85)" }}
+              onClick={toggleDevPanel}
+            />
+          </HStack>
         </HStack>
       </Box>
+      {devPanelVisible && (
+        <Box
+          position="fixed"
+          zIndex={30}
+          top={{ base: "calc(max(12px, env(safe-area-inset-top)) + 44px)", md: "calc(16px + 40px)" }}
+          right={{ base: "max(16px, env(safe-area-inset-right))", md: 5 }}
+          pointerEvents="auto"
+          maxW="min(100vw - 24px, 300px)"
+        >
+          <DevPanel
+            mountainCount={mountainCount}
+            onMountainCountChange={(v) => setMountainCount(clampMountainCount(v))}
+            hillSeed={hillSeed}
+            onHillSeedChange={(v) => setHillSeed(clampHillSeed(v))}
+            harmonicsPerLayer={harmonicsPerLayer}
+            onHarmonicsPerLayerChange={(v) => setHarmonicsPerLayer(clampHarmonicsPerLayer(v))}
+            frequencySpread={frequencySpread}
+            onFrequencySpreadChange={(v) => setFrequencySpread(clampFrequencySpread(v))}
+            highFrequencyFalloff={highFrequencyFalloff}
+            onHighFrequencyFalloffChange={(v) => setHighFrequencyFalloff(clampHighFrequencyFalloff(v))}
+          />
+        </Box>
+      )}
       <Box
         as="main"
         position="relative"
@@ -277,14 +367,76 @@ export default function Landing() {
         pt={{ base: "max(1rem, env(safe-area-inset-top))", sm: 10 }}
         pointerEvents="none"
       >
-        <VStack spacing={6} width="100%" maxW="md" align="center" pointerEvents="auto">
-          <MdConstruction size={120} color="#1a3a52" aria-hidden />
-          <VStack spacing={3} width="100%" align="center">
-            <Link href="/capitalizer">capitalizer</Link>
-            <Link href="/planets">planets</Link>
-            <Link href="/health">health</Link>
-            <Link href="/sandbox">sandbox</Link>
-            <Link href="/chess">chess</Link>
+        <VStack spacing={8} width="100%" maxW="md" align="center" pointerEvents="auto">
+          <Heading
+            as="h1"
+            fontWeight="normal"
+            fontSize={{ base: "2.25rem", sm: "3rem" }}
+            lineHeight="1.05"
+            textAlign="center"
+            px={2}
+          >
+            <Text
+              as="span"
+              display="inline"
+              fontWeight="200"
+              letterSpacing="0.06em"
+              bgGradient="linear(to-br, #0a1f33, #1a3a52, #4a8eb8)"
+              bgClip="text"
+              sx={{ WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+            >
+              brollin
+            </Text>
+            <Text as="span" display="inline" fontWeight="300" letterSpacing="0.18em" color="rgba(26, 58, 82, 0.5)">
+              .space
+            </Text>
+          </Heading>
+          <VStack spacing={2.5} width="100%" align="stretch" maxW="220px" mx="auto" userSelect="none" px={0}>
+            {NAV_LINKS.map(({ href, label }) => (
+              <NextLink key={href} href={href} passHref>
+                <Box
+                  as="a"
+                  display="block"
+                  cursor="pointer"
+                  py={2.5}
+                  px={3}
+                  borderRadius="xl"
+                  fontSize="sm"
+                  fontWeight="600"
+                  letterSpacing="0.08em"
+                  textTransform="lowercase"
+                  textAlign="center"
+                  textDecoration="none"
+                  color="rgba(15, 40, 64, 0.88)"
+                  bg="rgba(255,255,255,0.22)"
+                  borderWidth="1px"
+                  borderStyle="solid"
+                  borderColor="rgba(15, 40, 64, 0.14)"
+                  backdropFilter="blur(12px)"
+                  boxShadow="0 3px 10px rgba(15, 40, 64, 0.06)"
+                  transitionProperty="transform, box-shadow, background-color, border-color"
+                  transitionDuration="0.22s"
+                  transitionTimingFunction="cubic-bezier(0.4, 0, 0.2, 1)"
+                  sx={{
+                    WebkitTapHighlightColor: "transparent",
+                    "@media (hover: hover)": {
+                      "&:hover": {
+                        bg: "rgba(255,255,255,0.48)",
+                        borderColor: "rgba(15, 40, 64, 0.28)",
+                        transform: "translateY(-4px)",
+                        boxShadow: "0 12px 28px rgba(15, 40, 64, 0.12)",
+                      },
+                    },
+                  }}
+                  _active={{
+                    transform: "translateY(-1px)",
+                    boxShadow: "0 6px 16px rgba(15, 40, 64, 0.12)",
+                  }}
+                >
+                  {label}
+                </Box>
+              </NextLink>
+            ))}
           </VStack>
         </VStack>
       </Box>

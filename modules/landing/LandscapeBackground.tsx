@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useRef, useState, useCallback, type MouseEvent, type PointerEvent } from "react";
+import { useMemo, useEffect, useRef, useState } from "react";
 import { Box } from "@chakra-ui/react";
 import SunCalc from "suncalc";
 import {
@@ -175,8 +175,6 @@ type LandscapeBackgroundProps = {
   harmonicsPerLayer?: number;
   frequencySpread?: number;
   highFrequencyFalloff?: number;
-  /** Double-click / double-tap the sky (areas not covered by interactive UI) to toggle the dev panel. */
-  onBackgroundDoubleActivate?: () => void;
 };
 
 export default function LandscapeBackground({
@@ -186,7 +184,6 @@ export default function LandscapeBackground({
   harmonicsPerLayer = DEFAULT_HARMONICS_PER_LAYER,
   frequencySpread = DEFAULT_FREQUENCY_SPREAD,
   highFrequencyFalloff = DEFAULT_HIGH_FREQ_FALLOFF,
-  onBackgroundDoubleActivate,
 }: LandscapeBackgroundProps) {
   const sun = useSunPosition(SF_LAT, SF_LNG, timeOffsetMs);
 
@@ -207,29 +204,6 @@ export default function LandscapeBackground({
     [hillLayers],
   );
 
-  const lastTouchTapRef = useRef(0);
-  const handleBackgroundDoubleClick = useCallback(
-    (e: MouseEvent) => {
-      e.preventDefault();
-      onBackgroundDoubleActivate?.();
-    },
-    [onBackgroundDoubleActivate],
-  );
-  const handleBackgroundPointerDown = useCallback(
-    (e: PointerEvent) => {
-      if (e.pointerType !== "touch") return;
-      const now = Date.now();
-      if (now - lastTouchTapRef.current < 420) {
-        lastTouchTapRef.current = 0;
-        e.preventDefault();
-        onBackgroundDoubleActivate?.();
-      } else {
-        lastTouchTapRef.current = now;
-      }
-    },
-    [onBackgroundDoubleActivate],
-  );
-
   return (
     <Box
       position="fixed"
@@ -237,8 +211,6 @@ export default function LandscapeBackground({
       zIndex={0}
       pointerEvents="auto"
       overflow="hidden"
-      onDoubleClick={handleBackgroundDoubleClick}
-      onPointerDown={handleBackgroundPointerDown}
     >
       <svg
         viewBox={`0 0 ${VB.w} ${VB.h}`}

@@ -1,5 +1,5 @@
-import { Box, FormControl, FormLabel, HStack, IconButton, Input, Text, VStack } from "@chakra-ui/react";
-import { IoChevronDown, IoChevronUp } from "react-icons/io5";
+import { Box, FormControl, FormLabel, HStack, IconButton, Input, Tooltip, VStack } from "@chakra-ui/react";
+import { IoChevronDown, IoChevronUp, IoInformationCircleOutline } from "react-icons/io5";
 import {
   MAX_FREQUENCY_SPREAD,
   MAX_HARMONICS_PER_LAYER,
@@ -40,22 +40,22 @@ function DevNumberRow({ value, min, max, step = 1, isInteger = false, onChange }
   };
 
   return (
-    <HStack spacing={3} align="stretch" w="100%">
+    <HStack spacing={2} align="stretch" w="100%">
       <Input
         type="number"
         value={Number.isFinite(value) ? value : ""}
         min={min}
         max={max}
         step={step}
-        size="md"
-        h="44px"
+        size="sm"
+        h="34px"
         flex={1}
         minW={0}
         bg="whiteAlpha.100"
         borderColor="whiteAlpha.300"
         color="gray.100"
-        borderRadius="lg"
-        fontSize="sm"
+        borderRadius="md"
+        fontSize="xs"
         onChange={(e) => {
           const raw = parseFloat(e.target.value);
           if (!Number.isFinite(raw)) return;
@@ -65,19 +65,19 @@ function DevNumberRow({ value, min, max, step = 1, isInteger = false, onChange }
       <VStack
         spacing={0}
         flexShrink={0}
-        w="44px"
-        h="44px"
+        w="34px"
+        h="34px"
         borderWidth="1px"
         borderColor="whiteAlpha.300"
-        borderRadius="lg"
+        borderRadius="md"
         overflow="hidden"
         bg="whiteAlpha.100"
       >
         <IconButton
           aria-label="Increase"
-          icon={<IoChevronUp size={22} />}
+          icon={<IoChevronUp size={16} />}
           variant="ghost"
-          size="sm"
+          size="xs"
           flex={1}
           minH={0}
           h="50%"
@@ -88,9 +88,9 @@ function DevNumberRow({ value, min, max, step = 1, isInteger = false, onChange }
         />
         <IconButton
           aria-label="Decrease"
-          icon={<IoChevronDown size={22} />}
+          icon={<IoChevronDown size={16} />}
           variant="ghost"
-          size="sm"
+          size="xs"
           flex={1}
           minH={0}
           h="50%"
@@ -103,6 +103,36 @@ function DevNumberRow({ value, min, max, step = 1, isInteger = false, onChange }
         />
       </VStack>
     </HStack>
+  );
+}
+
+function LabelWithHint({ label, hint }: { label: string; hint: string }) {
+  return (
+    <FormLabel fontSize="xs" mb={1} color="gray.300" fontWeight="medium" display="flex" alignItems="center" gap={1}>
+      {label}
+      <Tooltip
+        label={hint}
+        fontSize="xs"
+        px={3}
+        py={2}
+        maxW="280px"
+        hasArrow
+        placement="top"
+        openDelay={200}
+      >
+        <Box
+          as="span"
+          display="inline-flex"
+          alignItems="center"
+          cursor="help"
+          color="whiteAlpha.500"
+          _hover={{ color: "whiteAlpha.800" }}
+          aria-label={`About ${label}`}
+        >
+          <IoInformationCircleOutline size={14} />
+        </Box>
+      </Tooltip>
+    </FormLabel>
   );
 }
 
@@ -133,12 +163,12 @@ export default function DevPanel({
 }: DevPanelProps) {
   return (
     <Box
-      minW={{ base: "240px", sm: "280px" }}
-      maxW="min(100vw - 32px, 320px)"
+      minW={{ base: "220px", sm: "248px" }}
+      w="100%"
       maxH="70vh"
       overflowY="auto"
       m={0}
-      p={5}
+      p={3}
       borderRadius="lg"
       bg="rgba(20, 30, 45, 0.92)"
       backdropFilter="blur(12px)"
@@ -149,14 +179,11 @@ export default function DevPanel({
       onClick={(e) => e.stopPropagation()}
       onDoubleClick={(e) => e.stopPropagation()}
     >
-      <Text fontSize="11px" fontWeight="bold" color="whiteAlpha.800" letterSpacing="0.12em" mb={5} textAlign="left">
-        DEV
-      </Text>
-
-      <FormControl size="md" mb={6}>
-        <FormLabel fontSize="sm" mb={2} color="gray.200" fontWeight="medium">
-          Seed
-        </FormLabel>
+      <FormControl size="sm" mb={4}>
+        <LabelWithHint
+          label="Seed"
+          hint="Same seed → same hills; reuse for future random features."
+        />
         <DevNumberRow
           value={hillSeed}
           min={MIN_HILL_SEED}
@@ -165,13 +192,10 @@ export default function DevPanel({
           isInteger
           onChange={onHillSeedChange}
         />
-        <Text fontSize="xs" color="whiteAlpha.500" mt={2} lineHeight="short">
-          Same seed → same hills; reuse for future random features.
-        </Text>
       </FormControl>
 
-      <FormControl size="md" mb={6}>
-        <FormLabel fontSize="sm" mb={2} color="gray.200" fontWeight="medium">
+      <FormControl size="sm" mb={4}>
+        <FormLabel fontSize="xs" mb={1} color="gray.300" fontWeight="medium">
           Mountain layers
         </FormLabel>
         <DevNumberRow
@@ -184,10 +208,8 @@ export default function DevPanel({
         />
       </FormControl>
 
-      <FormControl size="md" mb={6}>
-        <FormLabel fontSize="sm" mb={2} color="gray.200" fontWeight="medium">
-          Harmonics / layer
-        </FormLabel>
+      <FormControl size="sm" mb={4}>
+        <LabelWithHint label="Harmonics / layer" hint="Sine terms summed per ridge (1 = plain sine)." />
         <DevNumberRow
           value={harmonicsPerLayer}
           min={MIN_HARMONICS_PER_LAYER}
@@ -196,15 +218,13 @@ export default function DevPanel({
           isInteger
           onChange={onHarmonicsPerLayerChange}
         />
-        <Text fontSize="xs" color="whiteAlpha.500" mt={2} lineHeight="short">
-          Sine terms summed per ridge (1 = plain sine).
-        </Text>
       </FormControl>
 
-      <FormControl size="md" mb={6}>
-        <FormLabel fontSize="sm" mb={2} color="gray.200" fontWeight="medium">
-          Frequency spread
-        </FormLabel>
+      <FormControl size="sm" mb={4}>
+        <LabelWithHint
+          label="Frequency spread"
+          hint="Each harmonic’s frequency × this vs the previous (detail scale)."
+        />
         <DevNumberRow
           value={frequencySpread}
           min={MIN_FREQUENCY_SPREAD}
@@ -212,15 +232,13 @@ export default function DevPanel({
           step={0.05}
           onChange={onFrequencySpreadChange}
         />
-        <Text fontSize="xs" color="whiteAlpha.500" mt={2} lineHeight="short">
-          Each harmonic’s frequency × this vs the previous (detail scale).
-        </Text>
       </FormControl>
 
-      <FormControl size="md">
-        <FormLabel fontSize="sm" mb={2} color="gray.200" fontWeight="medium">
-          High-freq falloff
-        </FormLabel>
+      <FormControl size="sm">
+        <LabelWithHint
+          label="High-freq falloff"
+          hint="Amplitude × this for each higher harmonic (lower = smoother)."
+        />
         <DevNumberRow
           value={highFrequencyFalloff}
           min={MIN_HIGH_FREQ_FALLOFF}
@@ -228,9 +246,6 @@ export default function DevPanel({
           step={0.02}
           onChange={onHighFrequencyFalloffChange}
         />
-        <Text fontSize="xs" color="whiteAlpha.500" mt={2} lineHeight="short">
-          Amplitude × this for each higher harmonic (lower = smoother).
-        </Text>
       </FormControl>
     </Box>
   );
