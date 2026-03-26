@@ -1,7 +1,17 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useRef, useState } from "react";
 import { Box } from "@chakra-ui/react";
+import SunCalc from "suncalc";
+
+/** San Francisco — fixed observer; time is `Date.now() + timeOffsetMs` from the landing page. */
+const SF_LAT = 37.7749;
+const SF_LNG = -122.4194;
 
 const VB = { w: 1200, h: 800 };
+
+/** Visual horizon in viewBox space (y grows downward). Sun at altitude 0 sits here. */
+const HORIZON_Y = 392;
+const SUN_RADIUS = 32;
+const SUN_GLOW_RADIUS = 52;
 
 type HillSpec = {
   baseline: number;
@@ -39,7 +49,49 @@ function buildHillPath(
   return d;
 }
 
-export default function LandscapeBackground() {
+/** Azimuth: radians from south toward west (SunCalc). Maps east→left, west→right. */
+function azimuthToX(azimuth: number, width: number): number {
+  const margin = 72;
+  return width * 0.5 + (width * 0.5 - margin) * Math.sin(azimuth);
+}
+
+/** Altitude: radians above horizon. Maps to viewBox y (smaller y = higher in sky). */
+function altitudeToY(altitude: number, height: number): number {
+  const vertScale = (height * 0.44) / (Math.PI / 2);
+  return HORIZON_Y - altitude * vertScale;
+}
+
+function useSunPosition(lat: number, lng: number, timeOffsetMs: number) {
+  const [sun, setSun] = useState<{ cx: number; cy: number } | null>(null);
+  const rafRef = useRef(0);
+  const offsetRef = useRef(timeOffsetMs);
+  offsetRef.current = timeOffsetMs;
+
+  useEffect(() => {
+    const tick = () => {
+      const when = new Date(Date.now() + offsetRef.current);
+      const { azimuth, altitude } = SunCalc.getPosition(when, lat, lng);
+      setSun({
+        cx: azimuthToX(azimuth, VB.w),
+        cy: altitudeToY(altitude, VB.h),
+      });
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [lat, lng]);
+
+  return sun;
+}
+
+type LandscapeBackgroundProps = {
+  /** Added to `Date.now()` for SunCalc — scroll gestures update this from the landing page. */
+  timeOffsetMs?: number;
+};
+
+export default function LandscapeBackground({ timeOffsetMs = 0 }: LandscapeBackgroundProps) {
+  const sun = useSunPosition(SF_LAT, SF_LNG, timeOffsetMs);
+
   const paths = useMemo(
     () =>
       HILL_LAYERS.map((layer) =>
@@ -63,8 +115,28 @@ export default function LandscapeBackground() {
             <stop offset="45%" stopColor="#8FC0EA" />
             <stop offset="100%" stopColor="#6BA6D9" />
           </linearGradient>
+          <radialGradient id="landing-sun-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="rgba(255, 248, 220, 0.95)" />
+            <stop offset="45%" stopColor="rgba(255, 230, 160, 0.35)" />
+            <stop offset="100%" stopColor="rgba(255, 220, 140, 0)" />
+          </radialGradient>
+          <filter id="landing-sun-blur" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
+          </filter>
         </defs>
         <rect width="100%" height="100%" fill="url(#landing-sky)" />
+        {sun && (
+          <g>
+            <circle
+              cx={sun.cx}
+              cy={sun.cy}
+              r={SUN_GLOW_RADIUS}
+              fill="url(#landing-sun-glow)"
+              filter="url(#landing-sun-blur)"
+            />
+            <circle cx={sun.cx} cy={sun.cy} r={SUN_RADIUS} fill="#FFF8E8" stroke="#F5E6B8" strokeWidth="1.5" />
+          </g>
+        )}
         {HILL_LAYERS.map((layer, i) => (
           <path key={i} d={paths[i]} fill={layer.fill} />
         ))}

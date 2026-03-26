@@ -1,10 +1,80 @@
 import Link from "next/link";
 import Head from "next/head";
-import { VStack, Box } from "@chakra-ui/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { VStack, Box, Text } from "@chakra-ui/react";
 import { MdConstruction } from "react-icons/md";
 import LandscapeBackground from "./LandscapeBackground";
 
+/** Wheel / touch movement → simulated time shift (ms per pixel of delta). */
+const WHEEL_MS_PER_DELTA = 900;
+const TOUCH_MS_PER_PX = 2800;
+
+const timeFormatter = new Intl.DateTimeFormat(undefined, {
+  timeStyle: "medium",
+  hour12: true,
+});
+
 export default function Landing() {
+  const [timeOffsetMs, setTimeOffsetMs] = useState(0);
+  /** Bumps once per second so the clock label tracks real time while offset is fixed. */
+  const [clockTick, setClockTick] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => setClockTick((n) => n + 1), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const applyScrollDeltaToTime = useCallback((deltaY: number) => {
+    if (deltaY === 0) return;
+    setTimeOffsetMs((o) => o + deltaY * WHEEL_MS_PER_DELTA);
+  }, []);
+
+  useEffect(() => {
+    const onWheel = (e: WheelEvent) => {
+      applyScrollDeltaToTime(e.deltaY);
+    };
+    window.addEventListener("wheel", onWheel, { passive: true });
+    return () => window.removeEventListener("wheel", onWheel);
+  }, [applyScrollDeltaToTime]);
+
+  useEffect(() => {
+    let lastY: number | null = null;
+    const onTouchStart = (e: TouchEvent) => {
+      lastY = e.touches[0].clientY;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (lastY == null) return;
+      const y = e.touches[0].clientY;
+      const dy = y - lastY;
+      lastY = y;
+      if (dy === 0) return;
+      setTimeOffsetMs((o) => o + dy * TOUCH_MS_PER_PX);
+    };
+    const onTouchEnd = () => {
+      lastY = null;
+    };
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, []);
+
+  const displayedTime = useMemo(
+    () => timeFormatter.format(new Date(Date.now() + timeOffsetMs)),
+    [clockTick, timeOffsetMs],
+  );
+
+  const isoTime = useMemo(
+    () => new Date(Date.now() + timeOffsetMs).toISOString(),
+    [clockTick, timeOffsetMs],
+  );
+
   return (
     <>
       <Head>
@@ -12,7 +82,33 @@ export default function Landing() {
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
-      <LandscapeBackground />
+      <LandscapeBackground timeOffsetMs={timeOffsetMs} />
+      <Box
+        position="fixed"
+        top={{ base: "max(12px, env(safe-area-inset-top))", md: 4 }}
+        right={{ base: "max(12px, env(safe-area-inset-right))", md: 4 }}
+        zIndex={10}
+        pointerEvents="none"
+        px={3}
+        py={2}
+        borderRadius="md"
+        bg="rgba(255,255,255,0.72)"
+        backdropFilter="blur(10px)"
+        boxShadow="sm"
+      >
+        <Text
+          as="time"
+          dateTime={isoTime}
+          suppressHydrationWarning
+          fontFamily='ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+          fontSize={{ base: "xs", sm: "sm" }}
+          fontWeight="medium"
+          color="#1a3a52"
+          letterSpacing="0.02em"
+        >
+          {displayedTime}
+        </Text>
+      </Box>
       <Box
         as="main"
         position="relative"
