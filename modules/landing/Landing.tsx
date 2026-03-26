@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Head from "next/head";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { VStack, Box, Text, HStack } from "@chakra-ui/react";
+import { VStack, Box, Text, HStack, Button } from "@chakra-ui/react";
 import { MdConstruction } from "react-icons/md";
 import LandscapeBackground from "./LandscapeBackground";
 import { useSmoothedFollow } from "./useSmoothedFollow";
@@ -29,6 +29,11 @@ import {
 const WHEEL_MS_PER_DELTA = 7200;
 const TOUCH_MS_PER_PX = 11200;
 
+/** Exponential smoothing for time offset: snappy for scroll; see `OFFSET_SMOOTH_RESET` after “Now”. */
+const OFFSET_SMOOTH_FAST = 20;
+/** Slower easing when animating back to real time after “Now”. */
+const OFFSET_SMOOTH_RESET = 5;
+
 const timeFormatter = new Intl.DateTimeFormat(undefined, {
   timeStyle: "medium",
   hour12: true,
@@ -36,8 +41,9 @@ const timeFormatter = new Intl.DateTimeFormat(undefined, {
 
 export default function Landing() {
   const [timeOffsetMs, setTimeOffsetMs] = useState(0);
+  const [offsetSmoothRate, setOffsetSmoothRate] = useState(OFFSET_SMOOTH_FAST);
   /** Smoothed toward `timeOffsetMs` so wheel/touch steps don’t jitter the sun and clock. */
-  const smoothedOffsetMs = useSmoothedFollow(timeOffsetMs);
+  const smoothedOffsetMs = useSmoothedFollow(timeOffsetMs, offsetSmoothRate);
   /** Bumps once per second so the clock label tracks real time while offset is fixed. */
   const [clockTick, setClockTick] = useState(0);
 
@@ -132,12 +138,27 @@ export default function Landing() {
     };
   }, []);
 
+  useEffect(() => {
+    if (timeOffsetMs !== 0) {
+      setOffsetSmoothRate(OFFSET_SMOOTH_FAST);
+    }
+  }, [timeOffsetMs]);
+
+  useEffect(() => {
+    if (Math.abs(smoothedOffsetMs) < 500 && offsetSmoothRate < OFFSET_SMOOTH_FAST) {
+      setOffsetSmoothRate(OFFSET_SMOOTH_FAST);
+    }
+  }, [smoothedOffsetMs, offsetSmoothRate]);
+
   const displayedTime = useMemo(
     () => timeFormatter.format(new Date(Date.now() + smoothedOffsetMs)),
     [clockTick, smoothedOffsetMs],
   );
 
   const isoTime = useMemo(() => new Date(Date.now() + smoothedOffsetMs).toISOString(), [clockTick, smoothedOffsetMs]);
+
+  /** Show reset while shifted or while smoothing back to real time after reset. */
+  const showTimeReset = Math.abs(smoothedOffsetMs) > 500;
 
   return (
     <>
@@ -170,28 +191,57 @@ export default function Landing() {
         alignItems="flex-end"
       >
         <HStack alignItems="flex-start" justifyContent="space-between" w="100%" maxW="100%">
-          <Box
-            pointerEvents="none"
-            px={4}
-            py={2.5}
-            borderRadius="xl"
-            bg="rgba(255,255,255,0.78)"
-            backdropFilter="blur(10px)"
-            boxShadow="md"
-          >
-            <Text
-              as="time"
-              dateTime={isoTime}
-              suppressHydrationWarning
-              fontFamily='ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
-              fontSize={{ base: "xs", sm: "sm" }}
-              fontWeight="medium"
-              color="#1a3a52"
-              letterSpacing="0.02em"
+          <HStack pointerEvents="auto" spacing={2} align="stretch">
+            <Box
+              px={4}
+              py={2.5}
+              borderRadius="xl"
+              bg="rgba(255,255,255,0.78)"
+              backdropFilter="blur(10px)"
+              boxShadow="md"
+              display="flex"
+              alignItems="center"
             >
-              {displayedTime}
-            </Text>
-          </Box>
+              <Text
+                as="time"
+                dateTime={isoTime}
+                suppressHydrationWarning
+                fontFamily='ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+                fontSize={{ base: "xs", sm: "sm" }}
+                fontWeight="medium"
+                color="#1a3a52"
+                letterSpacing="0.02em"
+              >
+                {displayedTime}
+              </Text>
+            </Box>
+            {showTimeReset && (
+              <Button
+                aria-label="Reset to current time"
+                variant="ghost"
+                alignSelf="stretch"
+                fontSize={{ base: "xs", sm: "sm" }}
+                fontWeight="medium"
+                color="#1a3a52"
+                px={3}
+                borderRadius="xl"
+                bg="rgba(255,255,255,0.78)"
+                backdropFilter="blur(10px)"
+                boxShadow="md"
+                minH={0}
+                h="unset"
+                whiteSpace="nowrap"
+                _hover={{ bg: "rgba(255,255,255,0.9)" }}
+                _active={{ bg: "rgba(255,255,255,0.85)" }}
+                onClick={() => {
+                  setTimeOffsetMs(0);
+                  setOffsetSmoothRate(OFFSET_SMOOTH_RESET);
+                }}
+              >
+                Now
+              </Button>
+            )}
+          </HStack>
           {devPanelVisible && (
             <Box pointerEvents="auto" m={10}>
               <DevPanel
