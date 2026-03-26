@@ -1,7 +1,16 @@
 import { useMemo, useEffect, useRef, useState, useCallback, type MouseEvent, type PointerEvent } from "react";
 import { Box } from "@chakra-ui/react";
 import SunCalc from "suncalc";
-import { createHillLayers, DEFAULT_MOUNTAIN_COUNT, type HillSpec } from "./hillLayers";
+import {
+  createHillLayers,
+  DEFAULT_FREQUENCY_SPREAD,
+  DEFAULT_HARMONICS_PER_LAYER,
+  DEFAULT_HIGH_FREQ_FALLOFF,
+  DEFAULT_HILL_SEED,
+  DEFAULT_MOUNTAIN_COUNT,
+  hillYAt,
+  type LayerHarmonic,
+} from "./hillLayers";
 
 /** San Francisco — fixed observer; time is `Date.now() + timeOffsetMs` from the landing page. */
 const SF_LAT = 37.7749;
@@ -18,16 +27,14 @@ function buildHillPath(
   width: number,
   height: number,
   baseline: number,
-  amplitude: number,
-  frequency: number,
-  phase: number,
-  steps = 240,
+  harmonics: LayerHarmonic[],
+  steps = 280,
 ): string {
-  const y0 = baseline + amplitude * Math.sin(phase);
+  const y0 = hillYAt(0, baseline, harmonics);
   let d = `M 0 ${height + 1} L 0 ${y0}`;
   for (let i = 1; i <= steps; i++) {
     const x = (i / steps) * width;
-    const y = baseline + amplitude * Math.sin(frequency * x + phase);
+    const y = hillYAt(x, baseline, harmonics);
     d += ` L ${x.toFixed(2)} ${y.toFixed(2)}`;
   }
   d += ` L ${width} ${height + 1} Z`;
@@ -163,6 +170,11 @@ type LandscapeBackgroundProps = {
   /** Added to `Date.now()` for SunCalc — scroll gestures update this from the landing page. */
   timeOffsetMs?: number;
   mountainCount?: number;
+  /** Procedural terrain seed (also reserved for future random features). */
+  hillSeed?: number;
+  harmonicsPerLayer?: number;
+  frequencySpread?: number;
+  highFrequencyFalloff?: number;
   /** Double-click / double-tap the sky (areas not covered by interactive UI) to toggle the dev panel. */
   onBackgroundDoubleActivate?: () => void;
 };
@@ -170,17 +182,28 @@ type LandscapeBackgroundProps = {
 export default function LandscapeBackground({
   timeOffsetMs = 0,
   mountainCount = DEFAULT_MOUNTAIN_COUNT,
+  hillSeed = DEFAULT_HILL_SEED,
+  harmonicsPerLayer = DEFAULT_HARMONICS_PER_LAYER,
+  frequencySpread = DEFAULT_FREQUENCY_SPREAD,
+  highFrequencyFalloff = DEFAULT_HIGH_FREQ_FALLOFF,
   onBackgroundDoubleActivate,
 }: LandscapeBackgroundProps) {
   const sun = useSunPosition(SF_LAT, SF_LNG, timeOffsetMs);
 
-  const hillLayers = useMemo(() => createHillLayers(mountainCount), [mountainCount]);
+  const hillLayers = useMemo(
+    () =>
+      createHillLayers({
+        layerCount: mountainCount,
+        seed: hillSeed,
+        harmonicsPerLayer,
+        frequencySpread,
+        highFrequencyFalloff,
+      }),
+    [mountainCount, hillSeed, harmonicsPerLayer, frequencySpread, highFrequencyFalloff],
+  );
 
   const paths = useMemo(
-    () =>
-      hillLayers.map((layer: HillSpec) =>
-        buildHillPath(VB.w, VB.h, layer.baseline, layer.amplitude, layer.frequency, layer.phase),
-      ),
+    () => hillLayers.map((layer) => buildHillPath(VB.w, VB.h, layer.baseline, layer.harmonics)),
     [hillLayers],
   );
 
@@ -254,7 +277,11 @@ export default function LandscapeBackground({
           </g>
         )}
         {hillLayers.map((layer, i) => (
-          <path key={`${mountainCount}-${i}`} d={paths[i]} fill={layer.fill} />
+          <path
+            key={`${hillSeed}-${mountainCount}-${harmonicsPerLayer}-${i}`}
+            d={paths[i]}
+            fill={layer.fill}
+          />
         ))}
       </svg>
     </Box>
