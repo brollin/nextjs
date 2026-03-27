@@ -1,5 +1,6 @@
 import {
   memo,
+  useCallback,
   useMemo,
   useEffect,
   useLayoutEffect,
@@ -7,6 +8,7 @@ import {
   type MutableRefObject,
   type RefObject,
 } from "react";
+import dynamic from "next/dynamic";
 import { Box } from "@chakra-ui/react";
 import SunCalc from "suncalc";
 import {
@@ -15,12 +17,16 @@ import {
   DEFAULT_HARMONICS_PER_LAYER,
   DEFAULT_HIGH_FREQ_FALLOFF,
   DEFAULT_HILL_SEED,
+  DEFAULT_HILL_Y_OFFSET,
   DEFAULT_MOUNTAIN_COUNT,
   hillYAt,
   type LayerHarmonic,
 } from "./hillLayers";
 import { DEFAULT_OBSERVER_LAT, DEFAULT_OBSERVER_LNG } from "./observerCities";
 import { skyColorsForAltitude } from "./landscapeAmbient";
+import type { LandscapeSkyCanvasHandle } from "./LandscapeSkyCanvas";
+
+const LandscapeSkyCanvas = dynamic(() => import("./LandscapeSkyCanvas"), { ssr: false });
 
 const RAD_TO_DEG = 180 / Math.PI;
 
@@ -119,12 +125,6 @@ function altitudeToY(altitude: number, height: number): number {
   return HORIZON_Y - altitude * vertScale;
 }
 
-type SkyStopRefs = [
-  RefObject<SVGStopElement | null>,
-  RefObject<SVGStopElement | null>,
-  RefObject<SVGStopElement | null>,
-];
-
 /**
  * Quantized key for sky gradient updates. Near the horizon, colors change steeply per degree — coarse
  * buckets + throttle reduce full-screen gradient repaints.
@@ -136,14 +136,14 @@ function ambientBucket(altDeg: number): number {
   return Math.round(altDeg * scale);
 }
 
-/** Sun transform every frame; sky gradient stops when bucket changes (and throttle allows). */
+/** Sun transform every frame; WebGL sky when bucket changes (and throttle allows). */
 function useLandscapeFrame(
   sunGroupRef: RefObject<SVGGElement | null>,
-  skyStopRefs: SkyStopRefs,
+  skyCanvasApiRef: MutableRefObject<LandscapeSkyCanvasHandle | null>,
   lat: number,
   lng: number,
   timeOffsetRef: MutableRefObject<number>,
-) {
+): { resetSkyAmbientBucket: () => void } {
   const rafRef = useRef(0);
   const riseSetCacheRef = useRef<{ key: string; value: ReturnType<typeof getSunriseSunsetAzimuth> } | null>(
     null,
@@ -151,6 +151,11 @@ function useLandscapeFrame(
   const lastAmbientBucketRef = useRef<number | null>(null);
   /** Caps how often we touch gradient stops (full-screen sky repaint) even if the bucket flips rapidly. */
   const lastAmbientAtRef = useRef(0);
+
+  const resetSkyAmbientBucket = useCallback(() => {
+    lastAmbientBucketRef.current = null;
+    lastAmbientAtRef.current = 0;
+  }, []);
 
   const viewportRef = useRef({ w: 1200, h: 800 });
   useEffect(() => {
@@ -211,12 +216,15 @@ function useLandscapeFrame(
       const throttleOk =
         lastAmbientBucketRef.current === null || nowMs - lastAmbientAtRef.current >= 85;
       if (bucketChanged && throttleOk) {
-        lastAmbientBucketRef.current = amb;
-        lastAmbientAtRef.current = nowMs;
-        const [s0, s1, s2] = skyColorsForAltitude(altDeg);
-        skyStopRefs[0].current?.setAttribute("stop-color", s0);
-        skyStopRefs[1].current?.setAttribute("stop-color", s1);
-        skyStopRefs[2].current?.setAttribute("stop-color", s2);
+        const api = skyCanvasApiRef.current;
+        if (api) {
+          const [s0, s1, s2] = skyColorsForAltitude(altDeg);
+          const applied = api.setSkyColors(s0, s1, s2);
+          if (applied) {
+            lastAmbientBucketRef.current = amb;
+            lastAmbientAtRef.current = nowMs;
+          }
+        }
       }
     };
 
@@ -234,6 +242,8 @@ function useLandscapeFrame(
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
   }, [lat, lng]);
+
+  return { resetSkyAmbientBucket };
 }
 
 type LandscapeBackgroundProps = {
@@ -249,6 +259,8 @@ type LandscapeBackgroundProps = {
   harmonicsPerLayer?: number;
   frequencySpread?: number;
   highFrequencyFalloff?: number;
+  /** ViewBox Δy for hill SVG paths only (positive = up). */
+  hillYOffset?: number;
 };
 
 function LandscapeBackground({
@@ -260,11 +272,10 @@ function LandscapeBackground({
   harmonicsPerLayer = DEFAULT_HARMONICS_PER_LAYER,
   frequencySpread = DEFAULT_FREQUENCY_SPREAD,
   highFrequencyFalloff = DEFAULT_HIGH_FREQ_FALLOFF,
+  hillYOffset = DEFAULT_HILL_Y_OFFSET,
 }: LandscapeBackgroundProps) {
   const sunGroupRef = useRef<SVGGElement | null>(null);
-  const skyStop0Ref = useRef<SVGStopElement | null>(null);
-  const skyStop1Ref = useRef<SVGStopElement | null>(null);
-  const skyStop2Ref = useRef<SVGStopElement | null>(null);
+  const skyCanvasApiRef = useRef<LandscapeSkyCanvasHandle | null>(null);
 
   const hillLayers = useMemo(
     () =>
@@ -283,9 +294,9 @@ function LandscapeBackground({
     [hillLayers],
   );
 
-  useLandscapeFrame(
+  const { resetSkyAmbientBucket } = useLandscapeFrame(
     sunGroupRef,
-    [skyStop0Ref, skyStop1Ref, skyStop2Ref],
+    skyCanvasApiRef,
     observerLat,
     observerLng,
     timeOffsetRef,
@@ -298,22 +309,24 @@ function LandscapeBackground({
       zIndex={0}
       pointerEvents="auto"
       overflow="hidden"
-      sx={{ contain: "paint" }}
+      sx={{ contain: "paint", minHeight: "100vh" }}
     >
+      <LandscapeSkyCanvas apiRef={skyCanvasApiRef} onApiReady={resetSkyAmbientBucket} />
       <svg
         viewBox={`0 0 ${VB.w} ${VB.h}`}
         preserveAspectRatio="xMidYMid slice"
         width="100%"
         height="100%"
-        style={{ minHeight: "100vh", display: "block" }}
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: 1,
+          minHeight: "100vh",
+          display: "block",
+        }}
         aria-hidden
       >
         <defs>
-          <linearGradient id="landing-sky" x1="0" y1="0" x2="0" y2="1">
-            <stop ref={skyStop0Ref} offset="0%" stopColor="#B8D9F5" />
-            <stop ref={skyStop1Ref} offset="45%" stopColor="#8FC0EA" />
-            <stop ref={skyStop2Ref} offset="100%" stopColor="#6BA6D9" />
-          </linearGradient>
           <radialGradient id="landing-sun-glow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="rgba(255, 248, 220, 0.95)" />
             <stop offset="45%" stopColor="rgba(255, 230, 160, 0.35)" />
@@ -323,7 +336,6 @@ function LandscapeBackground({
             <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
           </filter>
         </defs>
-        <rect width="100%" height="100%" fill="url(#landing-sky)" />
         <g
           ref={sunGroupRef}
           transform="translate(0,0)"
@@ -338,14 +350,16 @@ function LandscapeBackground({
           />
           <circle cx={0} cy={0} r={SUN_RADIUS} fill="#FFF8E8" stroke="#F5E6B8" strokeWidth="1.5" />
         </g>
-        {hillLayers.map((layer, i) => (
-          <path
-            key={`${hillSeed}-${mountainCount}-${harmonicsPerLayer}-${i}`}
-            d={paths[i]}
-            fill={layer.fill}
-            shapeRendering="optimizeSpeed"
-          />
-        ))}
+        <g transform={`translate(0, ${-hillYOffset})`}>
+          {hillLayers.map((layer, i) => (
+            <path
+              key={`${hillSeed}-${mountainCount}-${harmonicsPerLayer}-${i}`}
+              d={paths[i]}
+              fill={layer.fill}
+              shapeRendering="optimizeSpeed"
+            />
+          ))}
+        </g>
       </svg>
     </Box>
   );

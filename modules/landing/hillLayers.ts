@@ -25,16 +25,16 @@ const PALETTE = [
   "#2A5580",
 ];
 
-export const DEFAULT_MOUNTAIN_COUNT = 5;
+export const DEFAULT_MOUNTAIN_COUNT = 6;
 export const MIN_MOUNTAIN_COUNT = 1;
 export const MAX_MOUNTAIN_COUNT = 20;
 
-export const DEFAULT_HILL_SEED = 42_004;
+export const DEFAULT_HILL_SEED = 42_013;
 export const MIN_HILL_SEED = 0;
 export const MAX_HILL_SEED = 999_999_999;
 
 /** Sine terms stacked per ridge (1 = single sinusoid). */
-export const DEFAULT_HARMONICS_PER_LAYER = 10;
+export const DEFAULT_HARMONICS_PER_LAYER = 14;
 export const MIN_HARMONICS_PER_LAYER = 1;
 export const MAX_HARMONICS_PER_LAYER = 30;
 
@@ -42,7 +42,7 @@ export const MAX_HARMONICS_PER_LAYER = 30;
  * Each harmonic after the first gets frequency multiplied by this (e.g. 2 ≈ octaves).
  * Higher → more small-scale wiggles along the ridge.
  */
-export const DEFAULT_FREQUENCY_SPREAD = 2.1;
+export const DEFAULT_FREQUENCY_SPREAD = 2.4;
 export const MIN_FREQUENCY_SPREAD = 1.05;
 export const MAX_FREQUENCY_SPREAD = 4;
 
@@ -50,9 +50,17 @@ export const MAX_FREQUENCY_SPREAD = 4;
  * Amplitude multiplier for each successive harmonic (0–1 typical).
  * Lower → smoother silhouettes; higher → bumpier high-frequency detail.
  */
-export const DEFAULT_HIGH_FREQ_FALLOFF = 0.52;
+export const DEFAULT_HIGH_FREQ_FALLOFF = 0.47;
 export const MIN_HIGH_FREQ_FALLOFF = 0.15;
 export const MAX_HIGH_FREQ_FALLOFF = 0.95;
+
+/**
+ * ViewBox-space Δy for all hill layers (positive = up). Dev-only visual tweak;
+ * does not affect sun position or sky/ambient color math.
+ */
+export const DEFAULT_HILL_Y_OFFSET = -26;
+export const MIN_HILL_Y_OFFSET = -400;
+export const MAX_HILL_Y_OFFSET = 400;
 
 export type CreateHillLayersOptions = {
   layerCount: number;

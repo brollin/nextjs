@@ -2,8 +2,9 @@ import NextLink from "next/link";
 import Head from "next/head";
 import { keyframes } from "@emotion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { VStack, Box, Text, HStack, Button, IconButton, Heading } from "@chakra-ui/react";
+import { VStack, Box, Text, HStack, IconButton, Heading, Center } from "@chakra-ui/react";
 import { IoSettingsOutline } from "react-icons/io5";
+import { FiClock, FiSunrise, FiSunset } from "react-icons/fi";
 import LandscapeBackground from "./LandscapeBackground";
 import { useSmoothedFollow } from "./useSmoothedFollow";
 import DevPanel from "./DevPanel";
@@ -13,33 +14,39 @@ import {
   DEFAULT_HARMONICS_PER_LAYER,
   DEFAULT_HIGH_FREQ_FALLOFF,
   DEFAULT_HILL_SEED,
+  DEFAULT_HILL_Y_OFFSET,
   DEFAULT_MOUNTAIN_COUNT,
   MAX_FREQUENCY_SPREAD,
   MAX_HARMONICS_PER_LAYER,
   MAX_HIGH_FREQ_FALLOFF,
   MAX_HILL_SEED,
+  MAX_HILL_Y_OFFSET,
   MAX_MOUNTAIN_COUNT,
   MIN_FREQUENCY_SPREAD,
   MIN_HARMONICS_PER_LAYER,
   MIN_HIGH_FREQ_FALLOFF,
   MIN_HILL_SEED,
+  MIN_HILL_Y_OFFSET,
   MIN_MOUNTAIN_COUNT,
 } from "./hillLayers";
-import { DEFAULT_OBSERVER_CITY_ID, getObserverCoords, type ObserverCityId } from "./observerCities";
+import {
+  DEFAULT_OBSERVER_CITY_ID,
+  getObserverCoords,
+  getObserverTimeZone,
+  type ObserverCityId,
+} from "./observerCities";
+import { msOffsetForSunEventOnVirtualCalendarDay } from "./sunPresetLocalDay";
 
 /** Wheel / touch movement → simulated time shift (ms per pixel of delta). */
-const WHEEL_MS_PER_DELTA = 7200;
-const TOUCH_MS_PER_PX = 44800;
+const WHEEL_MS_PER_DELTA = 10000;
+const TOUCH_MS_PER_PX = 89600;
 
 /** Exponential smoothing for time offset: snappy for scroll; see `OFFSET_SMOOTH_RESET` after “Now”. */
 const OFFSET_SMOOTH_FAST = 20;
 /** Slower easing when animating back to real time after “Now”. */
 const OFFSET_SMOOTH_RESET = 5;
-
-const timeFormatter = new Intl.DateTimeFormat(undefined, {
-  timeStyle: "medium",
-  hour12: true,
-});
+/** Gentler rate for sunrise / sunset preset jumps so the sun glides to the event. */
+const OFFSET_SMOOTH_PRESET = 3;
 
 const devGearKeyframes = keyframes`
   from { transform: rotate(0deg); }
@@ -61,6 +68,12 @@ export default function Landing() {
   const timeOffsetRef = useRef(0);
   /** Smoothed toward `timeOffsetMs` so wheel/touch steps don’t jitter the sun and clock. */
   const smoothedOffsetMs = useSmoothedFollow(timeOffsetMs, offsetSmoothRate, timeOffsetRef);
+  const smoothedOffsetForPresetsRef = useRef(smoothedOffsetMs);
+  smoothedOffsetForPresetsRef.current = smoothedOffsetMs;
+  const [clientTimeReady, setClientTimeReady] = useState(false);
+  useEffect(() => {
+    setClientTimeReady(true);
+  }, []);
   /** Bumps once per second so the clock label tracks real time while offset is fixed. */
   const [clockTick, setClockTick] = useState(0);
 
@@ -68,12 +81,16 @@ export default function Landing() {
   const [nowButtonSuppressed, setNowButtonSuppressed] = useState(false);
 
   const [devPanelVisible, setDevPanelVisible] = useState(DEV_SHOW_DEV_UI_INIT);
+  /** Ignore sun time drags when interacting with the scrollable dev panel (`stopPropagation` does not affect window-level touch listeners). */
+  const devPanelContainerRef = useRef<HTMLDivElement | null>(null);
+  const touchTimeDragGestureStartedInDevPanelRef = useRef(false);
   const [observerCityId, setObserverCityId] = useState<ObserverCityId>(DEFAULT_OBSERVER_CITY_ID);
   const [mountainCount, setMountainCount] = useState(DEFAULT_MOUNTAIN_COUNT);
   const [hillSeed, setHillSeed] = useState(DEFAULT_HILL_SEED);
   const [harmonicsPerLayer, setHarmonicsPerLayer] = useState(DEFAULT_HARMONICS_PER_LAYER);
   const [frequencySpread, setFrequencySpread] = useState(DEFAULT_FREQUENCY_SPREAD);
   const [highFrequencyFalloff, setHighFrequencyFalloff] = useState(DEFAULT_HIGH_FREQ_FALLOFF);
+  const [hillYOffset, setHillYOffset] = useState(DEFAULT_HILL_Y_OFFSET);
 
   const toggleDevPanel = useCallback(() => {
     setDevPanelVisible((v) => !v);
@@ -115,9 +132,22 @@ export default function Landing() {
     return Math.min(MAX_HIGH_FREQ_FALLOFF, Math.max(MIN_HIGH_FREQ_FALLOFF, v));
   }, []);
 
-  const { lat: observerLat, lng: observerLng } = useMemo(
-    () => getObserverCoords(observerCityId),
-    [observerCityId],
+  const clampHillYOffset = useCallback((v: number) => {
+    return Math.min(MAX_HILL_Y_OFFSET, Math.max(MIN_HILL_Y_OFFSET, Math.round(v)));
+  }, []);
+
+  const { lat: observerLat, lng: observerLng } = useMemo(() => getObserverCoords(observerCityId), [observerCityId]);
+
+  const observerTimeZone = useMemo(() => getObserverTimeZone(observerCityId), [observerCityId]);
+
+  const timeFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(undefined, {
+        timeStyle: "medium",
+        hour12: true,
+        timeZone: observerTimeZone,
+      }),
+    [observerTimeZone],
   );
 
   useEffect(() => {
@@ -150,6 +180,7 @@ export default function Landing() {
 
   const applyScrollDeltaToTime = useCallback((deltaY: number) => {
     if (deltaY === 0) return;
+    setOffsetSmoothRate(OFFSET_SMOOTH_FAST);
     setTimeOffsetMs((o) => o + deltaY * WHEEL_MS_PER_DELTA);
   }, []);
 
@@ -164,17 +195,26 @@ export default function Landing() {
   useEffect(() => {
     let lastY: number | null = null;
     const onTouchStart = (e: TouchEvent) => {
+      const panelEl = devPanelContainerRef.current;
+      const inDevPanel = !!(panelEl && e.target instanceof Node && panelEl.contains(e.target));
+      touchTimeDragGestureStartedInDevPanelRef.current = inDevPanel;
+      if (inDevPanel) {
+        lastY = null;
+        return;
+      }
       lastY = e.touches[0].clientY;
     };
     const onTouchMove = (e: TouchEvent) => {
-      if (lastY == null) return;
+      if (touchTimeDragGestureStartedInDevPanelRef.current || lastY == null) return;
       const y = e.touches[0].clientY;
       const dy = y - lastY;
       lastY = y;
       if (dy === 0) return;
+      setOffsetSmoothRate(OFFSET_SMOOTH_FAST);
       setTimeOffsetMs((o) => o + dy * TOUCH_MS_PER_PX);
     };
     const onTouchEnd = () => {
+      touchTimeDragGestureStartedInDevPanelRef.current = false;
       lastY = null;
     };
     window.addEventListener("touchstart", onTouchStart, { passive: true });
@@ -191,10 +231,43 @@ export default function Landing() {
 
   useEffect(() => {
     if (timeOffsetMs !== 0) {
-      setOffsetSmoothRate(OFFSET_SMOOTH_FAST);
       setNowButtonSuppressed(false);
     }
   }, [timeOffsetMs]);
+
+  const jumpToNextSunEvent = useCallback(
+    (event: "sunrise" | "sunset") => {
+      const virtualNowMs = Date.now() + smoothedOffsetForPresetsRef.current;
+      const next = msOffsetForSunEventOnVirtualCalendarDay(
+        event,
+        virtualNowMs,
+        observerLat,
+        observerLng,
+        observerTimeZone,
+      );
+      if (next == null) return;
+      setOffsetSmoothRate(OFFSET_SMOOTH_PRESET);
+      setTimeOffsetMs(next);
+    },
+    [observerLat, observerLng, observerTimeZone],
+  );
+
+  /** Recompute only when smoothed time crosses ~3 min buckets (avoids SunCalc loops every rAF). */
+  const sunPresetAvailKey = Math.floor(smoothedOffsetMs / 180_000);
+  const sunPresetAvailability = useMemo(() => {
+    if (!clientTimeReady) {
+      return { sunrise: true, sunset: true };
+    }
+    const virtualNowMs = Date.now() + smoothedOffsetForPresetsRef.current;
+    return {
+      sunrise:
+        msOffsetForSunEventOnVirtualCalendarDay("sunrise", virtualNowMs, observerLat, observerLng, observerTimeZone) !=
+        null,
+      sunset:
+        msOffsetForSunEventOnVirtualCalendarDay("sunset", virtualNowMs, observerLat, observerLng, observerTimeZone) !=
+        null,
+    };
+  }, [clientTimeReady, observerLat, observerLng, observerTimeZone, sunPresetAvailKey]);
 
   useEffect(() => {
     if (Math.abs(smoothedOffsetMs) < 500) {
@@ -210,7 +283,7 @@ export default function Landing() {
 
   const displayedTime = useMemo(
     () => timeFormatter.format(new Date(Date.now() + smoothedOffsetMs)),
-    [clockTick, smoothedOffsetMs],
+    [clockTick, smoothedOffsetMs, timeFormatter],
   );
 
   const isoTime = useMemo(() => new Date(Date.now() + smoothedOffsetMs).toISOString(), [clockTick, smoothedOffsetMs]);
@@ -233,6 +306,7 @@ export default function Landing() {
         harmonicsPerLayer={harmonicsPerLayer}
         frequencySpread={frequencySpread}
         highFrequencyFalloff={highFrequencyFalloff}
+        hillYOffset={hillYOffset}
       />
       <Box
         position="fixed"
@@ -249,67 +323,104 @@ export default function Landing() {
         alignItems="flex-end"
       >
         <HStack alignItems="flex-start" justifyContent="space-between" w="100%" maxW="100%">
-          <HStack pointerEvents="auto" spacing={2} align="stretch">
-            <Box
-              px={4}
-              py={2.5}
-              borderRadius="xl"
-              bg="rgba(248, 250, 252, 0.88)"
-              borderWidth="1px"
-              borderColor="rgba(26, 58, 82, 0.14)"
-              backdropFilter="blur(8px)"
-              boxShadow="none"
-              display="flex"
-              alignItems="center"
-              pointerEvents="none"
-              cursor="default"
-              userSelect="none"
-            >
-              <Text
-                as="time"
-                dateTime={isoTime}
-                suppressHydrationWarning
-                fontFamily='ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
-                fontSize={{ base: "xs", sm: "sm" }}
-                fontWeight="medium"
-                color="rgba(26, 58, 82, 0.88)"
-                letterSpacing="0.02em"
-              >
-                {displayedTime}
-              </Text>
-            </Box>
-            {showTimeReset && (
-              <Button
-                aria-label="Reset to current time"
-                variant="ghost"
-                alignSelf="stretch"
-                fontSize={{ base: "xs", sm: "sm" }}
-                fontWeight="medium"
-                color="#1a3a52"
-                px={3}
+          <HStack pointerEvents="auto" spacing={2} align="flex-start">
+            <VStack spacing={0.5} align="stretch">
+              <Box
+                px={4}
+                py={2.5}
                 borderRadius="xl"
-                bg="rgba(255,255,255,0.78)"
-                backdropFilter="blur(10px)"
-                boxShadow="md"
+                bg="rgba(248, 250, 252, 0.88)"
                 borderWidth="1px"
-                borderColor="rgba(255,255,255,0.65)"
-                minH={0}
-                h="unset"
-                whiteSpace="nowrap"
-                _hover={{ bg: "rgba(255,255,255,0.9)" }}
-                _active={{ bg: "rgba(255,255,255,0.85)" }}
-                onClick={() => {
-                  setNowButtonSuppressed(true);
-                  setTimeOffsetMs(0);
-                  setOffsetSmoothRate(OFFSET_SMOOTH_RESET);
-                }}
+                borderColor="rgba(26, 58, 82, 0.14)"
+                backdropFilter="blur(8px)"
+                boxShadow="none"
+                display="flex"
+                alignItems="center"
+                pointerEvents="none"
+                cursor="default"
+                userSelect="none"
               >
-                Now
-              </Button>
-            )}
+                <Text
+                  as="time"
+                  dateTime={isoTime}
+                  suppressHydrationWarning
+                  fontFamily='ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+                  fontSize={{ base: "xs", sm: "sm" }}
+                  fontWeight="medium"
+                  color="rgba(26, 58, 82, 0.88)"
+                  letterSpacing="0.02em"
+                >
+                  {displayedTime}
+                </Text>
+              </Box>
+              <Center w="100%">
+                <HStack spacing={1}>
+                  <IconButton
+                    type="button"
+                    aria-label="Jump to next sunrise"
+                    icon={<FiSunrise size={18} strokeWidth={1.85} />}
+                    size="sm"
+                    variant="ghost"
+                    borderRadius="md"
+                    borderWidth={0}
+                    minW="32px"
+                    h="32px"
+                    color="rgba(255, 255, 255, 0.78)"
+                    isDisabled={!sunPresetAvailability.sunrise}
+                    _hover={{ bg: sunPresetAvailability.sunrise ? "rgba(255,255,255,0.65)" : undefined }}
+                    _active={{ bg: sunPresetAvailability.sunrise ? "rgba(255,255,255,0.5)" : undefined }}
+                    onClick={() => jumpToNextSunEvent("sunrise")}
+                    boxShadow="none"
+                  />
+                  <IconButton
+                    type="button"
+                    aria-label="Jump to next sunset"
+                    icon={<FiSunset size={18} strokeWidth={1.85} />}
+                    size="sm"
+                    variant="ghost"
+                    borderRadius="md"
+                    borderWidth={0}
+                    minW="32px"
+                    h="32px"
+                    color="rgba(255, 255, 255, 0.78)"
+                    isDisabled={!sunPresetAvailability.sunset}
+                    _hover={{ bg: sunPresetAvailability.sunset ? "rgba(255,255,255,0.65)" : undefined }}
+                    _active={{ bg: sunPresetAvailability.sunset ? "rgba(255,255,255,0.5)" : undefined }}
+                    onClick={() => jumpToNextSunEvent("sunset")}
+                    boxShadow="none"
+                  />
+                  {/* Fixed slot so toggling Now does not shift sunrise/sunset */}
+                  <Box minW="32px" h="32px" flexShrink={0}>
+                    {showTimeReset ? (
+                      <IconButton
+                        type="button"
+                        aria-label="Reset to current time"
+                        icon={<FiClock size={18} strokeWidth={1.85} />}
+                        size="sm"
+                        variant="ghost"
+                        borderRadius="md"
+                        borderWidth={0}
+                        minW="32px"
+                        h="32px"
+                        color="rgba(255, 255, 255, 0.78)"
+                        _hover={{ bg: "rgba(255,255,255,0.65)" }}
+                        _active={{ bg: "rgba(255,255,255,0.5)" }}
+                        onClick={() => {
+                          setNowButtonSuppressed(true);
+                          setTimeOffsetMs(0);
+                          setOffsetSmoothRate(OFFSET_SMOOTH_RESET);
+                        }}
+                        boxShadow="none"
+                      />
+                    ) : null}
+                  </Box>
+                </HStack>
+              </Center>
+            </VStack>
           </HStack>
           <HStack pointerEvents="auto" spacing={3} alignItems="flex-start" justifyContent="flex-end" flexShrink={0}>
             <IconButton
+              type="button"
               aria-label="Toggle dev settings"
               icon={
                 <Box
@@ -323,23 +434,23 @@ export default function Landing() {
               }
               size="sm"
               variant="ghost"
-              color="#1a3a52"
-              bg="rgba(255,255,255,0.78)"
-              backdropFilter="blur(10px)"
-              boxShadow="md"
-              borderWidth="1px"
-              borderColor="rgba(255,255,255,0.65)"
-              borderRadius="xl"
+              borderRadius="md"
+              borderWidth={0}
+              minW="32px"
+              h="32px"
+              color="rgba(255, 255, 255, 0.78)"
               flexShrink={0}
-              _hover={{ bg: "rgba(255,255,255,0.9)" }}
-              _active={{ bg: "rgba(255,255,255,0.85)" }}
+              _hover={{ bg: "rgba(255,255,255,0.65)" }}
+              _active={{ bg: "rgba(255,255,255,0.5)" }}
               onClick={toggleDevPanel}
+              boxShadow="none"
             />
           </HStack>
         </HStack>
       </Box>
       {devPanelVisible && (
         <Box
+          ref={devPanelContainerRef}
           position="fixed"
           zIndex={30}
           top={{ base: "calc(max(12px, env(safe-area-inset-top)) + 44px)", md: "calc(16px + 40px)" }}
@@ -360,6 +471,8 @@ export default function Landing() {
             onFrequencySpreadChange={(v) => setFrequencySpread(clampFrequencySpread(v))}
             highFrequencyFalloff={highFrequencyFalloff}
             onHighFrequencyFalloffChange={(v) => setHighFrequencyFalloff(clampHighFrequencyFalloff(v))}
+            hillYOffset={hillYOffset}
+            onHillYOffsetChange={(v) => setHillYOffset(clampHillYOffset(v))}
           />
         </Box>
       )}
@@ -380,7 +493,7 @@ export default function Landing() {
         pt={{ base: "max(1rem, env(safe-area-inset-top))", sm: 10 }}
         pointerEvents="none"
       >
-        <VStack spacing={8} width="100%" maxW="md" align="center" pointerEvents="auto">
+        <VStack spacing={32} width="100%" maxW="md" align="center" pointerEvents="auto">
           <Heading
             as="h1"
             fontWeight="normal"
@@ -409,7 +522,7 @@ export default function Landing() {
               display="inline"
               fontWeight="300"
               letterSpacing="0.18em"
-              color="rgba(255,255,255,0.78)"
+              color="rgba(209, 209, 209, 0.78)"
               sx={{ textShadow: "0 1px 3px rgba(0,0,0,0.55), 0 0 12px rgba(0,0,0,0.25)" }}
             >
               .space
@@ -431,7 +544,7 @@ export default function Landing() {
                   textTransform="lowercase"
                   textAlign="center"
                   textDecoration="none"
-                  color="rgba(15, 40, 64, 0.88)"
+                  color="rgba(15, 40, 64, 0.98)"
                   bg="rgba(255,255,255,0.22)"
                   borderWidth="1px"
                   borderStyle="solid"
