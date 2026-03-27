@@ -203,7 +203,7 @@ export default function DevPanel({
       <FormControl size="sm" mb={4}>
         <LabelWithHint
           label="City"
-          hint="Observer location for SunCalc sun position and sunrise/sunset mapping."
+          hint="Observer location for SunCalc (sun position, sunrise/sunset). The clock shows local time in this city."
         />
         <Select
           size="sm"

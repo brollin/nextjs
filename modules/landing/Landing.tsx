@@ -30,7 +30,12 @@ import {
   MIN_MOUNTAIN_COUNT,
 } from "./hillLayers";
 import SunCalc from "suncalc";
-import { DEFAULT_OBSERVER_CITY_ID, getObserverCoords, type ObserverCityId } from "./observerCities";
+import {
+  DEFAULT_OBSERVER_CITY_ID,
+  getObserverCoords,
+  getObserverTimeZone,
+  type ObserverCityId,
+} from "./observerCities";
 
 /** Wheel / touch movement → simulated time shift (ms per pixel of delta). */
 const WHEEL_MS_PER_DELTA = 10000;
@@ -65,11 +70,6 @@ function msOffsetForNextSunEvent(
   }
   return null;
 }
-
-const timeFormatter = new Intl.DateTimeFormat(undefined, {
-  timeStyle: "medium",
-  hour12: true,
-});
 
 const devGearKeyframes = keyframes`
   from { transform: rotate(0deg); }
@@ -160,6 +160,18 @@ export default function Landing() {
   }, []);
 
   const { lat: observerLat, lng: observerLng } = useMemo(() => getObserverCoords(observerCityId), [observerCityId]);
+
+  const observerTimeZone = useMemo(() => getObserverTimeZone(observerCityId), [observerCityId]);
+
+  const timeFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(undefined, {
+        timeStyle: "medium",
+        hour12: true,
+        timeZone: observerTimeZone,
+      }),
+    [observerTimeZone],
+  );
 
   useEffect(() => {
     const id = window.setInterval(() => setClockTick((n) => n + 1), 1000);
@@ -284,7 +296,7 @@ export default function Landing() {
 
   const displayedTime = useMemo(
     () => timeFormatter.format(new Date(Date.now() + smoothedOffsetMs)),
-    [clockTick, smoothedOffsetMs],
+    [clockTick, smoothedOffsetMs, timeFormatter],
   );
 
   const isoTime = useMemo(() => new Date(Date.now() + smoothedOffsetMs).toISOString(), [clockTick, smoothedOffsetMs]);
