@@ -31,8 +31,8 @@ import {
 import { DEFAULT_OBSERVER_CITY_ID, getObserverCoords, type ObserverCityId } from "./observerCities";
 
 /** Wheel / touch movement → simulated time shift (ms per pixel of delta). */
-const WHEEL_MS_PER_DELTA = 7200;
-const TOUCH_MS_PER_PX = 44800;
+const WHEEL_MS_PER_DELTA = 10000;
+const TOUCH_MS_PER_PX = 89600;
 
 /** Exponential smoothing for time offset: snappy for scroll; see `OFFSET_SMOOTH_RESET` after “Now”. */
 const OFFSET_SMOOTH_FAST = 20;
@@ -71,6 +71,9 @@ export default function Landing() {
   const [nowButtonSuppressed, setNowButtonSuppressed] = useState(false);
 
   const [devPanelVisible, setDevPanelVisible] = useState(DEV_SHOW_DEV_UI_INIT);
+  /** Ignore sun time drags when interacting with the scrollable dev panel (`stopPropagation` does not affect window-level touch listeners). */
+  const devPanelContainerRef = useRef<HTMLDivElement | null>(null);
+  const touchTimeDragGestureStartedInDevPanelRef = useRef(false);
   const [observerCityId, setObserverCityId] = useState<ObserverCityId>(DEFAULT_OBSERVER_CITY_ID);
   const [mountainCount, setMountainCount] = useState(DEFAULT_MOUNTAIN_COUNT);
   const [hillSeed, setHillSeed] = useState(DEFAULT_HILL_SEED);
@@ -169,10 +172,17 @@ export default function Landing() {
   useEffect(() => {
     let lastY: number | null = null;
     const onTouchStart = (e: TouchEvent) => {
+      const panelEl = devPanelContainerRef.current;
+      const inDevPanel = !!(panelEl && e.target instanceof Node && panelEl.contains(e.target));
+      touchTimeDragGestureStartedInDevPanelRef.current = inDevPanel;
+      if (inDevPanel) {
+        lastY = null;
+        return;
+      }
       lastY = e.touches[0].clientY;
     };
     const onTouchMove = (e: TouchEvent) => {
-      if (lastY == null) return;
+      if (touchTimeDragGestureStartedInDevPanelRef.current || lastY == null) return;
       const y = e.touches[0].clientY;
       const dy = y - lastY;
       lastY = y;
@@ -180,6 +190,7 @@ export default function Landing() {
       setTimeOffsetMs((o) => o + dy * TOUCH_MS_PER_PX);
     };
     const onTouchEnd = () => {
+      touchTimeDragGestureStartedInDevPanelRef.current = false;
       lastY = null;
     };
     window.addEventListener("touchstart", onTouchStart, { passive: true });
@@ -346,6 +357,7 @@ export default function Landing() {
       </Box>
       {devPanelVisible && (
         <Box
+          ref={devPanelContainerRef}
           position="fixed"
           zIndex={30}
           top={{ base: "calc(max(12px, env(safe-area-inset-top)) + 44px)", md: "calc(16px + 40px)" }}
@@ -388,7 +400,7 @@ export default function Landing() {
         pt={{ base: "max(1rem, env(safe-area-inset-top))", sm: 10 }}
         pointerEvents="none"
       >
-        <VStack spacing={8} width="100%" maxW="md" align="center" pointerEvents="auto">
+        <VStack spacing={32} width="100%" maxW="md" align="center" pointerEvents="auto">
           <Heading
             as="h1"
             fontWeight="normal"
@@ -417,7 +429,7 @@ export default function Landing() {
               display="inline"
               fontWeight="300"
               letterSpacing="0.18em"
-              color="rgba(255,255,255,0.78)"
+              color="rgba(209, 209, 209, 0.78)"
               sx={{ textShadow: "0 1px 3px rgba(0,0,0,0.55), 0 0 12px rgba(0,0,0,0.25)" }}
             >
               .space
