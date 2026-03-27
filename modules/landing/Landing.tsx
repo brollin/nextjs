@@ -29,13 +29,13 @@ import {
   MIN_HILL_Y_OFFSET,
   MIN_MOUNTAIN_COUNT,
 } from "./hillLayers";
-import SunCalc from "suncalc";
 import {
   DEFAULT_OBSERVER_CITY_ID,
   getObserverCoords,
   getObserverTimeZone,
   type ObserverCityId,
 } from "./observerCities";
+import { msOffsetForSunEventOnVirtualCalendarDay } from "./sunPresetLocalDay";
 
 /** Wheel / touch movement → simulated time shift (ms per pixel of delta). */
 const WHEEL_MS_PER_DELTA = 10000;
@@ -47,29 +47,6 @@ const OFFSET_SMOOTH_FAST = 20;
 const OFFSET_SMOOTH_RESET = 5;
 /** Gentler rate for sunrise / sunset preset jumps so the sun glides to the event. */
 const OFFSET_SMOOTH_PRESET = 3;
-
-/** Next sunrise or sunset strictly after `virtualNowMs` (epoch ms). */
-function msOffsetForNextSunEvent(
-  event: "sunrise" | "sunset",
-  virtualNowMs: number,
-  lat: number,
-  lng: number,
-): number | null {
-  const day = new Date(virtualNowMs);
-  for (let i = 0; i < 370; i++) {
-    const times = SunCalc.getTimes(day, lat, lng);
-    const ev = event === "sunrise" ? times.sunrise : times.sunset;
-    if (Number.isNaN(ev.getTime())) {
-      day.setDate(day.getDate() + 1);
-      continue;
-    }
-    if (ev.getTime() > virtualNowMs + 200) {
-      return ev.getTime() - Date.now();
-    }
-    day.setDate(day.getDate() + 1);
-  }
-  return null;
-}
 
 const devGearKeyframes = keyframes`
   from { transform: rotate(0deg); }
@@ -261,12 +238,18 @@ export default function Landing() {
   const jumpToNextSunEvent = useCallback(
     (event: "sunrise" | "sunset") => {
       const virtualNowMs = Date.now() + smoothedOffsetForPresetsRef.current;
-      const next = msOffsetForNextSunEvent(event, virtualNowMs, observerLat, observerLng);
+      const next = msOffsetForSunEventOnVirtualCalendarDay(
+        event,
+        virtualNowMs,
+        observerLat,
+        observerLng,
+        observerTimeZone,
+      );
       if (next == null) return;
       setOffsetSmoothRate(OFFSET_SMOOTH_PRESET);
       setTimeOffsetMs(next);
     },
-    [observerLat, observerLng],
+    [observerLat, observerLng, observerTimeZone],
   );
 
   /** Recompute only when smoothed time crosses ~3 min buckets (avoids SunCalc loops every rAF). */
@@ -277,10 +260,14 @@ export default function Landing() {
     }
     const virtualNowMs = Date.now() + smoothedOffsetForPresetsRef.current;
     return {
-      sunrise: msOffsetForNextSunEvent("sunrise", virtualNowMs, observerLat, observerLng) != null,
-      sunset: msOffsetForNextSunEvent("sunset", virtualNowMs, observerLat, observerLng) != null,
+      sunrise:
+        msOffsetForSunEventOnVirtualCalendarDay("sunrise", virtualNowMs, observerLat, observerLng, observerTimeZone) !=
+        null,
+      sunset:
+        msOffsetForSunEventOnVirtualCalendarDay("sunset", virtualNowMs, observerLat, observerLng, observerTimeZone) !=
+        null,
     };
-  }, [clientTimeReady, observerLat, observerLng, sunPresetAvailKey]);
+  }, [clientTimeReady, observerLat, observerLng, observerTimeZone, sunPresetAvailKey]);
 
   useEffect(() => {
     if (Math.abs(smoothedOffsetMs) < 500) {
@@ -433,6 +420,7 @@ export default function Landing() {
           </HStack>
           <HStack pointerEvents="auto" spacing={3} alignItems="flex-start" justifyContent="flex-end" flexShrink={0}>
             <IconButton
+              type="button"
               aria-label="Toggle dev settings"
               icon={
                 <Box
@@ -446,17 +434,16 @@ export default function Landing() {
               }
               size="sm"
               variant="ghost"
-              color="#1a3a52"
-              bg="rgba(255,255,255,0.78)"
-              backdropFilter="blur(10px)"
-              boxShadow="md"
-              borderWidth="1px"
-              borderColor="rgba(255,255,255,0.65)"
-              borderRadius="xl"
+              borderRadius="md"
+              borderWidth={0}
+              minW="32px"
+              h="32px"
+              color="rgba(255, 255, 255, 0.78)"
               flexShrink={0}
-              _hover={{ bg: "rgba(255,255,255,0.9)" }}
-              _active={{ bg: "rgba(255,255,255,0.85)" }}
+              _hover={{ bg: "rgba(255,255,255,0.65)" }}
+              _active={{ bg: "rgba(255,255,255,0.5)" }}
               onClick={toggleDevPanel}
+              boxShadow="none"
             />
           </HStack>
         </HStack>
