@@ -29,7 +29,7 @@ export const DEFAULT_MOUNTAIN_COUNT = 5;
 export const MIN_MOUNTAIN_COUNT = 1;
 export const MAX_MOUNTAIN_COUNT = 20;
 
-export const DEFAULT_HILL_SEED = 42_001;
+export const DEFAULT_HILL_SEED = 42_004;
 export const MIN_HILL_SEED = 0;
 export const MAX_HILL_SEED = 999_999_999;
 
