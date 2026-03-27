@@ -394,13 +394,24 @@ export default function Landing() {
               display="inline"
               fontWeight="200"
               letterSpacing="0.06em"
-              bgGradient="linear(to-br, #0a1f33, #1a3a52, #4a8eb8)"
+              bgGradient="linear(to-br, #ffffff, #e8f4fc, #c5dff0)"
               bgClip="text"
-              sx={{ WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+              sx={{
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.65)) drop-shadow(0 0 18px rgba(0,0,0,0.35))",
+              }}
             >
               brollin
             </Text>
-            <Text as="span" display="inline" fontWeight="300" letterSpacing="0.18em" color="rgba(26, 58, 82, 0.5)">
+            <Text
+              as="span"
+              display="inline"
+              fontWeight="300"
+              letterSpacing="0.18em"
+              color="rgba(255,255,255,0.78)"
+              sx={{ textShadow: "0 1px 3px rgba(0,0,0,0.55), 0 0 12px rgba(0,0,0,0.25)" }}
+            >
               .space
             </Text>
           </Heading>

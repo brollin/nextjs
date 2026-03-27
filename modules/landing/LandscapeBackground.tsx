@@ -28,6 +28,7 @@ const VB = { w: 1200, h: 800 };
 
 /** Visual horizon in viewBox space (y grows downward). Sun at altitude 0 sits here. */
 const HORIZON_Y = 392;
+
 const SUN_RADIUS = 32;
 const SUN_GLOW_RADIUS = 52;
 
