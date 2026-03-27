@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:lan": "next dev -H 0.0.0.0 -p 3001",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -37,6 +38,7 @@
     "react-markdown": "^9.0.1",
     "react-transition-group": "^4.4.2",
     "rehype-raw": "^7.0.0",
+    "suncalc": "^1.9.0",
     "three": "^0.148.0"
   },
   "devDependencies": {
