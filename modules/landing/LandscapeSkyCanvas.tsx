@@ -1,4 +1,5 @@
 import {
+  memo,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -82,32 +83,45 @@ function SkyQuad({ materialRef }: SkyQuadProps) {
 }
 
 export type LandscapeSkyCanvasHandle = {
-  setSkyColors(topHex: string, midHex: string, botHex: string): void;
+  /** Returns `true` if uniforms were updated; `false` if material not ready yet. */
+  setSkyColors(topHex: string, midHex: string, botHex: string): boolean;
 };
 
 type LandscapeSkyCanvasProps = {
   apiRef: MutableRefObject<LandscapeSkyCanvasHandle | null>;
+  /** Called when the imperative API is (re)attached — parent should resync sky colors. */
+  onApiReady?: () => void;
 };
 
 /**
  * Full-viewport vertical three-stop sky gradient (WebGL). Matches the old SVG linearGradient.
  * Uses `frameloop="demand"` — only redraws when `setSkyColors` runs.
  */
-export default function LandscapeSkyCanvas({ apiRef }: LandscapeSkyCanvasProps) {
+function LandscapeSkyCanvas({ apiRef, onApiReady }: LandscapeSkyCanvasProps) {
   const materialRef = useRef<THREE.ShaderMaterial | null>(null);
   const invalidateRef = useRef<(() => void) | null>(null);
+  const onApiReadyRef = useRef(onApiReady);
+  onApiReadyRef.current = onApiReady;
+
+  /** Stable — a new object each parent render makes R3F tear down the WebGL context. */
+  const glProps = useMemo(
+    () => ({ antialias: false, alpha: false, powerPreference: "high-performance" as const }),
+    [],
+  );
 
   useLayoutEffect(() => {
     apiRef.current = {
       setSkyColors(topHex: string, midHex: string, botHex: string) {
         const m = materialRef.current;
-        if (!m) return;
+        if (!m) return false;
         m.uniforms.uColorTop.value.set(topHex);
         m.uniforms.uColorMid.value.set(midHex);
         m.uniforms.uColorBot.value.set(botHex);
         invalidateRef.current?.();
+        return true;
       },
     };
+    onApiReadyRef.current?.();
     return () => {
       apiRef.current = null;
     };
@@ -116,7 +130,7 @@ export default function LandscapeSkyCanvas({ apiRef }: LandscapeSkyCanvasProps) 
   return (
     <Canvas
       orthographic
-      gl={{ antialias: false, alpha: false, powerPreference: "high-performance" }}
+      gl={glProps}
       dpr={[1, 2]}
       frameloop="demand"
       style={{
@@ -147,3 +161,5 @@ export default function LandscapeSkyCanvas({ apiRef }: LandscapeSkyCanvasProps) 
     </Canvas>
   );
 }
+
+export default memo(LandscapeSkyCanvas);

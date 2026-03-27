@@ -1,5 +1,6 @@
 import {
   memo,
+  useCallback,
   useMemo,
   useEffect,
   useLayoutEffect,
@@ -16,6 +17,7 @@ import {
   DEFAULT_HARMONICS_PER_LAYER,
   DEFAULT_HIGH_FREQ_FALLOFF,
   DEFAULT_HILL_SEED,
+  DEFAULT_HILL_Y_OFFSET,
   DEFAULT_MOUNTAIN_COUNT,
   hillYAt,
   type LayerHarmonic,
@@ -141,7 +143,7 @@ function useLandscapeFrame(
   lat: number,
   lng: number,
   timeOffsetRef: MutableRefObject<number>,
-) {
+): { resetSkyAmbientBucket: () => void } {
   const rafRef = useRef(0);
   const riseSetCacheRef = useRef<{ key: string; value: ReturnType<typeof getSunriseSunsetAzimuth> } | null>(
     null,
@@ -149,6 +151,11 @@ function useLandscapeFrame(
   const lastAmbientBucketRef = useRef<number | null>(null);
   /** Caps how often we touch gradient stops (full-screen sky repaint) even if the bucket flips rapidly. */
   const lastAmbientAtRef = useRef(0);
+
+  const resetSkyAmbientBucket = useCallback(() => {
+    lastAmbientBucketRef.current = null;
+    lastAmbientAtRef.current = 0;
+  }, []);
 
   const viewportRef = useRef({ w: 1200, h: 800 });
   useEffect(() => {
@@ -209,10 +216,15 @@ function useLandscapeFrame(
       const throttleOk =
         lastAmbientBucketRef.current === null || nowMs - lastAmbientAtRef.current >= 85;
       if (bucketChanged && throttleOk) {
-        lastAmbientBucketRef.current = amb;
-        lastAmbientAtRef.current = nowMs;
-        const [s0, s1, s2] = skyColorsForAltitude(altDeg);
-        skyCanvasApiRef.current?.setSkyColors(s0, s1, s2);
+        const api = skyCanvasApiRef.current;
+        if (api) {
+          const [s0, s1, s2] = skyColorsForAltitude(altDeg);
+          const applied = api.setSkyColors(s0, s1, s2);
+          if (applied) {
+            lastAmbientBucketRef.current = amb;
+            lastAmbientAtRef.current = nowMs;
+          }
+        }
       }
     };
 
@@ -230,6 +242,8 @@ function useLandscapeFrame(
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
   }, [lat, lng]);
+
+  return { resetSkyAmbientBucket };
 }
 
 type LandscapeBackgroundProps = {
@@ -245,6 +259,8 @@ type LandscapeBackgroundProps = {
   harmonicsPerLayer?: number;
   frequencySpread?: number;
   highFrequencyFalloff?: number;
+  /** ViewBox Δy for hill SVG paths only (positive = up). */
+  hillYOffset?: number;
 };
 
 function LandscapeBackground({
@@ -256,6 +272,7 @@ function LandscapeBackground({
   harmonicsPerLayer = DEFAULT_HARMONICS_PER_LAYER,
   frequencySpread = DEFAULT_FREQUENCY_SPREAD,
   highFrequencyFalloff = DEFAULT_HIGH_FREQ_FALLOFF,
+  hillYOffset = DEFAULT_HILL_Y_OFFSET,
 }: LandscapeBackgroundProps) {
   const sunGroupRef = useRef<SVGGElement | null>(null);
   const skyCanvasApiRef = useRef<LandscapeSkyCanvasHandle | null>(null);
@@ -277,7 +294,13 @@ function LandscapeBackground({
     [hillLayers],
   );
 
-  useLandscapeFrame(sunGroupRef, skyCanvasApiRef, observerLat, observerLng, timeOffsetRef);
+  const { resetSkyAmbientBucket } = useLandscapeFrame(
+    sunGroupRef,
+    skyCanvasApiRef,
+    observerLat,
+    observerLng,
+    timeOffsetRef,
+  );
 
   return (
     <Box
@@ -288,7 +311,7 @@ function LandscapeBackground({
       overflow="hidden"
       sx={{ contain: "paint", minHeight: "100vh" }}
     >
-      <LandscapeSkyCanvas apiRef={skyCanvasApiRef} />
+      <LandscapeSkyCanvas apiRef={skyCanvasApiRef} onApiReady={resetSkyAmbientBucket} />
       <svg
         viewBox={`0 0 ${VB.w} ${VB.h}`}
         preserveAspectRatio="xMidYMid slice"
@@ -327,14 +350,16 @@ function LandscapeBackground({
           />
           <circle cx={0} cy={0} r={SUN_RADIUS} fill="#FFF8E8" stroke="#F5E6B8" strokeWidth="1.5" />
         </g>
-        {hillLayers.map((layer, i) => (
-          <path
-            key={`${hillSeed}-${mountainCount}-${harmonicsPerLayer}-${i}`}
-            d={paths[i]}
-            fill={layer.fill}
-            shapeRendering="optimizeSpeed"
-          />
-        ))}
+        <g transform={`translate(0, ${-hillYOffset})`}>
+          {hillLayers.map((layer, i) => (
+            <path
+              key={`${hillSeed}-${mountainCount}-${harmonicsPerLayer}-${i}`}
+              d={paths[i]}
+              fill={layer.fill}
+              shapeRendering="optimizeSpeed"
+            />
+          ))}
+        </g>
       </svg>
     </Box>
   );

@@ -15,11 +15,13 @@ import {
   MAX_HARMONICS_PER_LAYER,
   MAX_HIGH_FREQ_FALLOFF,
   MAX_HILL_SEED,
+  MAX_HILL_Y_OFFSET,
   MAX_MOUNTAIN_COUNT,
   MIN_FREQUENCY_SPREAD,
   MIN_HARMONICS_PER_LAYER,
   MIN_HIGH_FREQ_FALLOFF,
   MIN_HILL_SEED,
+  MIN_HILL_Y_OFFSET,
   MIN_MOUNTAIN_COUNT,
 } from "./hillLayers";
 import { OBSERVER_CITIES, type ObserverCityId } from "./observerCities";
@@ -160,6 +162,8 @@ type DevPanelProps = {
   onFrequencySpreadChange: (value: number) => void;
   highFrequencyFalloff: number;
   onHighFrequencyFalloffChange: (value: number) => void;
+  hillYOffset: number;
+  onHillYOffsetChange: (value: number) => void;
 };
 
 export default function DevPanel({
@@ -175,6 +179,8 @@ export default function DevPanel({
   onFrequencySpreadChange,
   highFrequencyFalloff,
   onHighFrequencyFalloffChange,
+  hillYOffset,
+  onHillYOffsetChange,
 }: DevPanelProps) {
   return (
     <Box
@@ -250,6 +256,21 @@ export default function DevPanel({
           step={1}
           isInteger
           onChange={onMountainCountChange}
+        />
+      </FormControl>
+
+      <FormControl size="sm" mb={4}>
+        <LabelWithHint
+          label="Hills Y offset"
+          hint="Moves all hill layers up or down in viewBox space (positive = higher on screen). Sun and sky colors are unchanged."
+        />
+        <DevNumberRow
+          value={hillYOffset}
+          min={MIN_HILL_Y_OFFSET}
+          max={MAX_HILL_Y_OFFSET}
+          step={1}
+          isInteger
+          onChange={onHillYOffsetChange}
         />
       </FormControl>
 

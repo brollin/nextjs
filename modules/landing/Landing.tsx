@@ -13,16 +13,19 @@ import {
   DEFAULT_HARMONICS_PER_LAYER,
   DEFAULT_HIGH_FREQ_FALLOFF,
   DEFAULT_HILL_SEED,
+  DEFAULT_HILL_Y_OFFSET,
   DEFAULT_MOUNTAIN_COUNT,
   MAX_FREQUENCY_SPREAD,
   MAX_HARMONICS_PER_LAYER,
   MAX_HIGH_FREQ_FALLOFF,
   MAX_HILL_SEED,
+  MAX_HILL_Y_OFFSET,
   MAX_MOUNTAIN_COUNT,
   MIN_FREQUENCY_SPREAD,
   MIN_HARMONICS_PER_LAYER,
   MIN_HIGH_FREQ_FALLOFF,
   MIN_HILL_SEED,
+  MIN_HILL_Y_OFFSET,
   MIN_MOUNTAIN_COUNT,
 } from "./hillLayers";
 import { DEFAULT_OBSERVER_CITY_ID, getObserverCoords, type ObserverCityId } from "./observerCities";
@@ -74,6 +77,7 @@ export default function Landing() {
   const [harmonicsPerLayer, setHarmonicsPerLayer] = useState(DEFAULT_HARMONICS_PER_LAYER);
   const [frequencySpread, setFrequencySpread] = useState(DEFAULT_FREQUENCY_SPREAD);
   const [highFrequencyFalloff, setHighFrequencyFalloff] = useState(DEFAULT_HIGH_FREQ_FALLOFF);
+  const [hillYOffset, setHillYOffset] = useState(DEFAULT_HILL_Y_OFFSET);
 
   const toggleDevPanel = useCallback(() => {
     setDevPanelVisible((v) => !v);
@@ -115,10 +119,11 @@ export default function Landing() {
     return Math.min(MAX_HIGH_FREQ_FALLOFF, Math.max(MIN_HIGH_FREQ_FALLOFF, v));
   }, []);
 
-  const { lat: observerLat, lng: observerLng } = useMemo(
-    () => getObserverCoords(observerCityId),
-    [observerCityId],
-  );
+  const clampHillYOffset = useCallback((v: number) => {
+    return Math.min(MAX_HILL_Y_OFFSET, Math.max(MIN_HILL_Y_OFFSET, Math.round(v)));
+  }, []);
+
+  const { lat: observerLat, lng: observerLng } = useMemo(() => getObserverCoords(observerCityId), [observerCityId]);
 
   useEffect(() => {
     const id = window.setInterval(() => setClockTick((n) => n + 1), 1000);
@@ -233,6 +238,7 @@ export default function Landing() {
         harmonicsPerLayer={harmonicsPerLayer}
         frequencySpread={frequencySpread}
         highFrequencyFalloff={highFrequencyFalloff}
+        hillYOffset={hillYOffset}
       />
       <Box
         position="fixed"
@@ -360,6 +366,8 @@ export default function Landing() {
             onFrequencySpreadChange={(v) => setFrequencySpread(clampFrequencySpread(v))}
             highFrequencyFalloff={highFrequencyFalloff}
             onHighFrequencyFalloffChange={(v) => setHighFrequencyFalloff(clampHighFrequencyFalloff(v))}
+            hillYOffset={hillYOffset}
+            onHillYOffsetChange={(v) => setHillYOffset(clampHillYOffset(v))}
           />
         </Box>
       )}
@@ -431,7 +439,7 @@ export default function Landing() {
                   textTransform="lowercase"
                   textAlign="center"
                   textDecoration="none"
-                  color="rgba(15, 40, 64, 0.88)"
+                  color="rgba(15, 40, 64, 0.98)"
                   bg="rgba(255,255,255,0.22)"
                   borderWidth="1px"
                   borderStyle="solid"

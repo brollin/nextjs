@@ -54,6 +54,14 @@ export const DEFAULT_HIGH_FREQ_FALLOFF = 0.52;
 export const MIN_HIGH_FREQ_FALLOFF = 0.15;
 export const MAX_HIGH_FREQ_FALLOFF = 0.95;
 
+/**
+ * ViewBox-space Δy for all hill layers (positive = up). Dev-only visual tweak;
+ * does not affect sun position or sky/ambient color math.
+ */
+export const DEFAULT_HILL_Y_OFFSET = -26;
+export const MIN_HILL_Y_OFFSET = -400;
+export const MAX_HILL_Y_OFFSET = 400;
+
 export type CreateHillLayersOptions = {
   layerCount: number;
   /** Master seed — drives all random choices for this terrain. */
