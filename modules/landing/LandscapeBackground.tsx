@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useRef, useState } from "react";
+import { useMemo, useEffect, useLayoutEffect, useRef, type RefObject } from "react";
 import { Box } from "@chakra-ui/react";
 import SunCalc from "suncalc";
 import {
@@ -107,8 +107,16 @@ function altitudeToY(altitude: number, height: number): number {
   return HORIZON_Y - altitude * vertScale;
 }
 
-function useSunPosition(lat: number, lng: number, timeOffsetMs: number) {
-  const [sun, setSun] = useState<{ cx: number; cy: number } | null>(null);
+/**
+ * Drives sun motion by updating an SVG `<g transform="translate(...)">` each frame.
+ * Avoids React state in the rAF loop (that was causing jitter from ~60 reconciliations/sec).
+ */
+function useSunPosition(
+  sunGroupRef: RefObject<SVGGElement | null>,
+  lat: number,
+  lng: number,
+  timeOffsetMs: number,
+) {
   const rafRef = useRef(0);
   const offsetRef = useRef(timeOffsetMs);
   offsetRef.current = timeOffsetMs;
@@ -140,27 +148,28 @@ function useSunPosition(lat: number, lng: number, timeOffsetMs: number) {
     };
   }, []);
 
-  useEffect(() => {
-    const tick = () => {
+  useLayoutEffect(() => {
+    const apply = () => {
+      const g = sunGroupRef.current;
+      if (!g) return;
       const when = new Date(Date.now() + offsetRef.current);
       const { w: vw, h: vh } = viewportRef.current;
       const { xMin, xMax } = getVisibleViewBoxSlice(vw, vh, VB.w, VB.h);
       const riseSet = getSunriseSunsetAzimuth(when, lat, lng);
-
       const { azimuth, altitude } = SunCalc.getPosition(when, lat, lng);
       const cx = azimuthToX(azimuth, VB.w, xMin, xMax, riseSet);
+      const cy = altitudeToY(altitude, VB.h);
+      g.setAttribute("transform", `translate(${cx}, ${cy})`);
+    };
 
-      setSun({
-        cx,
-        cy: altitudeToY(altitude, VB.h),
-      });
+    const tick = () => {
+      apply();
       rafRef.current = requestAnimationFrame(tick);
     };
+    apply();
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
   }, [lat, lng]);
-
-  return sun;
 }
 
 type LandscapeBackgroundProps = {
@@ -188,7 +197,8 @@ export default function LandscapeBackground({
   frequencySpread = DEFAULT_FREQUENCY_SPREAD,
   highFrequencyFalloff = DEFAULT_HIGH_FREQ_FALLOFF,
 }: LandscapeBackgroundProps) {
-  const sun = useSunPosition(observerLat, observerLng, timeOffsetMs);
+  const sunGroupRef = useRef<SVGGElement | null>(null);
+  useSunPosition(sunGroupRef, observerLat, observerLng, timeOffsetMs);
 
   const hillLayers = useMemo(
     () =>
@@ -239,18 +249,20 @@ export default function LandscapeBackground({
           </filter>
         </defs>
         <rect width="100%" height="100%" fill="url(#landing-sky)" />
-        {sun && (
-          <g>
-            <circle
-              cx={sun.cx}
-              cy={sun.cy}
-              r={SUN_GLOW_RADIUS}
-              fill="url(#landing-sun-glow)"
-              filter="url(#landing-sun-blur)"
-            />
-            <circle cx={sun.cx} cy={sun.cy} r={SUN_RADIUS} fill="#FFF8E8" stroke="#F5E6B8" strokeWidth="1.5" />
-          </g>
-        )}
+        <g
+          ref={sunGroupRef}
+          transform="translate(0,0)"
+          style={{ willChange: "transform" }}
+        >
+          <circle
+            cx={0}
+            cy={0}
+            r={SUN_GLOW_RADIUS}
+            fill="url(#landing-sun-glow)"
+            filter="url(#landing-sun-blur)"
+          />
+          <circle cx={0} cy={0} r={SUN_RADIUS} fill="#FFF8E8" stroke="#F5E6B8" strokeWidth="1.5" />
+        </g>
         {hillLayers.map((layer, i) => (
           <path
             key={`${hillSeed}-${mountainCount}-${harmonicsPerLayer}-${i}`}
