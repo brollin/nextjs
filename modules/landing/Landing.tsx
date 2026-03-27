@@ -1,7 +1,7 @@
 import NextLink from "next/link";
 import Head from "next/head";
 import { keyframes } from "@emotion/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VStack, Box, Text, HStack, Button, IconButton, Heading } from "@chakra-ui/react";
 import { IoSettingsOutline } from "react-icons/io5";
 import LandscapeBackground from "./LandscapeBackground";
@@ -57,8 +57,10 @@ const NAV_LINKS = [
 export default function Landing() {
   const [timeOffsetMs, setTimeOffsetMs] = useState(0);
   const [offsetSmoothRate, setOffsetSmoothRate] = useState(OFFSET_SMOOTH_FAST);
+  /** Imperative mirror of smoothed offset — LandscapeBackground reads this in rAF without re-rendering. */
+  const timeOffsetRef = useRef(0);
   /** Smoothed toward `timeOffsetMs` so wheel/touch steps don’t jitter the sun and clock. */
-  const smoothedOffsetMs = useSmoothedFollow(timeOffsetMs, offsetSmoothRate);
+  const smoothedOffsetMs = useSmoothedFollow(timeOffsetMs, offsetSmoothRate, timeOffsetRef);
   /** Bumps once per second so the clock label tracks real time while offset is fixed. */
   const [clockTick, setClockTick] = useState(0);
 
@@ -223,7 +225,7 @@ export default function Landing() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
       <LandscapeBackground
-        timeOffsetMs={smoothedOffsetMs}
+        timeOffsetRef={timeOffsetRef}
         observerLat={observerLat}
         observerLng={observerLng}
         mountainCount={mountainCount}

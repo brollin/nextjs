@@ -1,4 +1,12 @@
-import { useMemo, useEffect, useLayoutEffect, useRef, type RefObject } from "react";
+import {
+  memo,
+  useMemo,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  type MutableRefObject,
+  type RefObject,
+} from "react";
 import { Box } from "@chakra-ui/react";
 import SunCalc from "suncalc";
 import {
@@ -12,6 +20,9 @@ import {
   type LayerHarmonic,
 } from "./hillLayers";
 import { DEFAULT_OBSERVER_LAT, DEFAULT_OBSERVER_LNG } from "./observerCities";
+import { skyColorsForAltitude } from "./landscapeAmbient";
+
+const RAD_TO_DEG = 180 / Math.PI;
 
 const VB = { w: 1200, h: 800 };
 
@@ -25,7 +36,7 @@ function buildHillPath(
   height: number,
   baseline: number,
   harmonics: LayerHarmonic[],
-  steps = 280,
+  steps = 180,
 ): string {
   const y0 = hillYAt(0, baseline, harmonics);
   let d = `M 0 ${height + 1} L 0 ${y0}`;
@@ -107,19 +118,38 @@ function altitudeToY(altitude: number, height: number): number {
   return HORIZON_Y - altitude * vertScale;
 }
 
+type SkyStopRefs = [
+  RefObject<SVGStopElement | null>,
+  RefObject<SVGStopElement | null>,
+  RefObject<SVGStopElement | null>,
+];
+
 /**
- * Drives sun motion by updating an SVG `<g transform="translate(...)">` each frame.
- * Avoids React state in the rAF loop (that was causing jitter from ~60 reconciliations/sec).
+ * Quantized key for sky gradient updates. Near the horizon, colors change steeply per degree — coarse
+ * buckets + throttle reduce full-screen gradient repaints.
  */
-function useSunPosition(
+function ambientBucket(altDeg: number): number {
+  const a = Math.abs(altDeg);
+  const t = Math.min(1, Math.max(0, (a - 6) / 26));
+  const scale = 0.42 + t * 1.58;
+  return Math.round(altDeg * scale);
+}
+
+/** Sun transform every frame; sky gradient stops when bucket changes (and throttle allows). */
+function useLandscapeFrame(
   sunGroupRef: RefObject<SVGGElement | null>,
+  skyStopRefs: SkyStopRefs,
   lat: number,
   lng: number,
-  timeOffsetMs: number,
+  timeOffsetRef: MutableRefObject<number>,
 ) {
   const rafRef = useRef(0);
-  const offsetRef = useRef(timeOffsetMs);
-  offsetRef.current = timeOffsetMs;
+  const riseSetCacheRef = useRef<{ key: string; value: ReturnType<typeof getSunriseSunsetAzimuth> } | null>(
+    null,
+  );
+  const lastAmbientBucketRef = useRef<number | null>(null);
+  /** Caps how often we touch gradient stops (full-screen sky repaint) even if the bucket flips rapidly. */
+  const lastAmbientAtRef = useRef(0);
 
   const viewportRef = useRef({ w: 1200, h: 800 });
   useEffect(() => {
@@ -150,22 +180,55 @@ function useSunPosition(
 
   useLayoutEffect(() => {
     const apply = () => {
-      const g = sunGroupRef.current;
-      if (!g) return;
-      const when = new Date(Date.now() + offsetRef.current);
+      const when = new Date(Date.now() + timeOffsetRef.current);
       const { w: vw, h: vh } = viewportRef.current;
       const { xMin, xMax } = getVisibleViewBoxSlice(vw, vh, VB.w, VB.h);
-      const riseSet = getSunriseSunsetAzimuth(when, lat, lng);
+
+      const dayKey = `${when.getFullYear()}-${when.getMonth()}-${when.getDate()}-${lat}-${lng}`;
+      let riseSet: ReturnType<typeof getSunriseSunsetAzimuth>;
+      const cached = riseSetCacheRef.current;
+      if (cached?.key === dayKey) {
+        riseSet = cached.value;
+      } else {
+        riseSet = getSunriseSunsetAzimuth(when, lat, lng);
+        riseSetCacheRef.current = { key: dayKey, value: riseSet };
+      }
+
       const { azimuth, altitude } = SunCalc.getPosition(when, lat, lng);
+      const altDeg = altitude * RAD_TO_DEG;
       const cx = azimuthToX(azimuth, VB.w, xMin, xMax, riseSet);
       const cy = altitudeToY(altitude, VB.h);
-      g.setAttribute("transform", `translate(${cx}, ${cy})`);
+
+      const sunG = sunGroupRef.current;
+      if (sunG) {
+        sunG.setAttribute("transform", `translate(${cx}, ${cy})`);
+      }
+
+      const amb = ambientBucket(altDeg);
+      const nowMs = performance.now();
+      const bucketChanged = amb !== lastAmbientBucketRef.current;
+      const throttleOk =
+        lastAmbientBucketRef.current === null || nowMs - lastAmbientAtRef.current >= 85;
+      if (bucketChanged && throttleOk) {
+        lastAmbientBucketRef.current = amb;
+        lastAmbientAtRef.current = nowMs;
+        const [s0, s1, s2] = skyColorsForAltitude(altDeg);
+        skyStopRefs[0].current?.setAttribute("stop-color", s0);
+        skyStopRefs[1].current?.setAttribute("stop-color", s1);
+        skyStopRefs[2].current?.setAttribute("stop-color", s2);
+      }
     };
 
     const tick = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
       apply();
       rafRef.current = requestAnimationFrame(tick);
     };
+    lastAmbientBucketRef.current = null;
+    lastAmbientAtRef.current = 0;
     apply();
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
@@ -173,8 +236,8 @@ function useSunPosition(
 }
 
 type LandscapeBackgroundProps = {
-  /** Added to `Date.now()` for SunCalc — scroll gestures update this from the landing page. */
-  timeOffsetMs?: number;
+  /** Smoothed time offset (ms) — read imperatively each frame so the component need not re-render when time animates. */
+  timeOffsetRef: MutableRefObject<number>;
   /** Observer latitude ° (SunCalc). */
   observerLat?: number;
   /** Observer longitude ° (SunCalc). */
@@ -187,8 +250,8 @@ type LandscapeBackgroundProps = {
   highFrequencyFalloff?: number;
 };
 
-export default function LandscapeBackground({
-  timeOffsetMs = 0,
+function LandscapeBackground({
+  timeOffsetRef,
   observerLat = DEFAULT_OBSERVER_LAT,
   observerLng = DEFAULT_OBSERVER_LNG,
   mountainCount = DEFAULT_MOUNTAIN_COUNT,
@@ -198,7 +261,9 @@ export default function LandscapeBackground({
   highFrequencyFalloff = DEFAULT_HIGH_FREQ_FALLOFF,
 }: LandscapeBackgroundProps) {
   const sunGroupRef = useRef<SVGGElement | null>(null);
-  useSunPosition(sunGroupRef, observerLat, observerLng, timeOffsetMs);
+  const skyStop0Ref = useRef<SVGStopElement | null>(null);
+  const skyStop1Ref = useRef<SVGStopElement | null>(null);
+  const skyStop2Ref = useRef<SVGStopElement | null>(null);
 
   const hillLayers = useMemo(
     () =>
@@ -217,6 +282,14 @@ export default function LandscapeBackground({
     [hillLayers],
   );
 
+  useLandscapeFrame(
+    sunGroupRef,
+    [skyStop0Ref, skyStop1Ref, skyStop2Ref],
+    observerLat,
+    observerLng,
+    timeOffsetRef,
+  );
+
   return (
     <Box
       position="fixed"
@@ -224,6 +297,7 @@ export default function LandscapeBackground({
       zIndex={0}
       pointerEvents="auto"
       overflow="hidden"
+      sx={{ contain: "paint" }}
     >
       <svg
         viewBox={`0 0 ${VB.w} ${VB.h}`}
@@ -235,9 +309,9 @@ export default function LandscapeBackground({
       >
         <defs>
           <linearGradient id="landing-sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#B8D9F5" />
-            <stop offset="45%" stopColor="#8FC0EA" />
-            <stop offset="100%" stopColor="#6BA6D9" />
+            <stop ref={skyStop0Ref} offset="0%" stopColor="#B8D9F5" />
+            <stop ref={skyStop1Ref} offset="45%" stopColor="#8FC0EA" />
+            <stop ref={skyStop2Ref} offset="100%" stopColor="#6BA6D9" />
           </linearGradient>
           <radialGradient id="landing-sun-glow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="rgba(255, 248, 220, 0.95)" />
@@ -268,9 +342,12 @@ export default function LandscapeBackground({
             key={`${hillSeed}-${mountainCount}-${harmonicsPerLayer}-${i}`}
             d={paths[i]}
             fill={layer.fill}
+            shapeRendering="optimizeSpeed"
           />
         ))}
       </svg>
     </Box>
   );
 }
+
+export default memo(LandscapeBackground);
