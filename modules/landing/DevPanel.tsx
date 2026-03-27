@@ -1,4 +1,14 @@
-import { Box, FormControl, FormLabel, HStack, IconButton, Input, Tooltip, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  FormControl,
+  FormLabel,
+  HStack,
+  IconButton,
+  Input,
+  Select,
+  Tooltip,
+  VStack,
+} from "@chakra-ui/react";
 import { IoChevronDown, IoChevronUp, IoInformationCircleOutline } from "react-icons/io5";
 import {
   MAX_FREQUENCY_SPREAD,
@@ -12,6 +22,7 @@ import {
   MIN_HILL_SEED,
   MIN_MOUNTAIN_COUNT,
 } from "./hillLayers";
+import { OBSERVER_CITIES, type ObserverCityId } from "./observerCities";
 
 type DevNumberRowProps = {
   value: number;
@@ -137,6 +148,8 @@ function LabelWithHint({ label, hint }: { label: string; hint: string }) {
 }
 
 type DevPanelProps = {
+  observerCityId: ObserverCityId;
+  onObserverCityChange: (id: ObserverCityId) => void;
   mountainCount: number;
   onMountainCountChange: (value: number) => void;
   hillSeed: number;
@@ -150,6 +163,8 @@ type DevPanelProps = {
 };
 
 export default function DevPanel({
+  observerCityId,
+  onObserverCityChange,
   mountainCount,
   onMountainCountChange,
   hillSeed,
@@ -179,6 +194,36 @@ export default function DevPanel({
       onClick={(e) => e.stopPropagation()}
       onDoubleClick={(e) => e.stopPropagation()}
     >
+      <FormControl size="sm" mb={4}>
+        <LabelWithHint
+          label="City"
+          hint="Observer location for SunCalc sun position and sunrise/sunset mapping."
+        />
+        <Select
+          size="sm"
+          h="34px"
+          fontSize="xs"
+          value={observerCityId}
+          bg="whiteAlpha.100"
+          borderColor="whiteAlpha.300"
+          color="gray.100"
+          borderRadius="md"
+          _hover={{ borderColor: "whiteAlpha.400" }}
+          onChange={(e) => {
+            const id = e.target.value as ObserverCityId;
+            if (OBSERVER_CITIES.some((c) => c.id === id)) {
+              onObserverCityChange(id);
+            }
+          }}
+        >
+          {OBSERVER_CITIES.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.label}
+            </option>
+          ))}
+        </Select>
+      </FormControl>
+
       <FormControl size="sm" mb={4}>
         <LabelWithHint
           label="Seed"

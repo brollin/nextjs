@@ -11,10 +11,7 @@ import {
   hillYAt,
   type LayerHarmonic,
 } from "./hillLayers";
-
-/** San Francisco — fixed observer; time is `Date.now() + timeOffsetMs` from the landing page. */
-const SF_LAT = 37.7749;
-const SF_LNG = -122.4194;
+import { DEFAULT_OBSERVER_LAT, DEFAULT_OBSERVER_LNG } from "./observerCities";
 
 const VB = { w: 1200, h: 800 };
 
@@ -169,6 +166,10 @@ function useSunPosition(lat: number, lng: number, timeOffsetMs: number) {
 type LandscapeBackgroundProps = {
   /** Added to `Date.now()` for SunCalc — scroll gestures update this from the landing page. */
   timeOffsetMs?: number;
+  /** Observer latitude ° (SunCalc). */
+  observerLat?: number;
+  /** Observer longitude ° (SunCalc). */
+  observerLng?: number;
   mountainCount?: number;
   /** Procedural terrain seed (also reserved for future random features). */
   hillSeed?: number;
@@ -179,13 +180,15 @@ type LandscapeBackgroundProps = {
 
 export default function LandscapeBackground({
   timeOffsetMs = 0,
+  observerLat = DEFAULT_OBSERVER_LAT,
+  observerLng = DEFAULT_OBSERVER_LNG,
   mountainCount = DEFAULT_MOUNTAIN_COUNT,
   hillSeed = DEFAULT_HILL_SEED,
   harmonicsPerLayer = DEFAULT_HARMONICS_PER_LAYER,
   frequencySpread = DEFAULT_FREQUENCY_SPREAD,
   highFrequencyFalloff = DEFAULT_HIGH_FREQ_FALLOFF,
 }: LandscapeBackgroundProps) {
-  const sun = useSunPosition(SF_LAT, SF_LNG, timeOffsetMs);
+  const sun = useSunPosition(observerLat, observerLng, timeOffsetMs);
 
   const hillLayers = useMemo(
     () =>

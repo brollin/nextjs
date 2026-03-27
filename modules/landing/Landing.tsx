@@ -25,6 +25,7 @@ import {
   MIN_HILL_SEED,
   MIN_MOUNTAIN_COUNT,
 } from "./hillLayers";
+import { DEFAULT_OBSERVER_CITY_ID, getObserverCoords, type ObserverCityId } from "./observerCities";
 
 /** Wheel / touch movement → simulated time shift (ms per pixel of delta). */
 const WHEEL_MS_PER_DELTA = 7200;
@@ -65,6 +66,7 @@ export default function Landing() {
   const [nowButtonSuppressed, setNowButtonSuppressed] = useState(false);
 
   const [devPanelVisible, setDevPanelVisible] = useState(DEV_SHOW_DEV_UI_INIT);
+  const [observerCityId, setObserverCityId] = useState<ObserverCityId>(DEFAULT_OBSERVER_CITY_ID);
   const [mountainCount, setMountainCount] = useState(DEFAULT_MOUNTAIN_COUNT);
   const [hillSeed, setHillSeed] = useState(DEFAULT_HILL_SEED);
   const [harmonicsPerLayer, setHarmonicsPerLayer] = useState(DEFAULT_HARMONICS_PER_LAYER);
@@ -110,6 +112,11 @@ export default function Landing() {
   const clampHighFrequencyFalloff = useCallback((v: number) => {
     return Math.min(MAX_HIGH_FREQ_FALLOFF, Math.max(MIN_HIGH_FREQ_FALLOFF, v));
   }, []);
+
+  const { lat: observerLat, lng: observerLng } = useMemo(
+    () => getObserverCoords(observerCityId),
+    [observerCityId],
+  );
 
   useEffect(() => {
     const id = window.setInterval(() => setClockTick((n) => n + 1), 1000);
@@ -217,6 +224,8 @@ export default function Landing() {
       </Head>
       <LandscapeBackground
         timeOffsetMs={smoothedOffsetMs}
+        observerLat={observerLat}
+        observerLng={observerLng}
         mountainCount={mountainCount}
         hillSeed={hillSeed}
         harmonicsPerLayer={harmonicsPerLayer}
@@ -337,6 +346,8 @@ export default function Landing() {
           maxW="min(100vw - 24px, 300px)"
         >
           <DevPanel
+            observerCityId={observerCityId}
+            onObserverCityChange={setObserverCityId}
             mountainCount={mountainCount}
             onMountainCountChange={(v) => setMountainCount(clampMountainCount(v))}
             hillSeed={hillSeed}
@@ -415,7 +426,7 @@ export default function Landing() {
                   backdropFilter="blur(12px)"
                   boxShadow="0 3px 10px rgba(15, 40, 64, 0.06)"
                   transitionProperty="transform, box-shadow, background-color, border-color"
-                  transitionDuration="0.22s"
+                  transitionDuration="0.12s"
                   transitionTimingFunction="cubic-bezier(0.4, 0, 0.2, 1)"
                   sx={{
                     WebkitTapHighlightColor: "transparent",
