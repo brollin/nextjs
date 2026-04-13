@@ -4,7 +4,6 @@ This is a Vercel-hosted Next.js app for my personal website [https://brollin.spa
 
 - [World Capitalizer](modules/capitalizer) ([https://brollin.space/capitalizer](https://brollin.space/capitalizer))
 - [Exoplanet Tour](modules/planets) ([https://brollin.space/planets](https://brollin.space/planets))
-- [Health Story](modules/health) ([https://brollin.space/health](https://brollin.space/health))
 - [3D Sandbox](modules/sandbox) ([https://brollin.space/sandbox](https://brollin.space/sandbox))
 
 ## Developing

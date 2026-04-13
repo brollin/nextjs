@@ -56,7 +56,7 @@ const devGearKeyframes = keyframes`
 const NAV_LINKS = [
   { href: "/capitalizer", label: "capitalizer" },
   { href: "/planets", label: "planets" },
-  { href: "/health", label: "health" },
+  { href: "https://health.brollin.space", label: "health" },
   { href: "/sandbox", label: "sandbox" },
   { href: "/chess", label: "chess" },
 ] as const;

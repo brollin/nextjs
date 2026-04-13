@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { ChakraProvider, Heading, VStack } from "@chakra-ui/react";
-import theme from "@/modules/health/theme";
+import theme from "@/modules/tea-with-worf/theme";
 
 export default function TeaWithWorf() {
   return (
@@ -61,13 +61,3 @@ If Tony would have tea with me.
     </ChakraProvider>
   );
 }
-
-const Health = () => (
-  <>
-    <Head>
-      <title>My health story</title>
-      <link rel="icon" href="/favicon.ico" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    </Head>
-  </>
-);
